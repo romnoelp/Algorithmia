@@ -2,11 +2,10 @@ import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect } from "react";
-import * as Font from "expo-font";
+import * as Font from 'expo-font';
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// SVG code
-/*const LogoSVG = `
+const LogoSVG = `
   <svg width="800px" height="800px" viewBox="0 0 1024 1024" class="icon" xmlns="http://www.w3.org/2000/svg">
     <g id="SVGRepo_bgCarrier" stroke-width="0"/>
     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
@@ -16,28 +15,25 @@ import { SafeAreaView } from "react-native-safe-area-context";
       <path d="M403.2 776l-62.4 62.4c-1.6 1.6-3.2 1.6-6.4 1.6h-88c-4.8 0-8-3.2-8-8s3.2-8 8-8h84.8l59.2-59.2v-68.8c0-4.8 3.2-8 8-8s8 3.2 8 8v64H576c4.8 0 8 3.2 8 8s-3.2 8-8 8H403.2z m-11.2-436.8l-108.8-94.4c-3.2-3.2-3.2-8-1.6-11.2 3.2-3.2 8-3.2 11.2-1.6l110.4 94.4H528c4.8 0 8 3.2 8 8s-3.2 8-8 8h-120V400c0 4.8-3.2 8-8 8s-8-3.2-8-8v-60.8zM800 728c-4.8 0-8-3.2-8-8s3.2-8 8-8h88c4.8 0 8 3.2 8 8s-3.2 8-8 8H800z m-49.6-435.2c-3.2 3.2-8 3.2-11.2 1.6-3.2-3.2-3.2-8-1.6-11.2l96-112c3.2-3.2 8-3.2 11.2-1.6 3.2 3.2 3.2 8 1.6 11.2l-96 112zM160 504c-4.8 0-8-3.2-8-8s3.2-8 8-8h112c4.8 0 8 3.2 8 8s-3.2 8-8 8h-112z m536 144c0 4.8-3.2 8-8 8s-8-3.2-8-8V544c0-4.8 3.2-8 8-8s8 3.2 8 8v104z" fill="#050D42"/>
     </g>
   </svg>
-`;*/
+`;
 
-/*const loadFont = () => {
+const loadFont = () => {
   return Font.loadAsync({
-    //"karma-regular": require("./assets/fonts/Karma-Regular.ttf"),
-    "karma-bold": require("./assets/fonts/Karma-Bold.ttf"),
-    "karma-light": require("./assets/fonts/Karma-Light.ttf"),
-    "karma-semibold": require("./assets/fonts/Karma-SemiBold.ttf"),
-    "karma-medium": require("./assets/fonts/Karma-Medium.ttf"),
+    "karma-regular": require("./assets/fonts/Karma-Regular.ttf"),
+    
   });
-};*/
+};
 
 const LandingScreen = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
 
-  /*useEffect(() => {
+  useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
 
   if (!fontLoaded) {
     return null;
-  }*/
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -48,9 +44,7 @@ const LandingScreen = ({ navigation }) => {
         style={styles.container}
       >
         <View style={styles.content}>
-          {/* SVG inserted here */}
           <View
-            //dangerouslySetInnerHTML={{ __html: LogoSVG }}
             style={{ width: 200, height: 200 }}
           />
           <Text style={[styles.karmaBold, { fontSize: 35 }]}>Algorithmia</Text>
