@@ -29,7 +29,6 @@ var svgCode = `<svg width="171" height="171" viewBox="0 0 171 171" fill="none" x
 </defs>
 </svg>`;
 
-
 const LogoSVG = svgCode;
 
 const loadFont = () => {
@@ -92,7 +91,6 @@ export default function App() {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -139,7 +137,3 @@ const styles = StyleSheet.create({
     fontFamily: 'karma-semibold',
   },
 });
-
-
-
-
