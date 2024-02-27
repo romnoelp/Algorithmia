@@ -1,15 +1,14 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet, Text, View } from 'react-native'
+import React from 'react'
 
 const LogInScreen = () => {
   return (
-    <SafeAreaView>
-      <Text>SexTiktok</Text>
-    </SafeAreaView>
-  );
-};
-//change
-export default LogInScreen;
+    <View>
+      <Text>INAMOL JERRY</Text>
+    </View>
+  )
+}
 
-const styles = StyleSheet.create({});
+export default LogInScreen
+
+const styles = StyleSheet.create({})
