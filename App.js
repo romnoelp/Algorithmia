@@ -61,31 +61,32 @@ export default function App() {
       style={styles.container}
     >
       <View style={styles.content}>
-        <Text style={[styles.karmaBold, { fontSize: 35, marginTop: -50, }]}>Algorithmia</Text>
+      <Text style={[styles.karmaBold, { fontSize: 35, marginTop: -50 }]}>Algorithmia</Text>
 
-        <View style={{ padding: 15 }}> 
-          <SvgXml xml={LogoSVG} width="150" height="180" />
-        </View>
+      <View style={{ padding: 15 }}> 
+        <SvgXml xml={LogoSVG} width="150" height="180" />
+      </View>
 
-        <Text style={[styles.karmaSemibold, { fontSize: 20, padding: 1, }]}>Discover your inner analytics with {'\n'}Algorithmia</Text>
+      <Text style={[styles.karmaSemibold, { fontSize: 20, padding: 1 }]}>Discover your inner analytics with {'\n'}Algorithmia</Text>
 
-        <Text style={[styles.karmaLight, { fontSize: 13, padding: 15, }]}>Knapsack, Selection Sorting, TSP, and String {'\n'} 
-        Matching - Your playground awaits!</Text>
+      <Text style={[styles.karmaLight, { fontSize: 13, padding: 15 }]}>Knapsack, Selection Sorting, TSP, and String {'\n'} 
+      Matching - Your playground awaits!</Text>
 
       <TouchableOpacity
-      style={styles.button}
-      onPress={() => {
-
-      }}>
-      <Text style={styles.buttonText}>Login</Text>
+        style={styles.button}
+        onPress={() => {
+          // Add login logic here
+        }}>
+        <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => { /* Point where the button will go.*/ }}>
-          <Text style={[styles.karmaLight, { fontSize: 13, padding: 15, }]}>
-            Don't have an account? <Text style={{ textDecorationLine: 'underline' }}>Sign up here.</Text>
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <Text style={[styles.karmaLight, { fontSize: 13, padding: 15 }]}>
+      Don't have an account? 
+      <TouchableOpacity onPress={() => { }}>
+        <Text style={[styles.karmaLight, { color: '#2CC5EF',  }]}>Sign up </Text>
+      </TouchableOpacity>
+    </Text>
+    </View>
       <StatusBar style="auto" />
     </LinearGradient>
   );
