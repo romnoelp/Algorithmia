@@ -29,6 +29,7 @@ var svgCode = `<svg width="171" height="171" viewBox="0 0 171 171" fill="none" x
 </defs>
 </svg>`;
 
+
 const LogoSVG = svgCode;
 
 const loadFont = () => {
@@ -78,11 +79,18 @@ export default function App() {
       }}>
       <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { /* Point where the button will go.*/ }}>
+          <Text style={[styles.karmaLight, { fontSize: 13, padding: 15, }]}>
+            Don't have an account? <Text style={{ textDecorationLine: 'underline' }}>Sign up here.</Text>
+          </Text>
+        </TouchableOpacity>
       </View>
       <StatusBar style="auto" />
     </LinearGradient>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -130,3 +138,7 @@ const styles = StyleSheet.create({
     fontFamily: 'karma-semibold',
   },
 });
+
+
+
+
