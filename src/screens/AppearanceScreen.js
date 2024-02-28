@@ -1,9 +1,10 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text  } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect } from "react";
 import * as Font from 'expo-font';
 import { SafeAreaView } from "react-native-safe-area-context";
+
 
 const loadFont = () => {
   return Font.loadAsync({
@@ -32,6 +33,11 @@ const AppearanceScreen = ({ navigation }) => {
         style={styles.container}
       >
         <View style={styles.headerLine} />
+
+        <View style={styles.content}>
+          <Text style={styles.text}>Sample text</Text>
+        </View>
+
         <StatusBar hidden />
       </LinearGradient>
     </SafeAreaView>
@@ -51,6 +57,16 @@ const styles = StyleSheet.create({
     height: 3,
     backgroundColor: "#2CC5EF", 
   },
+  content: {
+    marginTop: 100, 
+    paddingHorizontal: 20,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: '#E6F2F6',
+  }
 });
 
 export default AppearanceScreen;
