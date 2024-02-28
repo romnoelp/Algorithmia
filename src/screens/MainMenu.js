@@ -1,5 +1,5 @@
 import { 
-    SafeAreaView, View, Text, StyleSheet, ScrollView, TouchableOpacity 
+    SafeAreaView, View, Text, StyleSheet, ScrollView, TouchableOpacity
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SvgXml } from "react-native-svg";
@@ -28,6 +28,12 @@ const SVGLogo = `
 <stop offset="1" stop-color="#D8D8D8" stop-opacity="0.01"/>
 </linearGradient>
 </defs>
+</svg>
+`;
+
+const SVGSettings =`
+<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M18 23.25C16.6076 23.25 15.2723 22.6969 14.2877 21.7123C13.3031 20.7277 12.75 19.3924 12.75 18C12.75 16.6076 13.3031 15.2723 14.2877 14.2877C15.2723 13.3031 16.6076 12.75 18 12.75C19.3924 12.75 20.7277 13.3031 21.7123 14.2877C22.6969 15.2723 23.25 16.6076 23.25 18C23.25 19.3924 22.6969 20.7277 21.7123 21.7123C20.7277 22.6969 19.3924 23.25 18 23.25ZM29.145 19.455C29.205 18.975 29.25 18.495 29.25 18C29.25 17.505 29.205 17.01 29.145 16.5L32.31 14.055C32.595 13.83 32.67 13.425 32.49 13.095L29.49 7.905C29.31 7.575 28.905 7.44 28.575 7.575L24.84 9.075C24.06 8.49 23.25 7.98 22.305 7.605L21.75 3.63C21.69 3.27 21.375 3 21 3H15C14.625 3 14.31 3.27 14.25 3.63L13.695 7.605C12.75 7.98 11.94 8.49 11.16 9.075L7.425 7.575C7.095 7.44 6.69 7.575 6.51 7.905L3.51 13.095C3.315 13.425 3.405 13.83 3.69 14.055L6.855 16.5C6.795 17.01 6.75 17.505 6.75 18C6.75 18.495 6.795 18.975 6.855 19.455L3.69 21.945C3.405 22.17 3.315 22.575 3.51 22.905L6.51 28.095C6.69 28.425 7.095 28.545 7.425 28.425L11.16 26.91C11.94 27.51 12.75 28.02 13.695 28.395L14.25 32.37C14.31 32.73 14.625 33 15 33H21C21.375 33 21.69 32.73 21.75 32.37L22.305 28.395C23.25 28.005 24.06 27.51 24.84 26.91L28.575 28.425C28.905 28.545 29.31 28.425 29.49 28.095L32.49 22.905C32.67 22.575 32.595 22.17 32.31 21.945L29.145 19.455Z" fill="#E6F2F6"/>
 </svg>
 `;
 
@@ -72,57 +78,51 @@ const MainMenu = () => {
   }
     return (
         <SafeAreaView style={{ flex: 1 }}>
+            <TouchableOpacity>
+                <View style={styles.logoContainer}>
+                    <SvgXml xml={SVGLogo} width="43" height="43" />
+                </View>
+            </TouchableOpacity>
+            <View style={styles.settingsContainer}>
+                <SvgXml xml={SVGSettings} width="43" height="43" />
+            </View>
             <View style={styles.container}>
-            <View style={styles.headerLine}/>
-            <StatusBar hidden />
+                <View style={styles.headerLine}/>
+                <StatusBar hidden />
                 <View style={styles.sectionContainer}>
-                    <View styles = {styles.line}></View>
                     <Text style={styles.sectionTitle}>What to do?</Text>
                 </View>
                 <View style={styles.row}>
-                    <View style={styles.squareContainer}>
-                        <View style={styles.square}>
-                            <TouchableOpacity OnPress ={() => console.log("Button Pressed")}>
-                                <View style={styles.firstSquareShapeView}>
-                                    <View style={{ padding: 10, marginLeft: 30, marginTop: 25}}>
-                                        <SvgXml xml={SVGOne} width="76" height="76" />
-                                    </View>      
-                                </View>
-                            <Text style={[styles.title,{textAlign:"center"}]}>Wholesale</Text>
-                            </TouchableOpacity>
+                    <TouchableOpacity onPress={() => console.log("Wholesale pressed")} style={styles.square} activeOpacity={0.7}>
+                        <View style={styles.squareShapeView}>
+                            <SvgXml xml={SVGOne} width="76" height="76" />
                         </View>
-                        <View style={[styles.square, {marginLeft:20}]}>
-                            <View style={styles.secondSquareShapeView}>
-                                <View style={{ padding: 10, marginLeft: 30, marginTop: 20}}>
-                                    <SvgXml xml={SVGTwo} width="90" height="90" />
-                                </View>
-                            </View>
-                            <Text style={styles.title}>Sort Items</Text>
+                        <Text style={styles.title}>Wholesale</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => console.log("Sort Items pressed")} style={styles.square} activeOpacity={0.7}>
+                        <View style={styles.squareShapeView}>
+                            <SvgXml xml={SVGTwo} width="90" height="90" />
                         </View>
-                    </View>
+                        <Text style={styles.title}>Sort Items</Text>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.row}>
-                    <View style={styles.squareContainer}>
-                        <View style={styles.square}>
-                            <View style={styles.thirdSquareShapeView}>
-                                <View style={{ padding: 10, marginLeft: 30, marginTop: 25}}>
-                                    <SvgXml xml={SVGThree} width="80" height="80" />
-                                </View>
-                            </View>
-                            <Text style={styles.title}>Delivery</Text>
-                        </View>
-                        <View style={[styles.square, {marginLeft:20}]}>
-                            <View style={styles.fourthSquareShapeView}>
-                                <View style={{ padding: 10, marginLeft: 20, marginTop: 15}}>
-                                    <SvgXml xml={SVGFour} width="100" height="100" />
-                                </View>                                
-                            </View>
-                            <Text style={styles.title}>Word Finder</Text>
-                        </View>
+                    <TouchableOpacity onPress={() => console.log("Delivery pressed")} style={styles.square} activeOpacity={0.7}>
+                    <View style={styles.squareShapeView}>
+                        <SvgXml xml={SVGThree} width="76" height="76" />
                     </View>
+                    <Text style={styles.title}>Delivery</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => console.log("Word Finder pressed")} style={styles.square} activeOpacity={0.7}>
+                    <View style={styles.squareShapeView}>
+                        <SvgXml xml={SVGFour} width="90" height="90" />
+                    </View>
+                    <Text style={styles.title}>Word Finder</Text>
+                </TouchableOpacity>
                 </View>
             </View>
         </SafeAreaView>
+
     );
 };
 
@@ -134,15 +134,34 @@ const styles = StyleSheet.create({
     },
     headerLine: {
         position: "absolute",
+        backgroundColor: "#2CC5EF",
         top: 90,
         left: 0,
         right: 0,
         height: 3,
-        backgroundColor: "#2CC5EF",
+        marginBottom: 20,
+    },
+    logoContainer: {
+        alignItems: "center",
+        position: "absolute",
+        top: 20,
+        left: 0,
+        right: 350,
+        zIndex: 1,
+        paddingTop: 10,
+    },
+    settingsContainer: {
+        alignItems: "center",
+        position: "absolute",
+        top: 20,
+        left: 350,
+        right: 0,
+        zIndex: 1,
+        paddingTop: 10,
     },
     sectionContainer: {
-        alignItems: "center", 
-        marginBottom: 20, 
+        marginBottom: 20,
+        alignItems: "center",
     },
     sectionTitle: {
         fontFamily: "karma-semibold",
@@ -150,44 +169,20 @@ const styles = StyleSheet.create({
         fontSize: 24,
     },
     row: {
-        flexDirection: "row", 
-        justifyContent: "center", 
-        marginBottom: 20, 
-    },
-    squareContainer: {
-        flexDirection: "row", 
-        justifyContent: "space-around",
+        flexDirection: "row",
+        marginBottom: 20,
     },
     square: {
-        alignItems: "center", 
+        alignItems: "center",
+        flex: 1,
     },
-    firstSquareShapeView: {
+    squareShapeView: {
         width: 159,
         height: 142,
         borderRadius: 20,
         backgroundColor: "#147691",
-        marginTop: 30,
-    },
-    secondSquareShapeView: {
-        width: 159,
-        height: 142,
-        borderRadius: 20,
-        backgroundColor: "#147691",
-        marginTop: 30,
-    },
-    thirdSquareShapeView: {
-        width: 159,
-        height: 142,
-        borderRadius: 20,
-        backgroundColor: "#147691",
-        marginTop: 30,
-    },
-    fourthSquareShapeView: {
-        width: 159,
-        height: 142,
-        borderRadius: 20,
-        backgroundColor: "#147691",
-        marginTop: 30,
+        justifyContent: "center",
+        alignItems: "center",
     },
     title: {
         fontFamily: "karma-regular",
@@ -195,11 +190,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginTop: 10,
     },
-    line: {
-        backgroundColor: "#2CC5EF",
-        height: 2,
-        width: "100%", 
-    },
 });
+
 
 export default MainMenu;
