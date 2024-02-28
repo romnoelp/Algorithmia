@@ -64,15 +64,15 @@ const LandingScreen = ({ navigation }) => {
         style={styles.container}
       >
         <View style={styles.content}>
-          <Text style={[styles.karmaBold, { fontSize: 35, marginTop: -40, }]}>Algorithmia</Text>
+          <Text style={[styles.karmaBold, { fontSize: 35, padding: 30, marginBottom: 50, marginTop: -40 }]}>Algorithmia</Text>
 
-          <View style={{ padding: 15 }}>
-            <SvgXml xml={LogoSVG} width="150" height="180" />
+          <View style={{ padding: 10, marginBottom: 30, marginTop: -30 }}>
+            <SvgXml xml={LogoSVG} width="180" height="150" />
           </View>
 
-          <Text style={[styles.karmaSemibold, { fontSize: 20, padding: 1, }]}>Discover your inner analytics with {'\n'}Algorithmia</Text>
+          <Text style={[styles.karmaSemibold, { fontSize: 20, paddingTop: 20, marginBottom: 40 }]}>Discover your inner analytics with {'\n'}Algorithmia</Text>
 
-          <Text style={[styles.karmaLight, { fontSize: 16, padding: 15, }]}>Knapsack, Selection Sorting, TSP, and String {'\n'}
+          <Text style={[styles.karmaLight, { fontSize: 16, marginBottom: 40 }]}>Knapsack, Selection Sorting, TSP, and String {'\n'}
             Matching - Your playground awaits!</Text>
 
           <TouchableOpacity
@@ -83,10 +83,13 @@ const LandingScreen = ({ navigation }) => {
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
 
-          <Text style={[styles.karmaSemibold, { fontSize: 13, paddingVertical: 35 }]}>
+          <Text style={[styles.karmaLight, { fontSize: 10, marginBottom: 10, marginTop: -10 }]}>
             Don't have an account yet?{" "}
-            <Text style={{ color: '#8CD4E8' }}>Sign up here!</Text>
+            <TouchableOpacity onPress={() => {}}>
+              <Text style={{ color: '#8CD4E8', fontFamily: 'karma-light', marginLeft: 10, marginTop: -10, fontSize: 12}}>Sign up here!</Text>
+            </TouchableOpacity>
           </Text>
+
 
         </View>
       </LinearGradient>
@@ -108,25 +111,21 @@ const styles = StyleSheet.create({
   },
   karmaRegular: {
     fontFamily: "karma-regular",
-    marginBottom: 10,
     color: "#E4F2F6",
     textAlign: "center",
   },
   karmaLight: {
     fontFamily: "karma-light",
-    marginBottom: 10,
     color: "#E4F2F6",
     textAlign: "center",
   },
   karmaBold: {
     fontFamily: "karma-bold",
-    marginBottom: 10,
     color: "#E4F2F6",
     textAlign: "center",
   },
   karmaSemibold: {
     fontFamily: "karma-semibold",
-    marginBottom: 10,
     color: "#E4F2F6",
     textAlign: "center",
   },
@@ -135,6 +134,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 35,
     paddingVertical: 15,
     borderRadius: 20,
+    marginBottom: 60
   },
   buttonText: {
     color: '#E6F2F6',
