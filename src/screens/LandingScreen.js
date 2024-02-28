@@ -93,8 +93,6 @@ const LandingScreen = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
           </View>
-
-
         </View>
       </LinearGradient>
       <StatusBar hidden />
