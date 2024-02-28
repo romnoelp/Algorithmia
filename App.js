@@ -20,7 +20,7 @@ const App = () => (
       
       <Stack.Screen
         name="MainMenu"
-        component={MainMenu}
+        component={MainMenuScreen}
         options={{ headerShown: false }}
       />
 
