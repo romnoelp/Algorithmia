@@ -1,5 +1,6 @@
 import { Appearance, StyleSheet } from "react-native";
 import React from "react";
+import { View } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LandingScreen from "./src/screens/LandingScreen";
 import { NavigationContainer } from "@react-navigation/native";
