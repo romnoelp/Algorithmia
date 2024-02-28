@@ -83,12 +83,16 @@ const LandingScreen = ({ navigation }) => {
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
 
-          <Text style={[styles.karmaLight, { fontSize: 10, marginBottom: 10, marginTop: -10 }]}>
-            Don't have an account yet?{" "}
-            <TouchableOpacity onPress={() => {}}>
-              <Text style={{ color: '#8CD4E8', fontFamily: 'karma-light', marginLeft: 10, marginTop: -10, fontSize: 12}}>Sign up here!</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginTop: 10 }}>
+            <Text style={[styles.karmaLight, { fontSize: 12 }]}>
+              Don't have an account yet?{" "}
+            </Text>
+            <TouchableOpacity onPress={() => { }}>
+              <Text style={{}}>
+                Sign up here!
+              </Text>
             </TouchableOpacity>
-          </Text>
+          </View>
 
 
         </View>
@@ -142,6 +146,11 @@ const styles = StyleSheet.create({
     fontFamily: "karma-semibold",
     textAlign: 'center',
   },
+  signup: {
+    color: '#8CD4E8', 
+    fontFamily: 'karma-light', 
+    marginLeft: 5, fontSize: 12 
+  }
 });
 
 export default LandingScreen;
