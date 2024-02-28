@@ -1,9 +1,9 @@
 import { StyleSheet } from "react-native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LandingScreen from "./src/LandingScreen";
+import LandingScreen from "./src/screens/LandingScreen";
 import { NavigationContainer } from "@react-navigation/native";
-import LogInScreen from "./src/LogInScreen";
+import LogInScreen from "./src/screens/LogInScreen";
 
 const Stack = createNativeStackNavigator();
 const App = () => (

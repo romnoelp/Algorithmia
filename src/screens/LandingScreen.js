@@ -37,10 +37,10 @@ const LogoSVG = `
 
 const loadFont = () => {
   return Font.loadAsync({
-    "karma-regular": require("./assets/fonts/Karma-Regular.ttf"),
-    "karma-light": require("./assets/fonts/Karma-Light.ttf"),
-    "karma-bold": require("./assets/fonts/Karma-Bold.ttf"),
-    "karma-semibold": require("./assets/fonts/Karma-SemiBold.ttf"),
+    "karma-regular": require("../assets/fonts/Karma-Regular.ttf"),
+    "karma-light": require("../assets/fonts/Karma-Light.ttf"),
+    "karma-bold": require("../assets/fonts/Karma-Bold.ttf"),
+    "karma-semibold": require("../assets/fonts/Karma-SemiBold.ttf"),
   });
 };
 
