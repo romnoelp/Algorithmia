@@ -2,10 +2,10 @@ import * as Font from "expo-font";
 
 const loadFont = () => {
   return Font.loadAsync({
-    "karma-regular": require("./src/assets/fonts/Karma-Light.ttf"),
-    "karma-light": require("./src/assets/fonts/Karma-Light.ttf"),
-    "karma-bold": require("./src/assets/fonts/Karma-Bold.ttf"),
-    "karma-semibold": require("./src/assets/fonts/Karma-SemiBold.ttf"),
+    "karma-regular": require("./assets/fonts/Karma-Light.ttf"),
+    "karma-light": require("./assets/fonts/Karma-Light.ttf"),
+    "karma-bold": require("./assets/fonts/Karma-Bold.ttf"),
+    "karma-semibold": require("./assets/fonts/Karma-SemiBold.ttf"),
   });
 };
 
