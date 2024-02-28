@@ -19,6 +19,12 @@ const App = () => (
       />  
       
       <Stack.Screen
+        name="MainMenu"
+        component={MainMenu}
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
         name="LogInScreen"
         component={LogInScreen}
         options={{ headerShown: false }}
