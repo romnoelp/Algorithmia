@@ -11,17 +11,32 @@ import MainMenuScreen from "./src/screens/MainMenuScreen";
 const Stack = createNativeStackNavigator();
 const App = () => (
   <NavigationContainer>
-    <Stack.Navigator initialRouteName="AppearanceScreen"> 
-      
+    <Stack.Navigator initialRouteName="LandingScreen"> 
       <Stack.Screen
         name="AppearanceScreen"
         component={AppearanceScreen}
-        options={{ headerShown: false }}
-      />  
-      
+        options={{
+          headerLeft: () => (
+            <View>
+              <TouchableOpacity>
+                <SvgXml xml={homeSVG} width={"43"} height={"43"} />
+              </TouchableOpacity>
+            </View>
+          ),
+          headerTitle: "",
+          headerStyle: {
+            backgroundColor: "#061215",
+          },
+        }}
+      />
       <Stack.Screen
         name="MainMenu"
         component={MainMenuScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="LandingScreen"
+        component={LandingScreen}
         options={{ headerShown: false }}
       />
 
