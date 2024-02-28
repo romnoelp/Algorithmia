@@ -33,8 +33,6 @@ const LogoSVG = `
 
 `;
 
-
-
 const loadFont = () => {
   return Font.loadAsync({
     "karma-regular": require("../assets/fonts/Karma-Regular.ttf"),
@@ -59,20 +57,18 @@ const LandingScreen = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient
         colors={["#2CC5EF", "#147691", "#061215"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
         style={styles.container}
       >
         <View style={styles.content}>
-          <Text style={[styles.karmaBold, { fontSize: 35, padding: 30, marginBottom: 50, marginTop: -40 }]}>Algorithmia</Text>
+          <Text style={[styles.karmaBold, { fontSize: 45, padding: 30, marginBottom: 50, marginTop: -40 }]}>Algorithmia</Text>
 
           <View style={{ padding: 10, marginBottom: 30, marginTop: -30 }}>
             <SvgXml xml={LogoSVG} width="180" height="150" />
           </View>
 
-          <Text style={[styles.karmaSemibold, { fontSize: 20, paddingTop: 20, marginBottom: 40 }]}>Discover your inner analytics with {'\n'}Algorithmia</Text>
+          <Text style={[styles.karmaSemibold, { fontSize: 25, paddingTop: 20, marginBottom: 40 }]}>Discover your inner analytics with {'\n'}Algorithmia</Text>
 
-          <Text style={[styles.karmaLight, { fontSize: 16, marginBottom: 40 }]}>Knapsack, Selection Sorting, TSP, and String {'\n'}
+          <Text style={[styles.karmaLight, { fontSize: 20, marginBottom: 40 }]}>Knapsack, Selection Sorting, TSP, and String {'\n'}
             Matching - Your playground awaits!</Text>
 
           <TouchableOpacity
@@ -84,11 +80,11 @@ const LandingScreen = ({ navigation }) => {
           </TouchableOpacity>
 
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginTop: 10 }}>
-            <Text style={[styles.karmaLight, { fontSize: 12 }]}>
+            <Text style={[styles.karmaLight, { fontSize: 15 }]}>
               Don't have an account yet?{" "}
             </Text>
             <TouchableOpacity onPress={() => { }}>
-              <Text style={{ color: '#8CD4E8', fontFamily: 'karma-light', marginLeft: 5, fontSize: 12 }}>
+              <Text style={{ color: '#8CD4E8', fontFamily: 'karma-light', marginLeft: 5, fontSize: 15 }}>
                 Sign up here!
               </Text>
             </TouchableOpacity>
@@ -99,8 +95,6 @@ const LandingScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -136,11 +130,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 35,
     paddingVertical: 15,
     borderRadius: 20,
-    marginBottom: 60
+    marginBottom: 50
   },
   buttonText: {
     color: '#E6F2F6',
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: "karma-semibold",
     textAlign: 'center',
   },
