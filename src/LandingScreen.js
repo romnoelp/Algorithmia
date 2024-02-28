@@ -88,7 +88,7 @@ const LandingScreen = ({ navigation }) => {
               Don't have an account yet?{" "}
             </Text>
             <TouchableOpacity onPress={() => { }}>
-              <Text style={{}}>
+              <Text style={{ color: '#8CD4E8', fontFamily: 'karma-light', marginLeft: 5, fontSize: 12 }}>
                 Sign up here!
               </Text>
             </TouchableOpacity>
@@ -146,11 +146,6 @@ const styles = StyleSheet.create({
     fontFamily: "karma-semibold",
     textAlign: 'center',
   },
-  signup: {
-    color: '#8CD4E8', 
-    fontFamily: 'karma-light', 
-    marginLeft: 5, fontSize: 12 
-  }
 });
 
 export default LandingScreen;
