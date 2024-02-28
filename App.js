@@ -1,5 +1,6 @@
 import { Appearance, StyleSheet } from "react-native";
 import React from "react";
+import { View } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LandingScreen from "./src/screens/LandingScreen";
 import { NavigationContainer } from "@react-navigation/native";
@@ -10,17 +11,32 @@ import MainMenuScreen from "./src/screens/MainMenuScreen";
 const Stack = createNativeStackNavigator();
 const App = () => (
   <NavigationContainer>
-    <Stack.Navigator initialRouteName="AppearanceScreen"> 
-      
+    <Stack.Navigator initialRouteName="LandingScreen"> 
       <Stack.Screen
         name="AppearanceScreen"
         component={AppearanceScreen}
-        options={{ headerShown: false }}
-      />  
-      
+        options={{
+          headerLeft: () => (
+            <View>
+              <TouchableOpacity>
+                <SvgXml xml={homeSVG} width={"43"} height={"43"} />
+              </TouchableOpacity>
+            </View>
+          ),
+          headerTitle: "",
+          headerStyle: {
+            backgroundColor: "#061215",
+          },
+        }}
+      />
       <Stack.Screen
         name="MainMenu"
         component={MainMenuScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="LandingScreen"
+        component={LandingScreen}
         options={{ headerShown: false }}
       />
 
