@@ -66,7 +66,7 @@ const loadFont = () => {
       "karma-semibold": require("../assets/fonts/Karma-SemiBold.ttf"),
     });
   };
-
+//Hi
 const MainMenu = () => {
     const [fontLoaded, setFontLoaded] = useState(false);
 
