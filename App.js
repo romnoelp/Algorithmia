@@ -10,11 +10,16 @@ import MainMenuScreen from "./src/screens/MainMenuScreen";
 const Stack = createNativeStackNavigator();
 const App = () => (
   <NavigationContainer>
-    <Stack.Navigator initialRouteName="AppearanceScreen"> 
+    <Stack.Navigator initialRouteName="MainMenuScreen"> 
       
       <Stack.Screen
         name="AppearanceScreen"
         component={AppearanceScreen}
+        options={{ headerShown: false }}
+      />  
+      <Stack.Screen
+        name="LandingScreen"
+        component={LandingScreen}
         options={{ headerShown: false }}
       />  
       

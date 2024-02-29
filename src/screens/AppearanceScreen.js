@@ -24,16 +24,102 @@ const loadFont = () => {
   });
 };
 
+const getStyles = (darkMode) => {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      position: 'relative',
+    },
+    headerLine: {
+      position: 'absolute',
+      top: 70,
+      left: 0,
+      right: 0,
+      height: 3,
+      backgroundColor: "#2CC5EF",
+    },
+    settingsContainer: {
+      position: 'absolute',
+      top: 15,
+      right: 10,
+      zIndex: 1, 
+    },
+    homeContainer: {
+      position: 'absolute',
+      top: 15,
+      left: 10,
+      zIndex: 1, 
+    },
+    appearanceContainer: {
+      marginTop: 160,
+      marginHorizontal: 30,
+      padding: 20,
+      borderRadius: 20,
+      backgroundColor: '#147691',
+      height: 645,
+    },
+    rowContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 50,
+      marginTop: 30,
+    },
+    toggleButton: {
+      width: 50,
+      height: 25,
+      borderRadius: 25,
+      backgroundColor: '#061215',
+      justifyContent: 'center',
+      alignItems: 'flex-start',
+      paddingHorizontal: 5,
+    },
+    toggleButtonActive: {
+      backgroundColor: '#EBF7F9',
+    },
+    toggleCircle: {
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      backgroundColor: darkMode ? '#10ABD5' : '#2CC5EF', 
+    },
+    toggleCircleActive: {
+      transform: [{ translateX: 20 }]
+    },
+    karmaBold: {
+      fontFamily: "karma-bold",
+      color: "#E4F2F6",
+    },
+    karmaRegular: {
+      fontFamily: "karma-regular",
+      color: "#E4F2F6",
+      fontSize: 18,
+    },
+    karmaSemibold: {
+      fontFamily: "karma-semibold",
+      color: "#E4F2F6",
+      fontSize: 18,
+    },
+  });
+};
+
 const AppearanceScreen = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
 
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
 
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
   if (!fontLoaded) {
     return null;
   }
+
+  const styles = getStyles(darkMode);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -43,86 +129,33 @@ const AppearanceScreen = ({ navigation }) => {
       >
         <View style={styles.headerLine} />
         
-        <Text style={[styles.karmaBold, { fontSize: 25, color: '#E6F2F6', position: 'absolute', top: 110, left: 25,  }]}>Settings</Text>
 
-        <View style={styles.content}>
+        <TouchableOpacity style={styles.settingsContainer} onPress={() => console.log("Settings clicked")}>
+          <SvgXml xml={settingSVG} width="43" height="43" />
+        </TouchableOpacity>
 
-        </View>
+        <TouchableOpacity style={styles.homeContainer} onPress={() => console.log("Home clicked")}>
+          <SvgXml xml={homeSVG} width="43" height="43" />
+        </TouchableOpacity>
 
-        <View style={styles.settingsContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate('MainMenuScreen')}>
-            <SvgXml xml={homeSVG} width="43" height="43" />
-          </TouchableOpacity>
-        </View>
+        <Text style={[styles.karmaSemibold, { fontSize: 25, color: '#E6F2F6', position: 'absolute', top: 90, left: 25,  }]}>Settings</Text>
+        <Text style={[styles.karmaBold, { fontSize: 25, color: '#E6F2F6', textAlign: "center", top: 155 }]}>Appearance</Text>
 
-        <View style={styles.settingsContainerRight}>
-          <TouchableOpacity onPress={() => navigation.navigate('MainMenuScreen')}>
-            <SvgXml xml={settingSVG} width="43" height="43" />
-          </TouchableOpacity>
+        <View style={styles.appearanceContainer}>
+          <View style={styles.rowContainer}>
+            <Text style={styles.karmaRegular}>Dark Mode</Text>
+            <TouchableOpacity onPress={toggleDarkMode}>
+              <View style={[styles.toggleButton, darkMode ? {} : styles.toggleButtonActive]}>
+                <View style={[styles.toggleCircle, darkMode ? styles.toggleCircleActive : {}]} />
+              </View>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.karmaRegular}>Font</Text>
         </View>
         <StatusBar hidden />
       </LinearGradient>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: 'relative',
-  },
-  headerLine: {
-    position: 'absolute',
-    top: 90,
-    left: 0,
-    right: 0,
-    height: 3,
-    backgroundColor: "#2CC5EF",
-  },
-  content: {
-    marginTop: 100,
-    paddingHorizontal: 20,
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    color: '#E6F2F6',
-  },
-  settingsContainer: {
-    alignItems: "center",
-    position: "absolute",
-    top: 20,
-    left: 20,
-    zIndex: 1,
-  },
-  settingsContainerRight: {
-    alignItems: "center",
-    position: "absolute",
-    top: 20,
-    right: 20,
-    zIndex: 1,
-  },
-  karmaRegular: {
-    fontFamily: "karma-regular",
-    color: "#E4F2F6",
-    textAlign: "center",
-  },
-  karmaLight: {
-    fontFamily: "karma-light",
-    color: "#E4F2F6",
-    textAlign: "center",
-  },
-  karmaBold: {
-    fontFamily: "karma-bold",
-    color: "#E4F2F6",
-    textAlign: "center",
-  },
-  karmaSemibold: {
-    fontFamily: "karma-semibold",
-    color: "#E4F2F6",
-    textAlign: "center",
-  },
-});
 
 export default AppearanceScreen;
