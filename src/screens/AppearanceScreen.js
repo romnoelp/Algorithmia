@@ -157,5 +157,4 @@ const AppearanceScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
 export default AppearanceScreen;
