@@ -148,7 +148,7 @@ const SortingScreen = () => {
                 <Text style={styles.ParentContainerText}>    Name                  Boxes                 Amount</Text>
             <View style={[styles.textAndSvgContainer, { top: -40}]}>
             <Text style={styles.textBelowHeader}>Sorted List  </Text>
-            <SvgXml xml={SVGSorted} width="28" height="22" />
+            <SvgXml xml={SVGSorted} width="27.5" height="22" />
             <Text style={styles.textBelowHeader1}>Sort By</Text>
                 <View style={[styles.ChildContainer, { top: 530, left: 20 }]} />
                 <View style={[styles.ChildContainer, { top: 454, left: 20 }]} />

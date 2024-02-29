@@ -7,17 +7,30 @@ import { NavigationContainer } from "@react-navigation/native";
 import LogInScreen from "./src/screens/LogInScreen";
 import AppearanceScreen from "./src/screens/AppearanceScreen";
 import MainMenuScreen from "./src/screens/MainMenuScreen";
+import SortingScreen from "./src/screens/SortingScreen";
 
 const Stack = createNativeStackNavigator();
 const App = () => (
   <NavigationContainer>
-    <Stack.Navigator initialRouteName="AppearanceScreen"> 
+    <Stack.Navigator initialRouteName="SortingScreen"> 
       
       <Stack.Screen
         name="AppearanceScreen"
         component={AppearanceScreen}
         options={{ headerShown: false }}
       />  
+
+        <Stack.Screen
+        name="SortingScreen"
+        component={SortingScreen}
+        options={{headerShown: false}}
+      />
+
+      <Stack.Screen
+        name="Landing"
+        component={LandingScreen}
+        options={{headerShown: false}}
+      />
       
       <Stack.Screen
         name="MainMenu"
