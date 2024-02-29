@@ -7,6 +7,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import LogInScreen from "./src/screens/LogInScreen";
 import AppearanceScreen from "./src/screens/AppearanceScreen";
 import MainMenuScreen from "./src/screens/MainMenuScreen";
+import SortingScreen from "./src/screens/SortingScreen";
 
 const Stack = createNativeStackNavigator();
 const App = () => (
