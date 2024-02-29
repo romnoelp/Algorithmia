@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@react-native-picker/picker": "^2.6.1",
+    "@react-navigation/bottom-tabs": "^6.5.16",
     "@react-navigation/native-stack": "^6.9.20",
     "expo": "~50.0.7",
     "expo-font": "^11.10.3",

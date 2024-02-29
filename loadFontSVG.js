@@ -1,11 +1,11 @@
 import * as Font from "expo-font";
 
-const loadFont = () => {
-  return Font.loadAsync({
-    "karma-regular": require("./assets/fonts/Karma-Light.ttf"),
-    "karma-light": require("./assets/fonts/Karma-Light.ttf"),
-    "karma-bold": require("./assets/fonts/Karma-Bold.ttf"),
-    "karma-semibold": require("./assets/fonts/Karma-SemiBold.ttf"),
+const loadFont = async () => {
+  await Font.loadAsync({
+    "karma-regular": require("./src/assets/fonts/Karma-Regular.ttf"),
+    "karma-light": require("./src/assets/fonts/Karma-Light.ttf"),
+    "karma-bold": require("./src/assets/fonts/Karma-Bold.ttf"),
+    "karma-semibold": require("./src/assets/fonts/Karma-SemiBold.ttf"),
   });
 };
 
@@ -62,7 +62,7 @@ const SVGFour = `
 </svg>
 `;
 
-const homeSVG = `<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+const SVGHome = `<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M15 30V21H21V30H28.5V18H33L18 4.5L3 18H7.5V30H15Z" fill="#E6F2F6"/>
 </svg>
 `;
