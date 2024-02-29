@@ -5,15 +5,19 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SvgXml } from "react-native-svg";
 import { StatusBar } from "expo-status-bar";
 import { loadFont, SVGOne, SVGTwo, SVGThree, SVGFour } from "../../loadFontSVG";
 
 const MainMenuScreen = ({ navigation }) => {
+  const [fontLoaded, setFontLoaded] = useState(false);
   useEffect(() => {
-    loadFont();
+    loadFont().then(() => setFontLoaded(true));
   }, []);
+  if (!fontLoaded) {
+    return null;
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
