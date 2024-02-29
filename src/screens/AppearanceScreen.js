@@ -41,13 +41,13 @@ const getStyles = (darkMode) => {
     settingsContainer: {
       position: 'absolute',
       top: 15,
-      right: 10,
+      right: 25,
       zIndex: 1, 
     },
     homeContainer: {
       position: 'absolute',
       top: 15,
-      left: 10,
+      left: 25,
       zIndex: 1, 
     },
     appearanceContainer: {
@@ -138,7 +138,7 @@ const AppearanceScreen = ({ navigation }) => {
           <SvgXml xml={homeSVG} width="43" height="43" />
         </TouchableOpacity>
 
-        <Text style={[styles.karmaSemibold, { fontSize: 25, color: '#E6F2F6', position: 'absolute', top: 90, left: 25,  }]}>Settings</Text>
+        <Text style={[styles.karmaSemibold, { fontSize: 25, color: '#E6F2F6', position: 'absolute', top: 90, left: 32,  }]}>Settings</Text>
         <Text style={[styles.karmaBold, { fontSize: 25, color: '#E6F2F6', textAlign: "center", top: 155 }]}>Appearance</Text>
 
         <View style={styles.appearanceContainer}>
