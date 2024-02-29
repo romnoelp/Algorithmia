@@ -12,29 +12,32 @@ import SortingScreen from "./src/screens/SortingScreen";
 const Stack = createNativeStackNavigator();
 const App = () => (
   <NavigationContainer>
-    <Stack.Navigator initialRouteName="SortingScreen"> 
-      
+    <Stack.Navigator initialRouteName="LandingScreen"> 
       <Stack.Screen
         name="AppearanceScreen"
         component={AppearanceScreen}
-        options={{ headerShown: false }}
-      />  
-
-        <Stack.Screen
-        name="SortingScreen"
-        component={SortingScreen}
-        options={{headerShown: false}}
+        options={{
+          headerLeft: () => (
+            <View>
+              <TouchableOpacity>
+                <SvgXml xml={homeSVG} width={"43"} height={"43"} />
+              </TouchableOpacity>
+            </View>
+          ),
+          headerTitle: "",
+          headerStyle: {
+            backgroundColor: "#061215",
+          },
+        }}
       />
-
-      <Stack.Screen
-        name="Landing"
-        component={LandingScreen}
-        options={{headerShown: false}}
-      />
-      
       <Stack.Screen
         name="MainMenu"
         component={MainMenuScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="LandingScreen"
+        component={LandingScreen}
         options={{ headerShown: false }}
       />
 
