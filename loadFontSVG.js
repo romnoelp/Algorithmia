@@ -1,7 +1,7 @@
 import * as Font from "expo-font";
 
 const loadFont = async () => {
-  await Font.loadAsync({
+  return await Font.loadAsync({
     "karma-regular": require("./src/assets/fonts/Karma-Regular.ttf"),
     "karma-light": require("./src/assets/fonts/Karma-Light.ttf"),
     "karma-bold": require("./src/assets/fonts/Karma-Bold.ttf"),
@@ -74,6 +74,6 @@ export {
   SVGTwo,
   SVGThree,
   SVGFour,
-  homeSVG,
+  SVGHome,
   loadFont,
 };
