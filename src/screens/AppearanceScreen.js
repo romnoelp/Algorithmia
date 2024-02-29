@@ -81,7 +81,7 @@ const getStyles = (darkMode) => {
       width: 20,
       height: 20,
       borderRadius: 10,
-      backgroundColor: darkMode ? '#10ABD5' : '#2CC5EF', 
+      backgroundColor: darkMode ? '#2CC5EF' : '#2CC5EF', 
     },
     toggleCircleActive: {
       transform: [{ translateX: 20 }]
@@ -152,7 +152,7 @@ const AppearanceScreen = ({ navigation }) => {
           </View>
           <Text style={styles.karmaRegular}>Font</Text>
         </View>
-        <StatusBar hidden />
+        <StatusBar backgroundColor="#061215" />
       </LinearGradient>
     </SafeAreaView>
   );
