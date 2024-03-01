@@ -20,11 +20,13 @@ import {
   SVGHome,
 } from "./loadFontSVG";
 import { SvgXml } from "react-native-svg";
+import SettingsScreen from "./src/screens/SettingsScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const TabtoSettingsStack = createNativeStackNavigator();
 
-const headerOptionsForBottomTab = (svgLeft, svgRight, icon) => ({
+const headerOptionsForBottomTab = (navigation, svgLeft, svgRight, icon) => ({
   headerStyle: {
     backgroundColor: "#147691",
     borderBottomColor: "#2CC5EF",
@@ -32,7 +34,10 @@ const headerOptionsForBottomTab = (svgLeft, svgRight, icon) => ({
   },
   headerTitle: "",
   headerRight: () => (
-    <TouchableOpacity activeOpacity={0.7}>
+    <TouchableOpacity
+      activeOpacity={0.7}
+      onPress={() => navigation.navigate("SettingsScreen")}
+    >
       <SvgXml
         xml={svgRight("white")}
         width={"25"}
@@ -42,7 +47,10 @@ const headerOptionsForBottomTab = (svgLeft, svgRight, icon) => ({
     </TouchableOpacity>
   ),
   headerLeft: () => (
-    <TouchableOpacity activeOpacity={0.7}>
+    <TouchableOpacity
+      activeOpacity={0.7}
+      onPress={() => navigation.navigate("MainMenuScreen")}
+    >
       <SvgXml
         xml={svgLeft("white")}
         width={"25"}
@@ -56,7 +64,7 @@ const headerOptionsForBottomTab = (svgLeft, svgRight, icon) => ({
   tabBarActiveBackgroundColor: "#2CC5EF",
 });
 
-const MainTab = () => (
+const MainTab = ({ navigation }) => (
   <Tab.Navigator
     screenOptions={{
       tabBarStyle: {
@@ -67,24 +75,93 @@ const MainTab = () => (
     <Tab.Screen
       name="Products"
       component={WholeSaleScreen}
-      options={headerOptionsForBottomTab(SVGHome, SVGSettings, SVGOne)}
+      options={headerOptionsForBottomTab(
+        navigation,
+        SVGHome,
+        SVGSettings,
+        SVGOne
+      )}
     />
     <Tab.Screen
       name="List"
       component={SortingScreen}
-      options={headerOptionsForBottomTab(SVGHome, SVGSettings, SVGTwo)}
+      options={headerOptionsForBottomTab(
+        navigation,
+        SVGHome,
+        SVGSettings,
+        SVGTwo
+      )}
     />
     <Tab.Screen
       name="Delivery"
       component={DeliveryScreen}
-      options={headerOptionsForBottomTab(SVGHome, SVGSettings, SVGThree)}
+      options={headerOptionsForBottomTab(
+        navigation,
+        SVGHome,
+        SVGSettings,
+        SVGThree
+      )}
     />
     <Tab.Screen
       name="Finder"
       component={FinderScreen}
-      options={headerOptionsForBottomTab(SVGHome, SVGSettings, SVGFour)}
+      options={headerOptionsForBottomTab(
+        navigation,
+        SVGHome,
+        SVGSettings,
+        SVGFour
+      )}
     />
   </Tab.Navigator>
+);
+
+const TabtoSettingsStackNavigator = ({ navigation }) => (
+  <TabtoSettingsStack.Navigator initialRouteName="MainMenuScreen">
+    <TabtoSettingsStack.Screen
+      name="MainTab"
+      component={MainTab}
+      options={{ headerShown: false, statusBarHidden: true }}
+    />
+    <TabtoSettingsStack.Screen
+      name="SettingsScreen"
+      component={SettingsScreen}
+      options={{
+        headerStyle: {
+          backgroundColor: "#147691",
+        },
+        headerTitle: "",
+        headerLeft: () => (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate("MainMenuScreen")}
+          >
+            <SvgXml xml={SVGHome("white")} width={"25"} height={"25"} />
+          </TouchableOpacity>
+        ),
+        statusBarHidden: true,
+      }}
+    />
+    <TabtoSettingsStack.Screen
+      name="MainMenuScreen"
+      component={MainMenuScreen}
+      options={{
+        headerStyle: {
+          backgroundColor: "#147691",
+        },
+        headerTitle: "",
+        headerRight: () => (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate("SettingsScreen")}
+          >
+            <SvgXml xml={SVGSettings("white")} width={"25"} height={"25"} />
+          </TouchableOpacity>
+        ),
+        headerLeft: () => <SvgXml xml={SVGLogo} width={"25"} height={"25"} />,
+        statusBarHidden: false,
+      }}
+    />
+  </TabtoSettingsStack.Navigator>
 );
 const App = () => (
   <NavigationContainer>
@@ -92,7 +169,7 @@ const App = () => (
       <Stack.Screen
         name="LandingScreen"
         component={LandingScreen}
-        options={{ headerShown: false }}
+        options={{ headerShown: false, statusBarHidden: true }}
       />
       <Stack.Screen
         name="LogInScreen"
@@ -100,25 +177,9 @@ const App = () => (
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="MainMenuScreen"
-        component={MainMenuScreen}
-        options={{
-          headerStyle: {
-            backgroundColor: "#147691",
-          },
-          headerTitle: "",
-          headerRight: () => (
-            <TouchableOpacity activeOpacity={0.7}>
-              <SvgXml xml={SVGSettings("white")} width={"25"} height={"25"} />
-            </TouchableOpacity>
-          ),
-          headerLeft: () => <SvgXml xml={SVGLogo} width={"25"} height={"25"} />,
-        }}
-      />
-      <Stack.Screen
-        name="MainTab"
-        component={MainTab}
-        options={{ headerShown: false }}
+        name="TabToStack"
+        component={TabtoSettingsStackNavigator}
+        options={{ headerShown: false, statusBarHidden: true }}
       />
     </Stack.Navigator>
   </NavigationContainer>
