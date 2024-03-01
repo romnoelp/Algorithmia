@@ -55,7 +55,7 @@ const LandingScreen = ({ navigation }) => {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              navigation.replace("MainMenuScreen"); //change to LogInScreen later
+              navigation.replace("TabToStack"); //change to LogInScreen later
             }}
           >
             <Text style={styles.buttonText}>Login</Text>
@@ -87,7 +87,6 @@ const LandingScreen = ({ navigation }) => {
           </View>
         </View>
       </LinearGradient>
-      <StatusBar hidden />
     </SafeAreaView>
   );
 };
