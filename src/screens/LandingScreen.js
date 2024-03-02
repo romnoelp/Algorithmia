@@ -31,7 +31,7 @@ const LandingScreen = ({ navigation }) => {
         <Text style={styles.title}>Algorithmia</Text>
         <SvgXml xml={SVGLogo} style={styles.logo} />
         <Text style={styles.second}>
-          Discover your inner analytics with {"\n"}Algorithmia
+          Discover your inner computational knack {"\n"}with Algorithmia
         </Text>
         <Text style={styles.third}>
           Knapsack, Selection Sorting, TSP, and String {"\n"} Matching - Your
@@ -41,7 +41,7 @@ const LandingScreen = ({ navigation }) => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            navigation.replace("TabToStack");
+            navigation.replace("TabToStack"); // Reaplace with login screen 
           }}
         >
           <Text style={styles.buttonText}>Login</Text>
@@ -50,9 +50,7 @@ const LandingScreen = ({ navigation }) => {
         <View style={styles.signup}>
           <Text style={[styles.nonTouchable]}>Don't have an account yet? </Text>
           <TouchableOpacity onPress={() => {}}>
-            <Text style={styles.touchable}>
-              Sign up here!
-            </Text>
+            <Text style={styles.touchable}>Sign up here!</Text>
           </TouchableOpacity>
         </View>
       </LinearGradient>
@@ -75,28 +73,28 @@ const styles = StyleSheet.create({
   second: {
     fontFamily: "karma-semibold",
     color: "#EBF7F9",
-    fontSize: hp("2.5%"),
+    fontSize: wp("4.5%"),
     textAlign: "center",
-    marginHorizontal: wp("7%"),
+    marginHorizontal: wp("6%"),
     marginTop: hp("3%"),
     marginBottom: hp("2%"),
   },
   third: {
     fontFamily: "karma-regular",
     color: "#EBF7F9",
-    fontSize: hp("1.9%"),
+    fontSize: wp("3.5%"),
     textAlign: "center",
     marginHorizontal: wp("7%"),
   },
   logo: {
     margin: hp("2%"),
-    height: "10%", 
-    width: "20%", 
+    height: "10%",
+    width: "20%",
   },
   button: {
     backgroundColor: "#147691",
     paddingHorizontal: hp("5%"),
-    paddingVertical: hp("2%"),
+    paddingVertical: hp("1.8%"),
     borderRadius: 20,
     marginTop: hp("5%"),
   },
@@ -110,6 +108,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: hp("8%"),
+    fontSize: wp("1%")
   },
   nonTouchable: {
     fontFamily: "karma-light",

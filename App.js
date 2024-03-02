@@ -21,6 +21,10 @@ import {
 } from "./loadFontSVG";
 import { SvgXml } from "react-native-svg";
 import SettingsScreen from "./src/screens/SettingsScreen";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,8 +32,8 @@ const TabtoSettingsStack = createNativeStackNavigator();
 
 const headerOptionsForBottomTab = (navigation, svgLeft, svgRight, icon) => ({
   headerStyle: {
-    backgroundColor: "#147691",
-    borderBottomColor: "#2CC5EF",
+    backgroundColor: "#EBF7F9",
+    borderBottomColor: "#6FD1EB",
     borderBottomWidth: 5,
   },
   headerTitle: "",
@@ -39,10 +43,10 @@ const headerOptionsForBottomTab = (navigation, svgLeft, svgRight, icon) => ({
       onPress={() => navigation.navigate("SettingsScreen")}
     >
       <SvgXml
-        xml={svgRight("white")}
+        xml={svgRight("#09171B")}
         width={"25"}
         height={"25"}
-        style={{ marginRight: 10 }}
+        style={{ marginRight: wp("7%") }}
       />
     </TouchableOpacity>
   ),
@@ -52,23 +56,23 @@ const headerOptionsForBottomTab = (navigation, svgLeft, svgRight, icon) => ({
       onPress={() => navigation.navigate("MainMenuScreen")}
     >
       <SvgXml
-        xml={svgLeft("white")}
+        xml={svgLeft("#09171B")}
         width={"25"}
         height={"25"}
-        style={{ marginLeft: 10 }}
+        style={{ marginLeft: wp("7%") }}
       />
     </TouchableOpacity>
   ),
   tabBarIcon: () => <SvgXml xml={icon("black")} width={"25"} height={"25"} />,
   tabBarShowLabel: false,
-  tabBarActiveBackgroundColor: "#2CC5EF",
+  tabBarActiveBackgroundColor: "#10ABD5",
 });
 
 const MainTab = ({ navigation }) => (
   <Tab.Navigator
     screenOptions={{
       tabBarStyle: {
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#EBF7F9",
       },
     }}
   >
