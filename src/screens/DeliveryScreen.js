@@ -18,9 +18,6 @@ const DeliveryScreen = () => {
     return null;
   }
 
-  // Please don't touch yet, I'm yet to finish the cards for the addressItems (I suggest we start configuring the database)
-  // that way we don't have to waste energy and time for setting up cards that are not going to be used anyway. Instead 
-  // it'll be more efficient to make cards based off of the rows in the DB 
   return (
     <View style={styles.container}>
       <View style={styles.headerTitleSVG}>
@@ -29,7 +26,7 @@ const DeliveryScreen = () => {
       </View>
       <View style={styles.testContainer}>
         <View style={styles.addressRow}>
-          <Text style={styles.columnName}>Customer Name</Text>
+          <Text style={styles.columnName}>Customer</Text>
           <Text style={styles.columnName}>Address</Text>
           <Text style={styles.columnName}>Distance</Text>
         </View>
@@ -38,15 +35,12 @@ const DeliveryScreen = () => {
   );
 };
 
-// We need to work on the navbar, it needs to be aligned with the left and right most part of the container
-// (Look at the Delivery text and the testContainer)
-
 export default DeliveryScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#EBF7F9",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -72,21 +66,17 @@ const styles = StyleSheet.create({
     color: "#09171B",
     marginRight: wp("3"),
   },
-  svgContainer: {
-    marginLeft: wp("2%"),
-  },
-  svgIcon: {
-    height: hp("28%"),
-    width: wp("28%"),
-    backgroundColor: "#09171B",
-  },
   addressRow: {
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
+    paddingHorizontal: wp("5%"),
     alignItems: "center",
+    width: "100%",
   },
   columnName: {
+    flex: 1,
     fontFamily: "karma-regular",
-    margin: wp("10%"),
+    marginVertical: hp("1%"),
+    textAlign: "center",
   },
 });
