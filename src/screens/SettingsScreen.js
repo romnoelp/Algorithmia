@@ -1,53 +1,71 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
-import * as Font from "expo-font";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const loadFont = async () => {
-  await Font.loadAsync({
-    "karma-regular": require("../assets/fonts/Karma-Regular.ttf"),
-    "karma-light": require("../assets/fonts/Karma-Light.ttf"),
-    "karma-bold": require("../assets/fonts/Karma-Bold.ttf"),
-    "karma-semibold": require("../assets/fonts/Karma-SemiBold.ttf"),
-  });
-};
+import { loadFont } from "../../loadFontSVG";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
 const SettingsScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
 
   useEffect(() => {
-    const loadFonts = async () => {
-      await loadFont();
-      setFontLoaded(true);
-    };
-    loadFonts();
+    loadFont().then(() => setFontLoaded(true));
   }, []);
+  if (!fontLoaded) {
+    return null;
+  }
+  const settingChoices = [
+    {
+      key: 1,
+      name: "Appearance",
+    },
+    {
+      key: 2,
+      name: "Developers",
+    },
+    {
+      key: 3,
+      name: "About the app",
+    },
+  ];
 
-  const clickableNames = ["Appearance", "Developers", "About the app"];
-  const nonClickableName = "Settings";
-
-  const handleNameClick = (name) => {
-    alert("namo jeri");
+  const handleChoicesFunctionality = (key) => {
+    switch (key) {
+      case 1:
+        return alert("Appearance");
+      case 2:
+        return alert("Developers");
+      case 3:
+        return alert("About the app");
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {fontLoaded && (
-        <View>
-          <View style={styles.headerLine} />
-          <Text style={styles.nonClickable}>{nonClickableName}</Text>
-          {clickableNames.map((name, index) => (
-            <React.Fragment key={index}>
-              <TouchableOpacity onPress={() => handleNameClick(name)}>
-                <Text style={styles.clickable}>{name}</Text>
-              </TouchableOpacity>
-              {index < clickableNames.length - 1 && (
-                <View style={styles.separator} />
-              )}
-            </React.Fragment>
-          ))}
-        </View>
-      )}
+      <Text style={{ fontSize: hp("4%"), fontFamily: "karma-bold" }}>
+        Settings
+      </Text>
+      <View style={styles.mapContainer}>
+        {settingChoices.map((item) => (
+          <TouchableOpacity
+            onPress={() => handleChoicesFunctionality(item.key)}
+          >
+            <View style={styles.settingContainer} key={item.key}>
+              <Text
+                style={{
+                  marginHorizontal: wp("2%"),
+                  fontFamily: "karma-semibold",
+                  fontSize: hp("3%"),
+                }}
+              >
+                {item.name}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
     </SafeAreaView>
   );
 };
@@ -55,28 +73,14 @@ const SettingsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginHorizontal: wp("4%"),
   },
-  nonClickable: {
-    padding: 20,
-    fontSize: 24,
-    fontFamily: "karma-bold",
-  },
-  clickable: {
-    padding: 20,
-    fontSize: 24,
-    fontFamily: "karma-bold",
-  },
-  headerLine: {
-    borderBottomWidth: 5,
+  settingContainer: {
+    marginVertical: hp("1%"),
     borderBottomColor: "#2CC5EF",
+    borderBottomWidth: 2,
   },
-  separator: {
-    borderBottomWidth: 3,
-    borderBottomColor: "#2CC5EF",
-    marginLeft: 20, 
-    marginRight: 20, 
-    borderRadius: 20
-  },
+  mapContainer: { marginTop: hp("3%") },
 });
 
 export default SettingsScreen;

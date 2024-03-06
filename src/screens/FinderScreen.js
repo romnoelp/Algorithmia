@@ -3,7 +3,10 @@ import { SvgXml } from "react-native-svg";
 import * as Font from "expo-font";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 import { SVGFour, loadFont } from "../../loadFontSVG";
 
 const FinderScreen = () => {
@@ -66,7 +69,7 @@ const FinderScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.headerTitleSVG}>
         <Text style={styles.headerTitle}>Finder</Text>
-        <SvgXml xml={SVGFour("black")} width={30} height={30} style={{alignSelf: "center"}} />
+        <SvgXml xml={SVGFour("black")} width={30} height={30} />
       </View>
 
       <View style={styles.mainContainer}>
@@ -79,14 +82,9 @@ const FinderScreen = () => {
           showsVerticalScrollIndicator={false}
           data={data}
           renderItem={({ item }) => (
-            <View
-              style={styles.dataContainer}>
-              <Text
-                style={styles.customerValue}>
-                {item.name}
-              </Text>
-              <Text
-                style={styles.addressValue}>{item.boxes}</Text>
+            <View style={styles.dataContainer}>
+              <Text style={styles.customerValue}>{item.name}</Text>
+              <Text style={styles.addressValue}>{item.boxes}</Text>
               <Text style={styles.distanceValue}>{item.amount}</Text>
             </View>
           )}
@@ -105,15 +103,12 @@ const styles = StyleSheet.create({
   },
   headerTitleSVG: {
     flexDirection: "row",
-    alignItems: "center",
     alignSelf: "flex-start",
     marginLeft: wp("8%"),
   },
   mainContainer: {
     height: hp("78%"),
     width: wp("85%"),
-    alignItems: "center",
-    justifyContent: "flex-start",
     marginTop: hp("1.5%"),
     borderRadius: hp("2%"),
     backgroundColor: "#147691",
@@ -148,7 +143,7 @@ const styles = StyleSheet.create({
     maxWidth: 89,
     flexWrap: "wrap",
   },
-  addressValue:{
+  addressValue: {
     color: "white",
     flex: 1,
     marginLeft: 20,
@@ -157,18 +152,18 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     textAlign: "center",
   },
-  distanceValue:{
+  distanceValue: {
     color: "white",
     flex: 1,
     fontFamily: "karma-regular",
     fontSize: 13,
     marginStart: 15,
     marginLeft: 25,
-    marginEnd: 1, 
+    marginEnd: 1,
     flexWrap: "wrap",
     textAlign: "center",
   },
-  dataContainer:{
+  dataContainer: {
     backgroundColor: "#2CC5EF",
     flexDirection: "row",
     marginVertical: 5,
@@ -176,10 +171,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: 326,
     height: 79,
-    alignItems:"center",
+    alignItems: "center",
     paddingHorizontal: 20,
     justifyContent: "space-between",
-  }
+  },
 });
 
 export default FinderScreen;
