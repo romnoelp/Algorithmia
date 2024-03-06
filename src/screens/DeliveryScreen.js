@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -7,6 +6,7 @@ import {
   ScrollView,
   Modal,
   TextInput,
+  FlatList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SvgXml } from "react-native-svg";
@@ -19,10 +19,14 @@ import { SVGDelivery, loadFont } from "../../loadFontSVG";
 const DeliveryScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [customerData, setCustomerData] = useState([]);
 
+  const [customerName, setCustomerName] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
+  console.log(customerName);
 
   if (!fontLoaded) {
     return null;
@@ -33,9 +37,10 @@ const DeliveryScreen = () => {
   };
 
   const handleAddAddress = () => {
-    setIsModalVisible(false); 
+    setCustomerData((prev) => [...prev, { customerName, customerAddress }]);
+    setIsModalVisible(false);
   };
-
+  console.log(customerData);
   return (
     <View style={styles.container}>
       <View style={styles.headerTitleSVG}>
@@ -49,9 +54,15 @@ const DeliveryScreen = () => {
           <Text style={styles.columnName}>Distance</Text>
         </View>
 
-        <ScrollView style={styles.scrollContainer}>
-          {/* Cards here */}
-        </ScrollView>
+        <FlatList
+          data={customerData}
+          renderItem={({ item }) => (
+            <View>
+              <Text>{item.customerName}</Text>
+              <Text>{item.customerAddress}</Text>
+            </View>
+          )}
+        />
 
         <TouchableOpacity
           style={styles.floatingButtonContainer}
@@ -79,7 +90,10 @@ const DeliveryScreen = () => {
               >
                 Name
               </Text>
-              <TextInput style={styles.inputField} />
+              <TextInput
+                style={styles.inputField}
+                onChangeText={(text) => setCustomerName(text)}
+              />
             </View>
 
             <View style={styles.inputContainer}>
@@ -91,7 +105,10 @@ const DeliveryScreen = () => {
               >
                 Address
               </Text>
-              <TextInput style={styles.inputField} />
+              <TextInput
+                style={styles.inputField}
+                onChangeText={(text) => setCustomerAddress(text)}
+              />
             </View>
 
             <View style={styles.inputContainer}>
