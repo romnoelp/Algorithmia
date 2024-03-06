@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: wp("8%"),
     fontSize: wp("6%"),
+    elevation: 10,
     overflow: "hidden", //This makes the button rounded in IOS
   },
   modalContainer: {
