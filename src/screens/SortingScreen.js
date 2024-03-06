@@ -70,7 +70,7 @@ const SortingScreen = () => {
     },
   ];
   return (
-    <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
+    <SafeAreaView style={{ backgroundColor: "#EBF7F9", flex: 1 }}>
       <View
         style={{
           flexDirection: "row",
