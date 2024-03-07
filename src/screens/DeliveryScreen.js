@@ -64,7 +64,7 @@ const DeliveryScreen = () => {
 
         <FlatList
           data={customerData}
-          contentContainerStyle={styles.flatListContainer} // Add contentContainerStyle prop
+          contentContainerStyle={styles.flatListContainer} 
           renderItem={({ item }) => (
             <View style={styles.customerContainer}>
               <View style={styles.rowInfo}>
@@ -167,25 +167,25 @@ const styles = StyleSheet.create({
   },
   rowInfo: {
     flex: 1,
-    alignItems: "center", // Center the content horizontally
+    alignItems: "center",
     justifyContent: "center",
   },
   customerContainer: {
     flexDirection: "row",
-    width: wp("85%") - wp("4%"), // Adjust width to account for padding
-    height: hp("8%"), // Fixed height for each container
+    width: wp("85%") - wp("4%"), 
+    height: hp("8%"), 
     marginBottom: hp("1.2%"),
     elevation: 2,
     backgroundColor: "#10ABD5",
     borderRadius: wp("4%"),
-    paddingHorizontal: wp("1%"), // Add horizontal padding
+    paddingHorizontal: wp("1%"), 
   },
   customerInfo: {
     fontFamily: "karma-regular",
     fontSize: wp("3%"),
     color: "#09171B",
-    textAlign: "center", // Center align the text
-    width: wp("28%"), // Set fixed width for each column
+    textAlign: "center", 
+    width: wp("28%"), 
   },
   columnName: {
     flex: 1,
