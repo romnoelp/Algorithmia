@@ -163,7 +163,6 @@ export default DeliveryScreen;
 const styles = StyleSheet.create({
   flatListContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
   },
   rowInfo: {
     flex: 1,
