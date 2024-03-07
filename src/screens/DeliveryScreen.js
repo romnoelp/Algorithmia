@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,7 +9,6 @@ import {
   TextInput,
   FlatList,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import { SvgXml } from "react-native-svg";
 import {
   widthPercentageToDP as wp,
@@ -20,13 +20,15 @@ const DeliveryScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [customerData, setCustomerData] = useState([]);
-
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
+  const [customerDistance, setDistance] = useState("");
+
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
-  console.log(customerName);
+
+  console.log(customerData);
 
   if (!fontLoaded) {
     return null;
@@ -37,10 +39,16 @@ const DeliveryScreen = () => {
   };
 
   const handleAddAddress = () => {
-    setCustomerData((prev) => [...prev, { customerName, customerAddress }]);
+    setCustomerData((prev) => [
+      ...prev,
+      { customerName, customerAddress, customerDistance },
+    ]);
     setIsModalVisible(false);
+    setCustomerName("");
+    setCustomerAddress("");
+    setDistance("");
   };
-  console.log(customerData);
+
   return (
     <View style={styles.container}>
       <View style={styles.headerTitleSVG}>
@@ -56,10 +64,18 @@ const DeliveryScreen = () => {
 
         <FlatList
           data={customerData}
+          contentContainerStyle={styles.flatListContainer} // Add contentContainerStyle prop
           renderItem={({ item }) => (
-            <View>
-              <Text>{item.customerName}</Text>
-              <Text>{item.customerAddress}</Text>
+            <View style={styles.customerContainer}>
+              <View style={styles.rowInfo}>
+                <Text style={styles.customerInfo}>{item.customerName}</Text>
+              </View>
+              <View style={styles.rowInfo}>
+                <Text style={styles.customerInfo}>{item.customerAddress}</Text>
+              </View>
+              <View style={styles.rowInfo}>
+                <Text style={styles.customerInfo}>{item.customerDistance}</Text>
+              </View>
             </View>
           )}
         />
@@ -93,6 +109,7 @@ const DeliveryScreen = () => {
               <TextInput
                 style={styles.inputField}
                 onChangeText={(text) => setCustomerName(text)}
+                value={customerName}
               />
             </View>
 
@@ -108,6 +125,7 @@ const DeliveryScreen = () => {
               <TextInput
                 style={styles.inputField}
                 onChangeText={(text) => setCustomerAddress(text)}
+                value={customerAddress}
               />
             </View>
 
@@ -120,12 +138,16 @@ const DeliveryScreen = () => {
               >
                 Distance from source
               </Text>
-              <TextInput style={styles.inputField} />
+              <TextInput
+                style={styles.inputField}
+                onChangeText={(text) => setDistance(text)}
+                value={customerDistance}
+              />
             </View>
 
             <TouchableOpacity
               style={styles.saveButton}
-              onPress={handleAddAddress} // Call handleAddAddress function
+              onPress={handleAddAddress}
             >
               <Text style={styles.saveButtonText}>Add Address</Text>
             </TouchableOpacity>
@@ -139,6 +161,39 @@ const DeliveryScreen = () => {
 export default DeliveryScreen;
 
 const styles = StyleSheet.create({
+  flatListContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  rowInfo: {
+    flex: 1,
+    alignItems: "center", // Center the content horizontally
+    justifyContent: "center",
+  },
+  customerContainer: {
+    flexDirection: "row",
+    width: wp("85%") - wp("4%"), // Adjust width to account for padding
+    height: hp("8%"), // Fixed height for each container
+    marginBottom: hp("1.2%"),
+    elevation: 2,
+    backgroundColor: "#10ABD5",
+    borderRadius: wp("4%"),
+    paddingHorizontal: wp("1%"), // Add horizontal padding
+  },
+  customerInfo: {
+    fontFamily: "karma-regular",
+    fontSize: wp("3%"),
+    color: "#09171B",
+    textAlign: "center", // Center align the text
+    width: wp("28%"), // Set fixed width for each column
+  },
+  columnName: {
+    flex: 1,
+    fontFamily: "karma-bold",
+    marginVertical: hp("1%"),
+    textAlign: "center",
+    fontSize: hp("2%"),
+  },
   container: {
     flex: 1,
     backgroundColor: "#EBF7F9",
@@ -155,11 +210,12 @@ const styles = StyleSheet.create({
     height: hp("78%"),
     width: wp("85%"),
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     marginTop: hp("1.5%"),
     borderRadius: hp("2%"),
     backgroundColor: "#6FD1EB",
     position: "relative",
+    padding: wp("2"),
   },
   headerTitle: {
     fontFamily: "karma-bold",
@@ -174,18 +230,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp("5%"),
     alignItems: "center",
     width: "100%",
-  },
-  columnName: {
-    flex: 1,
-    fontFamily: "karma-bold",
-    marginVertical: hp("1%"),
-    textAlign: "center",
-  },
-  scrollContainer: {
-    flex: 1,
-    width: "100%",
-    marginBottom: hp("1%"),
-    borderRadius: wp("3%"),
   },
   floatingButtonContainer: {
     position: "absolute",
