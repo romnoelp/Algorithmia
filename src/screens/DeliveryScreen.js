@@ -4,17 +4,18 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ScrollView,
   Modal,
   TextInput,
   FlatList,
 } from "react-native";
-import { SvgXml } from "react-native-svg";
+import { SvgXml, err } from "react-native-svg";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { SVGDelivery, loadFont } from "../../loadFontSVG";
+import axios from "axios";
+import * as geolib from "geolib";
 
 const DeliveryScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -23,8 +24,7 @@ const DeliveryScreen = () => {
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [customerDistance, setDistance] = useState("");
-
-  useEffect(() => {
+    useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
 
@@ -38,11 +38,50 @@ const DeliveryScreen = () => {
     setIsModalVisible(!isModalVisible);
   };
 
-  const handleAddAddress = () => {
-    setCustomerData((prev) => [
-      ...prev,
-      { customerName, customerAddress, customerDistance },
-    ]);
+  const handleAddAddress = async () => {
+    try {
+      const sourceAddress = {
+        latitude: 14.663979273045632,
+        longitude: 121.05794500238676,
+      }; // Get the coordinates of the source (NEU SHITTY ASS SCHOOL)
+
+      const apiResponse = await axios.get(
+        `https://nominatim.openstreetmap.org/search?q=${customerAddress}&format=json&limit=1`
+      ); // Logic -> Wait for the response of the API, then check conditionals
+
+      if (apiResponse.data && apiResponse.data.length > 0) {
+        const { lat, lon } = apiResponse.data[0];
+
+        const distance = geolib.getDistance(
+          {
+            latitude: sourceAddress.latitude,
+            longitude: sourceAddress.longitude,
+          },
+          { latitude: parseFloat(lat), longitude: parseFloat(lon) }
+        );
+
+        const convertedDistance = (distance / 1000).toFixed(2);
+
+        setCustomerData((prev) => [
+          ...prev,
+          {
+            customerName,
+            customerAddress,
+            customerDistance: convertedDistance,
+          },
+        ]);
+      } else {
+        console.error(
+          "Unable to find coordinates because this API is trash and shitty."
+        );
+      }
+    } catch (error) {
+      console.log(
+        "Error occurred while fetching coordinates. This is the fucking error: ",
+        error
+      );
+    }
+
     setIsModalVisible(false);
     setCustomerName("");
     setCustomerAddress("");
@@ -136,6 +175,7 @@ export default DeliveryScreen;
 const styles = StyleSheet.create({
   flatListContainer: {
     flexDirection: "row",
+    backgroundColor: "red"
   },
   rowInfo: {
     flex: 1,
@@ -258,7 +298,7 @@ const styles = StyleSheet.create({
     marginBottom: hp(".2%"),
   },
   inputField: {
-    fontFamily: "karma-regular", 
+    fontFamily: "karma-regular",
     borderWidth: wp(".5%"),
     borderColor: "#09171B",
     borderRadius: wp("2%"),
