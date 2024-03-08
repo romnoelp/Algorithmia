@@ -64,7 +64,7 @@ const DeliveryScreen = () => {
 
         <FlatList
           data={customerData}
-          contentContainerStyle={styles.flatListContainer} 
+          contentContainerStyle={styles.flatListContainer}
           renderItem={({ item }) => (
             <View style={styles.customerContainer}>
               <View style={styles.rowInfo}>
@@ -98,53 +98,26 @@ const DeliveryScreen = () => {
           <View style={styles.addAddressFrame}>
             <Text style={styles.modalTitle}>Add Customer Address</Text>
             <View style={styles.inputContainer}>
-              <Text
-                style={[
-                  styles.inputLabel,
-                  { textAlign: "left", width: wp("20%") },
-                ]}
-              >
-                Name
-              </Text>
+              <Text style={styles.inputLabel}>Name</Text>
               <TextInput
                 style={styles.inputField}
                 onChangeText={(text) => setCustomerName(text)}
                 value={customerName}
+                placeholder="Romnoel Petracorta"
+                placeholderTextColor="#A9A9A9"
               />
             </View>
 
             <View style={styles.inputContainer}>
-              <Text
-                style={[
-                  styles.inputLabel,
-                  { textAlign: "left", width: wp("20%") },
-                ]}
-              >
-                Address
-              </Text>
+              <Text style={styles.inputLabel}>Address</Text>
               <TextInput
                 style={styles.inputField}
                 onChangeText={(text) => setCustomerAddress(text)}
                 value={customerAddress}
+                placeholder="Montalban, Rizal"
+                placeholderTextColor="#A9A9A9"
               />
             </View>
-
-            <View style={styles.inputContainer}>
-              <Text
-                style={[
-                  styles.inputLabel,
-                  { textAlign: "left", width: wp("20%") },
-                ]}
-              >
-                Distance from source
-              </Text>
-              <TextInput
-                style={styles.inputField}
-                onChangeText={(text) => setDistance(text)}
-                value={customerDistance}
-              />
-            </View>
-
             <TouchableOpacity
               style={styles.saveButton}
               onPress={handleAddAddress}
@@ -163,7 +136,6 @@ export default DeliveryScreen;
 const styles = StyleSheet.create({
   flatListContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
   },
   rowInfo: {
     flex: 1,
@@ -172,20 +144,20 @@ const styles = StyleSheet.create({
   },
   customerContainer: {
     flexDirection: "row",
-    width: wp("85%") - wp("4%"), 
-    height: hp("8%"), 
+    width: wp("85%") - wp("4%"),
+    height: hp("8%"),
     marginBottom: hp("1.2%"),
     elevation: 2,
     backgroundColor: "#10ABD5",
     borderRadius: wp("4%"),
-    paddingHorizontal: wp("1%"), 
+    paddingHorizontal: wp("1%"),
   },
   customerInfo: {
     fontFamily: "karma-regular",
     fontSize: wp("3%"),
     color: "#09171B",
-    textAlign: "center", 
-    width: wp("28%"), 
+    textAlign: "center",
+    width: wp("28%"),
   },
   columnName: {
     flex: 1,
@@ -275,26 +247,25 @@ const styles = StyleSheet.create({
     marginBottom: hp("2%"),
   },
   inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "column",
+    alignItems: "flex-start",
     marginBottom: hp("2%"),
     width: "80%",
   },
   inputLabel: {
     fontFamily: "karma-semibold",
     fontSize: wp("4%"),
-    marginRight: wp("3%"),
-    textAlign: "left",
+    marginBottom: hp(".2%"),
   },
   inputField: {
-    flex: 1,
+    fontFamily: "karma-regular", 
     borderWidth: wp(".5%"),
     borderColor: "#09171B",
     borderRadius: wp("2%"),
     paddingHorizontal: wp("3%"),
     paddingVertical: hp(".8%"),
     fontSize: wp("4%"),
-    marginLeft: wp("3%"),
+    width: "100%",
   },
   saveButton: {
     backgroundColor: "#175F73",
