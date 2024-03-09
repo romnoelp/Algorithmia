@@ -36,31 +36,30 @@ const FinderScreen = () => {
 
   const handleSearch = () => {
     const cleanedSearchTerm = searchTerm.replace(/[^\w\s]/gi, '');
-  
 
     if (cleanedSearchTerm.trim() === '') {
-      setOccurrences('');
-      setPosition('');
-      return;
+        setOccurrences('');
+        setPosition('');
+        return;
     }
-  
+
     const words = selectedAddress.split(' ');
-  
+
     let occurrences = 0;
     let positions = [];
-  
+
     for (let i = 0; i < words.length; i++) {
-      const cleanedWord = words[i].replace(/[^\w\s]/gi, '');
-  
-      if (cleanedWord.toLowerCase() === cleanedSearchTerm.toLowerCase()) {
-        occurrences++;
-        positions.push(i + 1); 
-      }
+        const cleanedWord = words[i].replace(/[^\w\s]/gi, '');
+
+        if (cleanedWord.toLowerCase() === cleanedSearchTerm.toLowerCase()) {
+            occurrences++;
+            positions.push(i + 1); 
+        }
     }
-  
+
     setOccurrences(occurrences);
     setPosition(positions.join(', '));
-  };
+};
 
   const data = [
     {
