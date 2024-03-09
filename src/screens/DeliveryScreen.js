@@ -24,16 +24,15 @@ const DeliveryScreen = () => {
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [customerDistance, setDistance] = useState("");
-    useEffect(() => {
+  const [testKey, setTestKey] = useState(0);
+  console.log(testKey);
+  useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
-
-  console.log(customerData);
 
   if (!fontLoaded) {
     return null;
   }
-
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
@@ -65,11 +64,13 @@ const DeliveryScreen = () => {
         setCustomerData((prev) => [
           ...prev,
           {
+            key: testKey,
             customerName,
             customerAddress,
             customerDistance: convertedDistance,
           },
         ]);
+        setTestKey(testKey + 1);
       } else {
         console.error(
           "Unable to find coordinates because this API is trash and shitty."
@@ -95,29 +96,36 @@ const DeliveryScreen = () => {
         <SvgXml xml={SVGDelivery} />
       </View>
       <View style={styles.testContainer}>
-        <View style={styles.addressRow}>
-          <Text style={styles.columnName}>Customer</Text>
-          <Text style={styles.columnName}>Address</Text>
-          <Text style={styles.columnName}>Distance</Text>
+        <View style={{ flexDirection: "row", marginHorizontal: wp("2%") }}>
+          <Text style={[styles.columnName, { flex: 1 + 1 / 2 }]}>Customer</Text>
+          <Text style={[styles.columnName, { flex: 1 }]}>Address</Text>
+          <Text style={[styles.columnName, { flex: 1, textAlign: "right" }]}>
+            Distance
+          </Text>
         </View>
 
-        <FlatList
-          data={customerData}
-          contentContainerStyle={styles.flatListContainer}
-          renderItem={({ item }) => (
-            <View style={styles.customerContainer}>
-              <View style={styles.rowInfo}>
-                <Text style={styles.customerInfo}>{item.customerName}</Text>
+        {
+          <FlatList
+            data={customerData}
+            renderItem={({ item }) => (
+              <View style={styles.customerContainer}>
+                <Text style={[styles.customerInfo, { flex: 1 + 1 / 2 }]}>
+                  {item.customerName}
+                </Text>
+
+                <Text style={[styles.customerInfo, { flex: 1 }]}>
+                  {item.customerAddress}
+                </Text>
+
+                <Text
+                  style={[styles.customerInfo, { flex: 1, textAlign: "right" }]}
+                >
+                  {item.customerDistance}
+                </Text>
               </View>
-              <View style={styles.rowInfo}>
-                <Text style={styles.customerInfo}>{item.customerAddress}</Text>
-              </View>
-              <View style={styles.rowInfo}>
-                <Text style={styles.customerInfo}>{item.customerDistance}</Text>
-              </View>
-            </View>
-          )}
-        />
+            )}
+          />
+        }
 
         <TouchableOpacity
           style={styles.floatingButtonContainer}
@@ -173,10 +181,6 @@ const DeliveryScreen = () => {
 export default DeliveryScreen;
 
 const styles = StyleSheet.create({
-  flatListContainer: {
-    flexDirection: "row",
-    backgroundColor: "red"
-  },
   rowInfo: {
     flex: 1,
     alignItems: "center",
@@ -184,33 +188,26 @@ const styles = StyleSheet.create({
   },
   customerContainer: {
     flexDirection: "row",
-    width: wp("85%") - wp("4%"),
-    height: hp("8%"),
-    marginBottom: hp("1.2%"),
+    marginVertical: hp("0.5%"),
     elevation: 2,
     backgroundColor: "#10ABD5",
     borderRadius: wp("4%"),
-    paddingHorizontal: wp("1%"),
+    padding: wp("4%"),
   },
   customerInfo: {
     fontFamily: "karma-regular",
     fontSize: wp("3%"),
     color: "#09171B",
-    textAlign: "center",
-    width: wp("28%"),
   },
   columnName: {
-    flex: 1,
     fontFamily: "karma-bold",
     marginVertical: hp("1%"),
-    textAlign: "center",
+
     fontSize: hp("2%"),
   },
   container: {
     flex: 1,
     backgroundColor: "#EBF7F9",
-    justifyContent: "center",
-    alignItems: "center",
   },
   headerTitleSVG: {
     flexDirection: "row",
@@ -219,15 +216,12 @@ const styles = StyleSheet.create({
     marginLeft: wp("8%"),
   },
   testContainer: {
-    height: hp("78%"),
-    width: wp("85%"),
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: hp("1.5%"),
+    flex: 1,
+    marginHorizontal: wp("6%"),
     borderRadius: hp("2%"),
+    marginVertical: hp("2%"),
     backgroundColor: "#6FD1EB",
-    position: "relative",
-    padding: wp("2"),
+    padding: wp("2%"),
   },
   headerTitle: {
     fontFamily: "karma-bold",
@@ -236,13 +230,7 @@ const styles = StyleSheet.create({
     color: "#09171B",
     marginRight: wp("3"),
   },
-  addressRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: wp("5%"),
-    alignItems: "center",
-    width: "100%",
-  },
+
   floatingButtonContainer: {
     position: "absolute",
     bottom: 20,
