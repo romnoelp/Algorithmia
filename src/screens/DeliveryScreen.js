@@ -7,6 +7,7 @@ import {
   Modal,
   TextInput,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { SvgXml, err } from "react-native-svg";
 import {
@@ -17,6 +18,10 @@ import { SVGDelivery, loadFont } from "../../loadFontSVG";
 import axios from "axios";
 import * as geolib from "geolib";
 
+const calculateDistance = (source, destination) => {
+  return geolib.getDistance(source, destination);
+};
+
 const DeliveryScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -25,7 +30,10 @@ const DeliveryScreen = () => {
   const [customerAddress, setCustomerAddress] = useState("");
   const [customerDistance, setDistance] = useState("");
   const [testKey, setTestKey] = useState(0);
-  console.log(testKey);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
@@ -33,60 +41,71 @@ const DeliveryScreen = () => {
   if (!fontLoaded) {
     return null;
   }
+
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
+    if (!isModalVisible) {
+      setCustomerName("");
+      setCustomerAddress("");
+    }
   };
 
   const handleAddAddress = async () => {
+    setIsLoading(true);
     try {
       const sourceAddress = {
         latitude: 14.663979273045632,
         longitude: 121.05794500238676,
-      }; // Get the coordinates of the source (NEU SHITTY ASS SCHOOL)
+      };
 
       const apiResponse = await axios.get(
         `https://nominatim.openstreetmap.org/search?q=${customerAddress}&format=json&limit=1`
-      ); // Logic -> Wait for the response of the API, then check conditionals
+      );
 
       if (apiResponse.data && apiResponse.data.length > 0) {
         const { lat, lon } = apiResponse.data[0];
+        const destinationAddress = {
+          latitude: parseFloat(lat),
+          longitude: parseFloat(lon),
+        };
 
-        const distance = geolib.getDistance(
-          {
-            latitude: sourceAddress.latitude,
-            longitude: sourceAddress.longitude,
-          },
-          { latitude: parseFloat(lat), longitude: parseFloat(lon) }
-        );
-
+        const distance = calculateDistance(sourceAddress, destinationAddress);
         const convertedDistance = (distance / 1000).toFixed(2);
 
-        setCustomerData((prev) => [
-          ...prev,
+        const newCustomerData = [
+          ...customerData,
           {
             key: testKey,
             customerName,
             customerAddress,
             customerDistance: convertedDistance,
           },
-        ]);
+        ];
+
+        newCustomerData.sort(
+          (a, b) =>
+            parseFloat(a.customerDistance) - parseFloat(b.customerDistance)
+        );
+
+        setCustomerData(newCustomerData);
         setTestKey(testKey + 1);
       } else {
-        console.error(
-          "Unable to find coordinates because this API is trash and shitty."
-        );
+        console.error("Unable to find coordinates for the provided address.");
       }
     } catch (error) {
-      console.log(
-        "Error occurred while fetching coordinates. This is the fucking error: ",
-        error
-      );
+      console.error("Error occurred while fetching coordinates:", error);
+    } finally {
+      setIsLoading(false);
     }
 
-    setIsModalVisible(false);
     setCustomerName("");
     setCustomerAddress("");
-    setDistance("");
+    setIsModalVisible(false);
+  };
+
+  const handleContainerPress = (customer) => {
+    setSelectedCustomer(customer);
+    setIsModalVisible(true);
   };
 
   return (
@@ -104,35 +123,48 @@ const DeliveryScreen = () => {
           </Text>
         </View>
 
-        {
-          <FlatList
-            data={customerData}
-            renderItem={({ item }) => (
-              <View style={styles.customerContainer}>
-                <Text style={[styles.customerInfo, { flex: 1 + 1 / 2 }]}>
-                  {item.customerName}
-                </Text>
+        <FlatList
+          data={customerData}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.customerContainer}
+              onPress={() => handleContainerPress(item)}
+            >
+              <Text style={[styles.customerInfo, { flex: 1 + 1 / 2 }]}>
+                {item.customerName}
+              </Text>
 
-                <Text style={[styles.customerInfo, { flex: 1 }]}>
-                  {item.customerAddress}
-                </Text>
+              <Text style={[styles.customerInfo, { flex: 1 }]}>
+                {item.customerAddress}
+              </Text>
 
-                <Text
-                  style={[styles.customerInfo, { flex: 1, textAlign: "right" }]}
-                >
-                  {item.customerDistance}
-                </Text>
-              </View>
-            )}
-          />
-        }
+              <Text
+                style={[styles.customerInfo, { flex: 1, textAlign: "right" }]}
+              >
+                {item.customerDistance}
+              </Text>
+            </TouchableOpacity>
+          )}
+          onScroll={() => setIsScrolling(true)}
+          onScrollEndDrag={() => setIsScrolling(false)}
+        />
 
         <TouchableOpacity
           style={styles.floatingButtonContainer}
           onPress={toggleModal}
         >
-          <Text style={styles.floatingButton}>+</Text>
+          <Text
+            style={[styles.floatingButton, { opacity: isScrolling ? 0.2 : 1 }]}
+          >
+            +
+          </Text>
         </TouchableOpacity>
+
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#10ABD5" />
+          </View>
+        )}
       </View>
 
       <Modal
@@ -165,20 +197,24 @@ const DeliveryScreen = () => {
                 placeholderTextColor="#A9A9A9"
               />
             </View>
-            <TouchableOpacity
-              style={styles.saveButton}
-              onPress={handleAddAddress}
-            >
-              <Text style={styles.saveButtonText}>Add Address</Text>
-            </TouchableOpacity>
+            {isLoading ? (
+              <View style={styles.saveButton}>
+                <ActivityIndicator size="small" color="#EBF7F9" />
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={handleAddAddress}
+              >
+                <Text style={styles.saveButtonText}>Add Address</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </Modal>
     </View>
   );
 };
-
-export default DeliveryScreen;
 
 const styles = StyleSheet.create({
   rowInfo: {
@@ -188,11 +224,15 @@ const styles = StyleSheet.create({
   },
   customerContainer: {
     flexDirection: "row",
-    marginVertical: hp("0.5%"),
+    marginBottom: hp("1%"),
     elevation: 2,
     backgroundColor: "#10ABD5",
     borderRadius: wp("4%"),
-    padding: wp("4%"),
+    paddingHorizontal: wp("4%"),
+    paddingVertical: hp("2%"),
+    minWidth: wp("40%"),
+    height: hp("8%"),
+    alignItems: "center",
   },
   customerInfo: {
     fontFamily: "karma-regular",
@@ -222,6 +262,7 @@ const styles = StyleSheet.create({
     marginVertical: hp("2%"),
     backgroundColor: "#6FD1EB",
     padding: wp("2%"),
+    flexDirection: "column",
   },
   headerTitle: {
     fontFamily: "karma-bold",
@@ -235,6 +276,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 20,
     right: 20,
+    backgroundColor: "transparent",
   },
   floatingButton: {
     backgroundColor: "#09171B",
@@ -307,4 +349,11 @@ const styles = StyleSheet.create({
     color: "#EBF7F9",
     fontSize: wp("4%"),
   },
+  loadingContainer: {
+    position: "absolute",
+    bottom: 80,
+    right: 20,
+  },
 });
+
+export default DeliveryScreen;
