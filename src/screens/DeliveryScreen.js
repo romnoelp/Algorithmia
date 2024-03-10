@@ -17,7 +17,6 @@ import {
 import { SVGDelivery, loadFont } from "../../loadFontSVG";
 import axios from "axios";
 import * as geolib from "geolib";
-import ContainerModal from "./ContainerModal"; // Import the modal component
 
 const calculateDistance = (source, destination) => {
   return geolib.getDistance(source, destination);
@@ -29,7 +28,7 @@ const nearestNeighborSort = (customerData) => {
   }
 
   const sortedData = [customerData[0]];
-  const remainingData = [...customerData.slice(1)]; 
+  const remainingData = [...customerData.slice(1)];
 
   while (remainingData.length > 0) {
     let minDistance = Number.MAX_VALUE;
@@ -53,7 +52,9 @@ const nearestNeighborSort = (customerData) => {
 
 const DeliveryScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isAddAddressModalVisible, setIsAddAddressModalVisible] =
+    useState(false);
+  const [isEmptyModalVisible, setIsEmptyModalVisible] = useState(false);
   const [customerData, setCustomerData] = useState([]);
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
@@ -62,6 +63,7 @@ const DeliveryScreen = () => {
   const [isScrolling, setIsScrolling] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [sortedCustomerData, setSortedCustomerData] = useState([]);
 
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
@@ -71,12 +73,16 @@ const DeliveryScreen = () => {
     return null;
   }
 
-  const toggleModal = () => {
-    setIsModalVisible(!isModalVisible);
-    if (!isModalVisible) {
+  const toggleAddAddressModal = () => {
+    setIsAddAddressModalVisible(!isAddAddressModalVisible);
+    if (!isAddAddressModalVisible) {
       setCustomerName("");
       setCustomerAddress("");
     }
+  };
+
+  const toggleEmptyModal = () => {
+    setIsEmptyModalVisible(!isEmptyModalVisible);
   };
 
   const handleAddAddress = async () => {
@@ -89,7 +95,6 @@ const DeliveryScreen = () => {
       if (apiResponse.data && apiResponse.data.length > 0) {
         const { lat, lon } = apiResponse.data[0];
         if (lat && lon) {
-
           const coordinates = {
             latitude: parseFloat(lat),
             longitude: parseFloat(lon),
@@ -133,12 +138,17 @@ const DeliveryScreen = () => {
 
     setCustomerName("");
     setCustomerAddress;
-    setIsModalVisible(false);
+    setIsAddAddressModalVisible(false);
   };
 
   const handleContainerPress = (customer) => {
     setSelectedCustomer(customer);
-    setIsModalVisible(true);
+    const filteredCustomerData = customerData.filter(
+      (item) => item.key !== customer.key
+    );
+    const sortedCustomerData = nearestNeighborSort([...filteredCustomerData]);
+    setSortedCustomerData(sortedCustomerData);
+    setIsEmptyModalVisible(true);
   };
 
   return (
@@ -184,7 +194,7 @@ const DeliveryScreen = () => {
 
         <TouchableOpacity
           style={styles.floatingButtonContainer}
-          onPress={toggleModal}
+          onPress={toggleAddAddressModal}
         >
           <Text
             style={[styles.floatingButton, { opacity: isScrolling ? 0.2 : 1 }]}
@@ -203,8 +213,8 @@ const DeliveryScreen = () => {
       <Modal
         animationType="fade"
         transparent={true}
-        visible={isModalVisible}
-        onRequestClose={toggleModal}
+        visible={isAddAddressModalVisible}
+        onRequestClose={toggleAddAddressModal}
       >
         <View style={styles.modalContainer}>
           <View style={styles.addAddressFrame}>
@@ -245,11 +255,82 @@ const DeliveryScreen = () => {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isEmptyModalVisible}
+        onRequestClose={toggleEmptyModal}
+      >
+        <View style={styles.sortedModalContainer}>
+          <View style={styles.sortedAddressFrame}>
+            <Text style={styles.sortedModalTitle}>Ordered Destination</Text>
+            <FlatList
+              data={sortedCustomerData}
+              renderItem={({ item }) => (
+                <View
+                  style={styles.sortedCustomerContainer}
+                  onPress={() => handleContainerPress(item)}
+                >
+                  <Text style={[styles.customerInfo, { flex: 1 + 1 / 2 }]}>
+                    {item.customerName}
+                  </Text>
+                  <Text style={[styles.customerInfo, { flex: 1 }]}>
+                    {item.customerAddress}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.customerInfo,
+                      { flex: 1, textAlign: "right" },
+                    ]}
+                  >
+                    {item.customerDistance}
+                  </Text>
+                </View>
+              )}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  sortedAddressFrame: {
+    backgroundColor: "#EBF7F9",
+    height: hp("50%"),
+    width: wp("80%"),
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: wp("5%"),
+    paddingBottom: hp("2%"),
+  },
+  sortedCustomerContainer: {
+    flexDirection: "row",
+    marginBottom: hp("1%"),
+    elevation: 2,
+    backgroundColor: "#10ABD5",
+    borderRadius: wp("4%"),
+    paddingHorizontal: wp("5%"),
+    paddingVertical: hp("2%"),
+    minWidth: wp("70%"),
+    height: hp("8%"),
+    alignItems: "center",
+  },
+  sortedModalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(9, 23, 27, .6)",
+  },
+  sortedModalTitle: {
+    fontFamily: "karma-bold",
+    fontSize: wp("5%"),
+    marginBottom: hp("2%"),
+    marginTop: hp("2"),
+  },
   rowInfo: {
     flex: 1,
     alignItems: "center",
