@@ -88,10 +88,12 @@ const FinderScreen = () => {
       </View>
 
       <View style={styles.mainContainer}>
-        <View style={styles.addressRow}>
-          <Text style={styles.columnName}>Customer</Text>
-          <Text style={styles.columnName}>Address</Text>
-          <Text style={styles.columnName}>Distance</Text>
+        <View style={{ flexDirection: "row", marginHorizontal: wp("2%") }}>
+          <Text style={[styles.columnName, { flex: 1 + 1 / 2 }]}>Customer</Text>
+          <Text style={[styles.columnName, { flex: 1 }]}>Address</Text>
+          <Text style={[styles.columnName, { flex: 1, textAlign: "right" }]}>
+            Distance
+          </Text>
         </View>
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -99,12 +101,14 @@ const FinderScreen = () => {
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => handleItemPress(item)}>
               <View style={styles.dataContainer}>
-                <Text style={styles.customerValue}>{item.name}</Text>
-                <Text style={styles.addressValue}>{item.address}</Text>
-                <Text style={styles.distanceValue}>{item.amount}</Text>
+                <Text style={[styles.customerInfo, {flex: 1 + 1/2}]}>{item.name}</Text>
+                <Text style={[styles.customerInfo,{flex: 1}]}>{item.address}</Text>
+                <Text style={[styles.customerInfo, {flex: 1, textAlign: "right"}]}>{item.amount}</Text>
               </View>
             </TouchableOpacity>
           )}
+          onScroll={() => setIsScrolling(true)}
+          onScrollEndDrag={() => setIsScrolling(false)}
         />
       </View>
       <Modal
@@ -141,7 +145,7 @@ const FinderScreen = () => {
                 <Text style={styles.saveButtonText}>Extract word</Text>
               </TouchableOpacity>
 
-              <Text style={styles.occurrencesText}>Number of word Instance : {occurrences} </Text>
+              <Text style={styles.occurrencesText}>Number of word instance : {occurrences} </Text>
               <Text style={styles.occurrencesText}>Position : {position}</Text>
             </View>
           </View>
@@ -154,83 +158,51 @@ const FinderScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#EBF7F9",
   },
   headerTitleSVG: {
     flexDirection: "row",
+    alignItems: "center",
     alignSelf: "flex-start",
     marginLeft: wp("8%"),
   },
   mainContainer: {
-    height: hp("78%"),
-    width: wp("85%"),
-    marginTop: hp("1.5%"),
+    flex: 1,
+    marginHorizontal: wp("6%"),
     borderRadius: hp("2%"),
-    backgroundColor: "#147691",
-    paddingHorizontal: wp("3%"),
+    marginVertical: hp("2%"),
+    backgroundColor: "#6FD1EB",
+    padding: wp("2%"),
+    flexDirection: "column",
   },
   headerTitle: {
     fontFamily: "karma-bold",
     fontSize: 24,
+    marginTop: hp("1%"),
     color: "#09171B",
     marginRight: wp("3"),
   },
-  addressRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottomColor: "rgba(0,0,0,0.1)",
-    paddingVertical: hp("1%"),
-  },
   columnName: {
-    fontFamily: "karma-semibold",
-    flex: 1,
-    textAlign: "center",
-    fontSize: 16,
-    lineHeight: 24,
-    color: "white",
+    fontFamily: "karma-bold",
+    marginVertical: hp("1%"),
+    fontSize: hp("2%"),
   },
-  customerValue: {
-    flex: 3,
-    color: "white",
+  customerInfo: {
     fontFamily: "karma-regular",
-    fontSize: 13,
-    maxWidth: 89,
-    flexWrap: "wrap",
-  },
-  addressValue: {
-    color: "white",
-    flex: 1,
-    marginLeft: 20,
-    fontFamily: "karma-regular",
-    fontSize: 13,
-    flexWrap: "wrap",
-    textAlign: "center",
-  },
-  distanceValue: {
-    color: "white",
-    flex: 1,
-    fontFamily: "karma-regular",
-    fontSize: 13,
-    marginStart: 15,
-    marginLeft: 25,
-    marginEnd: 1,
-    flexWrap: "wrap",
-    textAlign: "center",
+    fontSize: wp("3%"),
+    color: "#09171B",
   },
   dataContainer: {
-    backgroundColor: "#2CC5EF",
     flexDirection: "row",
-    marginVertical: 5,
-    borderRadius: 20,
-    marginTop: 10,
-    width: 326,
-    height: 79,
+    marginBottom: hp("1%"),
+    elevation: 2,
+    backgroundColor: "#10ABD5",
+    borderRadius: wp("4%"),
+    paddingHorizontal: wp("4%"),
+    paddingVertical: hp("2%"),
+    minWidth: wp("40%"),
+    height: hp("8%"),
     alignItems: "center",
-    paddingHorizontal: 20,
-    justifyContent: "space-between",
   },
   modalBackground: {
     flex: 1,
@@ -259,16 +231,19 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontFamily: "karma-semibold",
-    fontSize: 13,
-    marginBottom: 1,
+    fontSize: wp("4%"),
+    marginBottom: hp(".2%"),
   },
   inputField: {
+    fontFamily: "karma-regular",
     width: wp("70%"),
-    borderWidth: 1,
+    borderWidth: wp(".5%"),
     borderColor: "#09171B",
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    borderRadius: wp("2%"),
+    paddingHorizontal: wp("3%"),
+    paddingVertical: hp(".8%"),
+    fontSize: wp("4%"),
+    
   },
   saveButton: {
     backgroundColor: "#175F73",
