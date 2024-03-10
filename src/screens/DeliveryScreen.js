@@ -17,9 +17,38 @@ import {
 import { SVGDelivery, loadFont } from "../../loadFontSVG";
 import axios from "axios";
 import * as geolib from "geolib";
+import ContainerModal from "./ContainerModal"; // Import the modal component
 
 const calculateDistance = (source, destination) => {
   return geolib.getDistance(source, destination);
+};
+
+const nearestNeighborSort = (customerData) => {
+  if (customerData.length <= 1) {
+    return customerData;
+  }
+
+  const sortedData = [customerData[0]];
+  const remainingData = [...customerData.slice(1)]; 
+
+  while (remainingData.length > 0) {
+    let minDistance = Number.MAX_VALUE;
+    let nearestCustomer = null;
+
+    for (const customer of remainingData) {
+      const distance = parseFloat(customer.customerDistance);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestCustomer = customer;
+      }
+    }
+
+    sortedData.push(nearestCustomer);
+    remainingData.splice(remainingData.indexOf(nearestCustomer), 1);
+  }
+
+  return sortedData;
 };
 
 const DeliveryScreen = () => {
@@ -53,53 +82,57 @@ const DeliveryScreen = () => {
   const handleAddAddress = async () => {
     setIsLoading(true);
     try {
-      const sourceAddress = {
-        latitude: 14.663979273045632,
-        longitude: 121.05794500238676,
-      };
-
       const apiResponse = await axios.get(
         `https://nominatim.openstreetmap.org/search?q=${customerAddress}&format=json&limit=1`
       );
 
       if (apiResponse.data && apiResponse.data.length > 0) {
         const { lat, lon } = apiResponse.data[0];
-        const destinationAddress = {
-          latitude: parseFloat(lat),
-          longitude: parseFloat(lon),
-        };
+        if (lat && lon) {
 
-        const distance = calculateDistance(sourceAddress, destinationAddress);
-        const convertedDistance = (distance / 1000).toFixed(2);
+          const coordinates = {
+            latitude: parseFloat(lat),
+            longitude: parseFloat(lon),
+          };
 
-        const newCustomerData = [
-          ...customerData,
-          {
-            key: testKey,
-            customerName,
-            customerAddress,
-            customerDistance: convertedDistance,
-          },
-        ];
+          const sourceAddress = {
+            latitude: 14.663979273045632,
+            longitude: 121.05794500238676,
+          };
 
-        newCustomerData.sort(
-          (a, b) =>
-            parseFloat(a.customerDistance) - parseFloat(b.customerDistance)
-        );
+          const distance = calculateDistance(sourceAddress, coordinates);
+          const convertedDistance = (distance / 1000).toFixed(2);
 
-        setCustomerData(newCustomerData);
-        setTestKey(testKey + 1);
+          const newCustomerData = [
+            ...customerData,
+            {
+              key: testKey,
+              customerName,
+              customerAddress,
+              coordinates,
+              customerDistance: convertedDistance,
+            },
+          ];
+
+          const sortedCustomerData = nearestNeighborSort(newCustomerData);
+
+          setCustomerData(sortedCustomerData);
+          setTestKey(testKey + 1);
+        } else {
+          console.error("Coordinates are undefined for the provided address.");
+        }
       } else {
         console.error("Unable to find coordinates for the provided address.");
       }
     } catch (error) {
       console.error("Error occurred while fetching coordinates:", error);
     } finally {
+      console.log(customerData);
       setIsLoading(false);
     }
 
     setCustomerName("");
-    setCustomerAddress("");
+    setCustomerAddress;
     setIsModalVisible(false);
   };
 
