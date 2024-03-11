@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,7 +8,6 @@ import {
   Modal,
   TextInput,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import { SvgXml } from "react-native-svg";
 import {
   widthPercentageToDP as wp,
@@ -19,6 +19,9 @@ import { Button } from "@rneui/base";
 const WholeSaleScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [productName, setProductName] = useState("");
+  const [productWeight, setProductWeight] = useState("");
+  const [productAmount, setProductAmount] = useState("");
 
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
@@ -32,7 +35,8 @@ const WholeSaleScreen = () => {
     setIsModalVisible(!isModalVisible);
   };
 
-  const handleAddAddress = () => {
+  const handleAddProduct = () => {
+    // Add product function
     setIsModalVisible(false);
   };
 
@@ -69,47 +73,39 @@ const WholeSaleScreen = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.addAddressFrame}>
-            <Text style={styles.modalTitle}>Add Item</Text>
+            <Text style={styles.modalTitle}>Add Product</Text>
             <View style={styles.inputContainer}>
-              <Text
-                style={[
-                  styles.inputLabel,
-                  { textAlign: "left", width: wp("20%") },
-                ]}
-              >
-                Name
-              </Text>
-              <TextInput style={styles.inputField} />
+              <Text style={styles.inputLabel}>Name</Text>
+              <TextInput
+                style={styles.inputField}
+                onChangeText={setProductName}
+                value={productName}
+              />
             </View>
 
             <View style={styles.inputContainer}>
-              <Text
-                style={[
-                  styles.inputLabel,
-                  { textAlign: "left", width: wp("20%") },
-                ]}
-              >
-                Weight
-              </Text>
-              <TextInput style={styles.inputField} />
+              <Text style={styles.inputLabel}>Weight</Text>
+              <TextInput
+                style={styles.inputField}
+                onChangeText={setProductWeight}
+                value={productWeight}
+              />
             </View>
 
             <View style={styles.inputContainer}>
-              <Text
-                style={[
-                  styles.inputLabel,
-                  { textAlign: "left", width: wp("20%") },
-                ]}
-              >
-                Amount
-              </Text>
-              <TextInput style={styles.inputField} />
+              <Text style={styles.inputLabel}>Amount</Text>
+              <TextInput
+                style={styles.inputField}
+                onChangeText={setProductAmount}
+                value={productAmount}
+              />
             </View>
 
             <Button
               title={"Add Product"}
               buttonStyle={styles.saveButton}
-              onPress={handleAddAddress} // Call handleAddAddress function
+              titleStyle={styles.buttonTitle}
+              onPress={handleAddProduct}
             />
           </View>
         </View>
@@ -121,6 +117,11 @@ const WholeSaleScreen = () => {
 export default WholeSaleScreen;
 
 const styles = StyleSheet.create({
+  buttonTitle: {
+    fontFamily: "karma-light", 
+    fontSize: wp("4%"), 
+    color: "#EBF7F9",
+},
   container: {
     flex: 1,
     backgroundColor: "#EBF7F9",
@@ -192,11 +193,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(9, 23, 27, .6)",
   },
-  modalText: {
-    fontSize: 24,
+  modalTitle: {
+    marginTop: wp("2%"),
     fontFamily: "karma-bold",
-    color: "#FFF",
-    marginBottom: 20,
+    fontSize: wp("5%"),
+    marginBottom: hp("2%"),
   },
   addAddressFrame: {
     backgroundColor: "#EBF7F9",
@@ -206,43 +207,32 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: wp("5%"),
   },
-  modalTitle: {
-    fontFamily: "karma-bold",
-    fontSize: wp("5%"),
-    marginBottom: hp("2%"),
-  },
   inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "column",
+    alignItems: "flex-start",
     marginBottom: hp("2%"),
     width: "80%",
   },
   inputLabel: {
     fontFamily: "karma-semibold",
     fontSize: wp("4%"),
-    marginRight: wp("3%"),
+    marginBottom: hp(".2%"),
     textAlign: "left",
   },
   inputField: {
-    flex: 1,
     borderWidth: wp(".5%"),
     borderColor: "#09171B",
     borderRadius: wp("2%"),
     paddingHorizontal: wp("3%"),
     paddingVertical: hp(".8%"),
     fontSize: wp("4%"),
-    marginLeft: wp("3%"),
+    width: "100%",
   },
   saveButton: {
     backgroundColor: "#175F73",
-    marginTop: hp("5%"),
+    marginTop: hp("1%"),
     padding: wp("3%"),
     paddingHorizontal: wp("8%"),
     borderRadius: wp("2%"),
-  },
-  saveButtonText: {
-    fontFamily: "karma-light",
-    color: "#EBF7F9",
-    fontSize: wp("4%"),
   },
 });
