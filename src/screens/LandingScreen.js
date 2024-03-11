@@ -40,7 +40,7 @@ const LandingScreen = ({ navigation }) => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            navigation.navigate("LogInScreen"); // Reaplace with login screen
+            navigation.replace("LogInScreen"); // Reaplace with login screen
           }}
         >
           <Text style={styles.buttonText}>Get started</Text>

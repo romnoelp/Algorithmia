@@ -37,15 +37,14 @@ const RegisterScreen = ({ navigation }) => {
       .collection("users")
       .where("userName", "==", userName)
       .get();
-    console.log(userNameSnapshot);
     return userNameSnapshot.empty;
   };
 
   const signUp = async () => {
     if (email && userName && confirmPassword) {
       try {
-        const userNameExist = await distinctUserName(userName);
-        const userCredential = userNameExist
+        const isUserNameUnique = await distinctUserName(userName);
+        const userCredential = isUserNameUnique
           ? password === confirmPassword
             ? await auth.createUserWithEmailAndPassword(email, confirmPassword)
             : Toast.show(
@@ -64,12 +63,14 @@ const RegisterScreen = ({ navigation }) => {
             userName: user.displayName,
             email,
           });
-          navigation.replace("LogInScreen");
+          navigation.goBack();
           console.log(user.displayName);
-          Toast.show("success", Toast.SHORT);
+          Toast.show("Sign Up Successful", Toast.SHORT);
         }
       } catch (error) {
-        console.log(error.message);
+        if (password.length <= 5) {
+          Toast.show("password must be at least 6 characters", Toast.SHORT);
+        }
       }
     } else {
       Toast.show("Please complete all required fields.", Toast.BOTTOM);

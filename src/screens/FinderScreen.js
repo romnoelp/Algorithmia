@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Modal, TouchableOpacity, TextInput, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Modal,
+  TouchableOpacity,
+  TextInput,
+  FlatList,
+} from "react-native";
 import { SvgXml } from "react-native-svg";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 import { SVGFour, loadFont } from "../../loadFontSVG";
+import { Button } from "@rneui/base";
 
 const FinderScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedAddress, setSelectedAddress] = useState('');
-  const [occurrences, setOccurrences] = useState('');
-  const [position, setPosition] = useState('');
-  const [isButtonClicked, setIsButtonClicked] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedAddress, setSelectedAddress] = useState("");
+  const [occurrences, setOccurrences] = useState("");
+  const [position, setPosition] = useState("");
 
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
@@ -19,7 +30,7 @@ const FinderScreen = () => {
 
   useEffect(() => {
     if (!isModalVisible) {
-      setSearchTerm('');
+      setSearchTerm("");
       setOccurrences("");
       setPosition("");
     }
@@ -35,31 +46,31 @@ const FinderScreen = () => {
   };
 
   const handleSearch = () => {
-    const cleanedSearchTerm = searchTerm.replace(/[^\w\s]/gi, '');
+    const cleanedSearchTerm = searchTerm.replace(/[^\w\s]/gi, "");
 
-    if (cleanedSearchTerm.trim() === '') {
-        setOccurrences('');
-        setPosition('');
-        return;
+    if (cleanedSearchTerm.trim() === "") {
+      setOccurrences("");
+      setPosition("");
+      return;
     }
 
-    const words = selectedAddress.split(' ');
+    const words = selectedAddress.split(" ");
 
     let occurrences = 0;
     let positions = [];
 
     for (let i = 0; i < words.length; i++) {
-        const cleanedWord = words[i].replace(/[^\w\s]/gi, '');
+      const cleanedWord = words[i].replace(/[^\w\s]/gi, "");
 
-        if (cleanedWord.toLowerCase() === cleanedSearchTerm.toLowerCase()) {
-            occurrences++;
-            positions.push(i + 1); 
-        }
+      if (cleanedWord.toLowerCase() === cleanedSearchTerm.toLowerCase()) {
+        occurrences++;
+        positions.push(i + 1);
+      }
     }
 
     setOccurrences(occurrences);
-    setPosition(positions.join(', '));
-};
+    setPosition(positions.join(", "));
+  };
 
   const data = [
     {
@@ -99,16 +110,23 @@ const FinderScreen = () => {
           showsVerticalScrollIndicator={false}
           data={data}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleItemPress(item)}>
-              <View style={styles.dataContainer}>
-                <Text style={[styles.customerInfo, {flex: 1 + 1/2}]}>{item.name}</Text>
-                <Text style={[styles.customerInfo,{flex: 1}]}>{item.address}</Text>
-                <Text style={[styles.customerInfo, {flex: 1, textAlign: "right"}]}>{item.amount}</Text>
-              </View>
+            <TouchableOpacity
+              onPress={() => handleItemPress(item)}
+              style={styles.dataContainer}
+            >
+              <Text style={[styles.customerInfo, { flex: 1 + 1 / 2 }]}>
+                {item.name}
+              </Text>
+              <Text style={[styles.customerInfo, { flex: 1 }]}>
+                {item.address}
+              </Text>
+              <Text
+                style={[styles.customerInfo, { flex: 1, textAlign: "right" }]}
+              >
+                {item.amount}
+              </Text>
             </TouchableOpacity>
           )}
-          onScroll={() => setIsScrolling(true)}
-          onScrollEndDrag={() => setIsScrolling(false)}
         />
       </View>
       <Modal
@@ -117,7 +135,7 @@ const FinderScreen = () => {
         visible={isModalVisible}
         onRequestClose={toggleModal}
       >
-        <TouchableOpacity
+        <View
           style={styles.modalBackground}
           onPress={toggleModal}
           activeOpacity={1}
@@ -126,30 +144,31 @@ const FinderScreen = () => {
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Word Finder</Text>
               <View style={styles.inputContainer}>
-              <Text style={[styles.inputLabel]}>Search</Text>
-              <TextInput
-                style={styles.inputField}
-                onChangeText={setSearchTerm}
-                value={searchTerm}
-                placeholder="Search Word"
-                placeholderTextColor="#999"
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
+                <Text style={[styles.inputLabel]}>Search</Text>
+                <TextInput
+                  style={styles.inputField}
+                  onChangeText={setSearchTerm}
+                  value={searchTerm}
+                  placeholder="Search Word"
+                  placeholderTextColor="#999"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
               </View>
               <Text style={styles.addressText}>{selectedAddress}</Text>
-              <TouchableOpacity
-                style={styles.saveButton}
+              <Button
+                title={"Extract Word"}
+                buttonStyle={styles.saveButton}
                 onPress={handleSearch}
-              >
-                <Text style={styles.saveButtonText}>Extract word</Text>
-              </TouchableOpacity>
+              />
 
-              <Text style={styles.occurrencesText}>Number of word instance : {occurrences} </Text>
+              <Text style={styles.occurrencesText}>
+                Number of word instance : {occurrences}{" "}
+              </Text>
               <Text style={styles.occurrencesText}>Position : {position}</Text>
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     </View>
   );
@@ -243,7 +262,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp("3%"),
     paddingVertical: hp(".8%"),
     fontSize: wp("4%"),
-    
   },
   saveButton: {
     backgroundColor: "#175F73",

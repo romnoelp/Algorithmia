@@ -18,7 +18,7 @@ import {
 import { auth, db } from "../../firebaseConfig";
 import { Button } from "@rneui/base";
 import { Ionicons } from "@expo/vector-icons";
-import Toast from 'react-native-simple-toast';
+import Toast from "react-native-simple-toast";
 
 const LogInScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -43,7 +43,7 @@ const LogInScreen = () => {
         if (docRefEmail.exists) {
           userEmail = docRefEmail.data();
         } else {
-          console.log("error fetching");
+          Toast.show("Error occured try again later", Toast.SHORT);
         }
 
         await auth.signInWithEmailAndPassword(userEmail.email, password);
@@ -54,13 +54,13 @@ const LogInScreen = () => {
           })
         );
       } catch (error) {
-        if (password < 5) {
-          Toast.show("password must be at least 5 characters", Toast.LONG);
-        }
-        console.log(error.message);
+        Toast.show("Error signing in", Toast.SHORT);
       }
     } else {
-      Toast.show("Please enter both your email and password to proceed.", Toast.LONG);
+      Toast.show(
+        "Please enter both your email and password to proceed.",
+        Toast.LONG
+      );
     }
   };
 

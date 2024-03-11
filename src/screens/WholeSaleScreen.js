@@ -14,6 +14,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { SVGOne, loadFont } from "../../loadFontSVG";
+import { Button } from "@rneui/base";
 
 const WholeSaleScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -105,12 +106,11 @@ const WholeSaleScreen = () => {
               <TextInput style={styles.inputField} />
             </View>
 
-            <TouchableOpacity
-              style={styles.saveButton}
+            <Button
+              title={"Add Product"}
+              buttonStyle={styles.saveButton}
               onPress={handleAddAddress} // Call handleAddAddress function
-            >
-              <Text style={styles.saveButtonText}>Add Product</Text>
-            </TouchableOpacity>
+            />
           </View>
         </View>
       </Modal>
