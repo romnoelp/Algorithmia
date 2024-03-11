@@ -6,8 +6,9 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-
-const SettingsScreen = () => {
+import { auth } from "../../firebaseConfig";
+import { CommonActions } from "@react-navigation/native";
+const SettingsScreen = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
 
   useEffect(() => {
@@ -29,8 +30,21 @@ const SettingsScreen = () => {
       key: 3,
       name: "About the app",
     },
+    {
+      key: 4,
+      name: "Log out",
+    },
   ];
 
+  const signOut = () => {
+    auth.signOut();
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 1,
+        routes: [{ name: "LandingScreen" }],
+      })
+    );
+  };
   const handleChoicesFunctionality = (key) => {
     switch (key) {
       case 1:
@@ -39,6 +53,8 @@ const SettingsScreen = () => {
         return alert("Developers");
       case 3:
         return alert("About the app");
+      case 4:
+        signOut();
     }
   };
 
@@ -50,6 +66,7 @@ const SettingsScreen = () => {
       <View style={styles.mapContainer}>
         {settingChoices.map((item) => (
           <TouchableOpacity
+            key={item.key}
             onPress={() => handleChoicesFunctionality(item.key)}
           >
             <View style={styles.settingContainer} key={item.key}>

@@ -1,32 +1,63 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, TextInput, View} from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TouchableOpacity } from "react-native";
 import { loadFont, SVGLogo } from "../../loadFontSVG";
 import { SvgXml } from "react-native-svg";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-
+import { auth, db } from "../../firebaseConfig";
+import { Button } from "@rneui/base";
 
 const LogInScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const navigation = useNavigation();
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
   if (!fontLoaded) {
     return null;
   }
+
+  const signIn = async () => {
+    if (userName && password) {
+      try {
+        const docRefEmail = await db.collection("users").doc(userName).get();
+        let userEmail;
+        if (docRefEmail.exists) {
+          userEmail = docRefEmail.data();
+        } else {
+          console.log("error fetching");
+        }
+
+        await auth.signInWithEmailAndPassword(userEmail.email, password);
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 1,
+            routes: [{ name: "TabToStack" }],
+          })
+        );
+      } catch (error) {
+        if (password < 5) {
+          console.log("password must be atleast 5 characters");
+        }
+        console.log(error.message);
+      }
+    } else {
+      console.log("please complete text fields");
+    }
+  };
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient
-      colors={["#2CC5EF", "#147691", "#061215"]}
-      style={styles.container}
+        colors={["#2CC5EF", "#147691", "#061215"]}
+        style={styles.container}
       >
         <Text style={styles.title}>Algorithmia</Text>
         <SvgXml xml={SVGLogo} style={styles.logo} />
@@ -36,7 +67,7 @@ const LogInScreen = () => {
           value={userName}
           placeholder="Username"
           placeholderTextColor="black"
-          placeholderStyle ={{ fontFamily: "karma-semibold"}}
+          placeholderStyle={{ fontFamily: "karma-semibold" }}
         />
         <TextInput
           style={styles.inputField}
@@ -45,22 +76,19 @@ const LogInScreen = () => {
           placeholder="Password"
           placeholderTextColor="black"
           secureTextEntry={true}
-
         />
-        <TouchableOpacity
-          style={styles.button}
+        <Button
+          title={"Log in"}
+          titleStyle={styles.buttonText}
+          buttonStyle={styles.button}
           onPress={() => {
-            navigation.replace("TabToStack"); // Reaplace with login screen 
+            signIn();
           }}
-        >
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-
+        />
       </LinearGradient>
-    </View>
-  )
-}
-
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -103,7 +131,6 @@ const styles = StyleSheet.create({
     paddingVertical: hp("1%"),
     backgroundColor: "white",
     fontSize: wp("4%"),
-    
   },
-})
+});
 export default LogInScreen;

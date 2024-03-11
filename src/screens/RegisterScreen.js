@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, TextInput, View} from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,24 +10,64 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { auth, db } from "../../firebaseConfig";
+import { Button } from "@rneui/base";
 
-
-const RegisterScreen = () => {
+const RegisterScreen = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
-  if (!fontLoaded) {
-    return null;
-  }
+
+  const distinctUserName = async (userName) => {
+    const userNameSnapshot = await db
+      .collection("users")
+      .where("username", "==", userName)
+      .get();
+    return !userNameSnapshot.empty;
+  };
+
+  const signUp = async () => {
+    if (email && userName && confirmPassword) {
+      try {
+        const userNameExist = await distinctUserName(userName);
+        const userCredential = userNameExist
+          ? password === confirmPassword
+            ? await auth.createUserWithEmailAndPassword(email, confirmPassword)
+            : console.log("password does not match")
+          : console.log("username already in use");
+
+        const user = userCredential?.user;
+        if (user) {
+          await user.updateProfile({
+            displayName: userName,
+          });
+
+          await db.collection("users").doc(user.displayName).set({
+            userName: user.displayName,
+            email,
+          });
+          navigation.replace("LogInScreen");
+          console.log(user.displayName);
+          console.log("success");
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    } else {
+      console.log("please complete text fields");
+    }
+  };
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient
-      colors={["#2CC5EF", "#147691", "#061215"]}
-      style={styles.container}
+        colors={["#2CC5EF", "#147691", "#061215"]}
+        style={styles.container}
       >
         <Text style={styles.title}>Algorithmia</Text>
         <SvgXml xml={SVGLogo} style={styles.logo} />
@@ -37,7 +77,8 @@ const RegisterScreen = () => {
           value={email}
           placeholder="Email"
           placeholderTextColor="black"
-          placeholderStyle ={{ fontFamily: "karma-semibold"}}
+          placeholderStyle={{ fontFamily: "karma-semibold" }}
+          keyboardType="email-address"
         />
         <TextInput
           style={styles.inputField}
@@ -45,7 +86,6 @@ const RegisterScreen = () => {
           value={userName}
           placeholder="Username"
           placeholderTextColor="black"
-
         />
         <TextInput
           style={styles.inputField}
@@ -55,20 +95,24 @@ const RegisterScreen = () => {
           placeholderTextColor="black"
           secureTextEntry={true}
         />
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            navigation.replace("TabToStack"); // Reaplace with login screen 
-          }}
-        >
-          <Text style={styles.buttonText}>Register</Text>
-        </TouchableOpacity>
-
+        <TextInput
+          style={styles.inputField}
+          onChangeText={(text) => setConfirmPassword(text)}
+          value={confirmPassword}
+          placeholder="Confirm Password"
+          placeholderTextColor="black"
+          secureTextEntry={true}
+        />
+        <Button
+          title={"Register"}
+          buttonStyle={styles.button}
+          titleStyle={styles.buttonText}
+          onPress={() => signUp(email, confirmPassword)}
+        />
       </LinearGradient>
-    </View>
-  )
-}
-
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -92,13 +136,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: hp("4%"),
     paddingVertical: hp("1%"),
     borderRadius: 25,
-    marginTop: hp("2%"),
+    marginTop: hp("3%"),
   },
   buttonText: {
     color: "#E6F2F6",
     fontSize: hp("2%"),
     fontFamily: "karma-semibold",
-    textAlign: "center",
   },
   inputField: {
     fontFamily: "karma-semibold",
@@ -111,7 +154,6 @@ const styles = StyleSheet.create({
     paddingVertical: hp("1%"),
     backgroundColor: "white",
     fontSize: wp("4%"),
-    
   },
-})
+});
 export default RegisterScreen;

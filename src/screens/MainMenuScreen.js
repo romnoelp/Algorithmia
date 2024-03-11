@@ -17,9 +17,11 @@ import {
   SVGFour,
   loadFont,
 } from "../../loadFontSVG";
+import { auth } from "../../firebaseConfig";
 
 const MainMenuScreen = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
+  const user = auth.currentUser;
 
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
@@ -27,6 +29,7 @@ const MainMenuScreen = ({ navigation }) => {
   if (!fontLoaded) {
     return null;
   }
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <TouchableOpacity>
@@ -41,7 +44,9 @@ const MainMenuScreen = ({ navigation }) => {
         <View style={styles.headerLine} />
         <StatusBar hidden />
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>What to do?</Text>
+          <Text style={styles.sectionTitle}>
+            Greetings {user.displayName}, What to do?
+          </Text>
         </View>
         <View style={styles.row}>
           <TouchableOpacity
