@@ -12,6 +12,7 @@ import {
 } from "react-native-responsive-screen";
 import { auth, db } from "../../firebaseConfig";
 import { Button } from "@rneui/base";
+import { Ionicons } from "@expo/vector-icons";
 
 const RegisterScreen = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -19,6 +20,8 @@ const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
@@ -63,6 +66,7 @@ const RegisterScreen = ({ navigation }) => {
       console.log("please complete text fields");
     }
   };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient
@@ -75,34 +79,58 @@ const RegisterScreen = ({ navigation }) => {
           style={styles.inputField}
           onChangeText={(text) => setEmail(text)}
           value={email}
-          placeholder="Email"
-          placeholderTextColor="black"
-          placeholderStyle={{ fontFamily: "karma-semibold" }}
+          placeholder="sample.email@neu.edu.ph"
+          placeholderTextColor="#A9A9A9"
+          placeholderStyle={{ fontFamily: "karma-light" }}
           keyboardType="email-address"
         />
         <TextInput
           style={styles.inputField}
           onChangeText={(text) => setUserName(text)}
           value={userName}
-          placeholder="Username"
-          placeholderTextColor="black"
+          placeholder="romnoel02"
+          placeholderTextColor="#A9A9A9"
         />
-        <TextInput
-          style={styles.inputField}
-          onChangeText={(text) => setPassword(text)}
-          value={password}
-          placeholder="Password"
-          placeholderTextColor="black"
-          secureTextEntry={true}
-        />
-        <TextInput
-          style={styles.inputField}
-          onChangeText={(text) => setConfirmPassword(text)}
-          value={confirmPassword}
-          placeholder="Confirm Password"
-          placeholderTextColor="black"
-          secureTextEntry={true}
-        />
+        <View style={styles.inputFieldContainer}>
+          <TextInput
+            style={styles.inputField}
+            onChangeText={(text) => setPassword(text)}
+            value={password}
+            placeholder="Password"
+            placeholderTextColor="#A9A9A9"
+            secureTextEntry={!showPassword}
+          />
+          <TouchableOpacity
+            style={styles.iconContainer}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <Ionicons
+              name={showPassword ? "eye-off" : "eye"}
+              size={24}
+              color="#A9A9A9"
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.inputFieldContainer}>
+          <TextInput
+            style={styles.inputField}
+            onChangeText={(text) => setConfirmPassword(text)}
+            value={confirmPassword}
+            placeholder="Confirm Password"
+            placeholderTextColor="#A9A9A9"
+            secureTextEntry={!showConfirmPassword}
+          />
+          <TouchableOpacity
+            style={styles.iconContainer}
+            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            <Ionicons
+              name={showConfirmPassword ? "eye-off" : "eye"}
+              size={24}
+              color="#A9A9A9"
+            />
+          </TouchableOpacity>
+        </View>
         <Button
           title={"Register"}
           buttonStyle={styles.button}
@@ -115,6 +143,14 @@ const RegisterScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  inputFieldContainer: {
+    position: "relative",
+  },
+  iconContainer: {
+    position: "absolute",
+    right: wp("5%"),
+    top: hp("5%"),
+  },
   container: {
     flex: 1,
     alignItems: "center",
@@ -122,7 +158,7 @@ const styles = StyleSheet.create({
     marginTop: hp("-4%"),
   },
   title: {
-    fontFamily: "karma-light",
+    fontFamily: "karma-bold",
     fontSize: hp("4.5%"),
     color: "#EBF7F9",
   },
@@ -153,7 +189,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp("4%"),
     paddingVertical: hp("1%"),
     backgroundColor: "white",
-    fontSize: wp("4%"),
+    fontSize: wp("3.5%"),
   },
 });
 export default RegisterScreen;

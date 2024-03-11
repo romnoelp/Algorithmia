@@ -43,19 +43,8 @@ const LandingScreen = ({ navigation }) => {
             navigation.navigate("LogInScreen"); // Reaplace with login screen
           }}
         >
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={styles.buttonText}>Get started</Text>
         </TouchableOpacity>
-
-        <View style={styles.signup}>
-          <Text style={[styles.nonTouchable]}>Don't have an account yet? </Text>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("RegisterScreen");
-            }}
-          >
-            <Text style={styles.touchable}>Sign up here!</Text>
-          </TouchableOpacity>
-        </View>
       </LinearGradient>
     </SafeAreaView>
   );
@@ -103,7 +92,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#E6F2F6",
-    fontSize: hp("2.5%"),
+    fontSize: hp("2%"),
     fontFamily: "karma-semibold",
     textAlign: "center",
   },
