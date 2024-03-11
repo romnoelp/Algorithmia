@@ -105,12 +105,12 @@ const SortingScreen = () => {
             height: "80%",
           }}
           titleStyle={{ fontSize: 10, fontFamily: "karma-regular" }}
-          color={"#147691"}
+          color={"#6FD1EB"}
         />
       </View>
       <View
         style={{
-          backgroundColor: "#147691",
+          backgroundColor: "#6FD1EB",
           flex: 1,
           margin: 20,
           borderRadius: 20,
@@ -120,7 +120,7 @@ const SortingScreen = () => {
         <View style={{ flexDirection: "row", paddingHorizontal: 25 }}>
           <Text
             style={{
-              color: "white",
+              color: "#09171B",
               flex: 2,
               fontFamily: "karma-semibold",
             }}
@@ -128,13 +128,13 @@ const SortingScreen = () => {
             Name
           </Text>
           <Text
-            style={{ color: "white", flex: 1, fontFamily: "karma-semibold" }}
+            style={{ color: "#09171B", flex: 1, fontFamily: "karma-semibold" }}
           >
             Boxes
           </Text>
           <Text
             style={{
-              color: "white",
+              color: "#09171B",
               fontFamily: "karma-semibold",
             }}
           >
@@ -148,7 +148,7 @@ const SortingScreen = () => {
             <View
               style={{
                 flexDirection: "row",
-                backgroundColor: "#2CC5EF",
+                backgroundColor: "#10ABD5",
                 marginVertical: 5,
                 borderRadius: 20,
                 padding: 25,
@@ -157,7 +157,7 @@ const SortingScreen = () => {
               <Text
                 style={{
                   flex: 3,
-                  color: "white",
+                  color: "#09171B",
                   fontFamily: "karma-regular",
                   fontSize: 12,
                   maxWidth: "80%",
@@ -168,7 +168,7 @@ const SortingScreen = () => {
               <Text
                 style={{
                   flex: 1,
-                  color: "white",
+                  color: "#09171B",
                   fontFamily: "karma-regular",
                   fontSize: 13,
                 }}
@@ -177,7 +177,7 @@ const SortingScreen = () => {
               </Text>
               <Text
                 style={{
-                  color: "white",
+                  color: "#09171B",
                   fontFamily: "karma-regular",
                   fontSize: 13,
                   maxWidth: "80%",
