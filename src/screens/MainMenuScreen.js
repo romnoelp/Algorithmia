@@ -17,19 +17,56 @@ import {
   SVGFour,
   loadFont,
 } from "../../loadFontSVG";
-import { auth } from "../../firebaseConfig";
+import { auth, db } from "../../firebaseConfig";
+import { useDeliveryContext } from "../../context/DeliveryContext";
+import Toast from "react-native-simple-toast";
 
 const MainMenuScreen = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const user = auth.currentUser;
+  const { setDeliveryList } = useDeliveryContext();
+  const [initialFetchDelivery, setInitialFetchDelivery] = useState(false);
 
+  const readDeliveryData = async () => {
+    try {
+      if (user) {
+        const fetched = [];
+        const docRef = db
+          .collection("users")
+          .doc(user.displayName)
+          .collection("deliveries");
+        const querySnapshot = await docRef.get();
+        querySnapshot.forEach((doc) => {
+          const {
+            customerName,
+            customerAddress,
+            coordinates,
+            customerDistance,
+          } = doc.data();
+          fetched.push({
+            id: doc.id,
+            customerName,
+            customerAddress,
+            coordinates,
+            customerDistance,
+          });
+        });
+        if (!initialFetchDelivery) {
+          setDeliveryList(fetched);
+          setInitialFetchDelivery(true);
+        }
+      }
+    } catch (error) {
+      Toast.show("Error getting data", Toast.SHORT);
+    }
+  };
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
+    readDeliveryData();
   }, []);
   if (!fontLoaded) {
     return null;
   }
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <TouchableOpacity>
