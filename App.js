@@ -1,5 +1,4 @@
 import { TouchableOpacity } from "react-native";
-
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LandingScreen from "./src/screens/LandingScreen";
 import { NavigationContainer } from "@react-navigation/native";
@@ -10,6 +9,8 @@ import WholeSaleScreen from "./src/screens/WholeSaleScreen";
 import FinderScreen from "./src/screens/FinderScreen";
 import DeliveryScreen from "./src/screens/DeliveryScreen";
 import SortingScreen from "./src/screens/SortingScreen";
+import RegisterScreen from "./src/screens/RegisterScreen";
+import SettingsScreen from "./src/screens/SettingsScreen";
 import {
   SVGFour,
   SVGLogo,
@@ -20,7 +21,6 @@ import {
   SVGHome,
 } from "./loadFontSVG";
 import { SvgXml } from "react-native-svg";
-import SettingsScreen from "./src/screens/SettingsScreen";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -30,6 +30,7 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const TabtoSettingsStack = createNativeStackNavigator();
 
+// Function to define header options for bottom tab screens
 const headerOptionsForBottomTab = (navigation, svgLeft, svgRight, icon) => ({
   headerStyle: {
     backgroundColor: "#EBF7F9",
@@ -68,6 +69,7 @@ const headerOptionsForBottomTab = (navigation, svgLeft, svgRight, icon) => ({
   tabBarActiveBackgroundColor: "#10ABD5",
 });
 
+// Main tab navigator component
 const MainTab = ({ navigation }) => (
   <Tab.Navigator
     screenOptions={{
@@ -119,6 +121,7 @@ const MainTab = ({ navigation }) => (
   </Tab.Navigator>
 );
 
+// Stack navigator for screens related to tab navigation and settings
 const TabtoSettingsStackNavigator = ({ navigation }) => (
   <TabtoSettingsStack.Navigator initialRouteName="MainMenuScreen">
     <TabtoSettingsStack.Screen
@@ -167,6 +170,7 @@ const TabtoSettingsStackNavigator = ({ navigation }) => (
     />
   </TabtoSettingsStack.Navigator>
 );
+
 const App = () => (
   <NavigationContainer>
     <Stack.Navigator initialRouteName="LandingScreen">
@@ -178,6 +182,11 @@ const App = () => (
       <Stack.Screen
         name="LogInScreen"
         component={LogInScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="RegisterScreen"
+        component={RegisterScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

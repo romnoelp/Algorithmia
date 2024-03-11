@@ -49,8 +49,9 @@ const LandingScreen = ({ navigation }) => {
 
         <View style={styles.signup}>
           <Text style={[styles.nonTouchable]}>Don't have an account yet? </Text>
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => {navigation.replace("RegisterScreen");}}>
             <Text style={styles.touchable}>Sign up here!</Text>
+            
           </TouchableOpacity>
         </View>
       </LinearGradient>
