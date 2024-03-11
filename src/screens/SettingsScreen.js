@@ -8,6 +8,8 @@ import {
 } from "react-native-responsive-screen";
 import { auth } from "../../firebaseConfig";
 import { CommonActions } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const SettingsScreen = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
 
@@ -38,6 +40,7 @@ const SettingsScreen = ({ navigation }) => {
 
   const signOut = () => {
     auth.signOut();
+    AsyncStorage.clear();
     navigation.dispatch(
       CommonActions.reset({
         index: 1,
