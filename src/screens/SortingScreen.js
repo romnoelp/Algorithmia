@@ -1,10 +1,10 @@
-import { View, StyleSheet, Text, FlatList } from "react-native";
+import { View, StyleSheet, Text, FlatList, TouchableOpacity } from "react-native";
 import { SvgXml } from "react-native-svg";
 import * as Font from "expo-font";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SVGTwo } from "../../loadFontSVG";
-import { Button } from "@rneui/base";
+import { AntDesign } from '@expo/vector-icons';
 
 const loadFont = () => {
   return Font.loadAsync({
@@ -17,15 +17,7 @@ const loadFont = () => {
 
 const SortingScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
-
-  useEffect(() => {
-    loadFont().then(() => setFontLoaded(true));
-  }, []);
-  if (!fontLoaded) {
-    return null;
-  }
-
-  const data = [
+  const [data, setData] = useState([
     {
       key: 1,
       name: "YSL Y EDP",
@@ -68,7 +60,49 @@ const SortingScreen = () => {
       boxes: 17,
       amount: "6,200",
     },
-  ];
+  ]);
+  const [sortField, setSortField] = useState("name"); 
+  const [sortOrder, setSortOrder] = useState("asc"); 
+  const [showFieldDropdown, setShowFieldDropdown] = useState(false);
+  const [showOrderDropdown, setShowOrderDropdown] = useState(false);
+
+  useEffect(() => {
+    loadFont().then(() => setFontLoaded(true));
+  }, []);
+
+  const handleSort = (field) => {
+    if (field === sortField) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+    setShowFieldDropdown(false);
+    setShowOrderDropdown(false);
+  };
+
+  const toggleFieldDropdown = () => {
+    setShowFieldDropdown(!showFieldDropdown);
+    setShowOrderDropdown(false);
+  };
+
+  const toggleOrderDropdown = () => {
+    setShowOrderDropdown(!showOrderDropdown);
+    setShowFieldDropdown(false);
+  };
+
+  const sortedData = [...data].sort((a, b) => {
+    if (sortOrder === "asc") {
+      return a[sortField] > b[sortField] ? 1 : -1;
+    } else {
+      return a[sortField] < b[sortField] ? 1 : -1;
+    }
+  });
+
+  if (!fontLoaded) {
+    return null;
+  }
+
   return (
     <SafeAreaView style={{ backgroundColor: "#EBF7F9", flex: 1 }}>
       <View
@@ -98,15 +132,35 @@ const SortingScreen = () => {
         >
           Sort By
         </Text>
-        <Button
-          title={"Name"}
-          containerStyle={{
-            borderRadius: 20,
-            height: "80%",
-          }}
-          titleStyle={{ fontSize: 10, fontFamily: "karma-regular" }}
-          color={"#6FD1EB"}
-        />
+        <TouchableOpacity onPress={toggleFieldDropdown}>
+          <AntDesign name="downcircle" size={24} color="black" />
+        </TouchableOpacity>
+        {showFieldDropdown && (
+          <View style={[styles.dropdown, { backgroundColor: '#6FD1EB' }]}>
+            <TouchableOpacity onPress={() => handleSort('name')}>
+              <Text style={styles.dropdownText}>Name</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleSort('boxes')}>
+              <Text style={styles.dropdownText}>Boxes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleSort('amount')}>
+              <Text style={styles.dropdownText}>Amount</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        <TouchableOpacity onPress={toggleOrderDropdown}>
+          <AntDesign name="downcircle" size={24} color="black" />
+        </TouchableOpacity>
+        {showOrderDropdown && (
+          <View style={[styles.dropdown, { backgroundColor: '#6FD1EB' }]}>
+            <TouchableOpacity onPress={() => setSortOrder('asc')}>
+              <Text style={styles.dropdownText}>Ascending</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setSortOrder('desc')}>
+              <Text style={styles.dropdownText}>Descending</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
       <View
         style={{
@@ -143,7 +197,7 @@ const SortingScreen = () => {
         </View>
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={data}
+          data={sortedData}
           renderItem={({ item }) => (
             <View
               style={{
@@ -194,6 +248,22 @@ const SortingScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  dropdown: {
+    position: 'absolute',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 10,
+    marginTop: 5,
+    zIndex: 1,
+    paddingTop: 5,
+  },
+  dropdownText: {
+    fontFamily: 'karma-regular',
+    fontSize: 16,
+    marginTop: 5,
+  },
+});
 
 export default SortingScreen;
