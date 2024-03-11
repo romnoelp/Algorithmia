@@ -56,20 +56,20 @@ const MainMenuScreen = ({ navigation }) => {
             style={styles.square}
             activeOpacity={0.7}
           >
-            <View style={styles.squareShapeView}>
+            <View style={[styles.squareShapeView, {marginLeft: 25}]}>
               <SvgXml xml={SVGOne("white")} width="76" height="76" />
             </View>
-            <Text style={styles.title}>Wholesale</Text>
+            <Text style={[styles.title, {marginLeft: 25}]}>Wholesale</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate("MainTab", { screen: "List" })}
             style={styles.square}
             activeOpacity={0.7}
           >
-            <View style={styles.squareShapeView}>
+            <View style={[styles.squareShapeView, {marginRight: 25}]}>
               <SvgXml xml={SVGTwo("white")} width="90" height="90" />
             </View>
-            <Text style={styles.title}>Sort Items</Text>
+            <Text style={[styles.title, {marginRight: 25}]}>Sort Items</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
@@ -80,20 +80,20 @@ const MainMenuScreen = ({ navigation }) => {
             style={styles.square}
             activeOpacity={0.7}
           >
-            <View style={styles.squareShapeView}>
+            <View style={[styles.squareShapeView, {marginLeft: 25}]}>
               <SvgXml xml={SVGThree("white")} width="76" height="76" />
             </View>
-            <Text style={styles.title}>Delivery</Text>
+            <Text style={[styles.title, {marginLeft: 25}]}>Delivery</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate("MainTab", { screen: "Finder" })}
             style={styles.square}
             activeOpacity={0.7}
           >
-            <View style={styles.squareShapeView}>
+            <View style={[styles.squareShapeView, {marginRight: 25}]}>
               <SvgXml xml={SVGFour("white")} width="90" height="90" />
             </View>
-            <Text style={styles.title}>Word Finder</Text>
+            <Text style={[styles.title, {marginRight: 25}]}>Word Finder</Text>
           </TouchableOpacity>
         </View>
       </View>
