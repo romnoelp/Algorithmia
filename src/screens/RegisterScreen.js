@@ -12,7 +12,7 @@ import {
 } from "react-native-responsive-screen";
 import { auth, db } from "../../firebaseConfig";
 import { Button } from "@rneui/base";
-import { Ionicons } from "@expo/vector-icons";
+import Toast from 'react-native-simple-toast';
 
 const RegisterScreen = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -20,8 +20,6 @@ const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
@@ -42,8 +40,8 @@ const RegisterScreen = ({ navigation }) => {
         const userCredential = userNameExist
           ? password === confirmPassword
             ? await auth.createUserWithEmailAndPassword(email, confirmPassword)
-            : console.log("password does not match")
-          : console.log("username already in use");
+            : Toast.show("The provided password does not match our records. Please try again.", Toast.LONG)
+          : Toast.show("Username already taken.", Toast.LONG);
 
         const user = userCredential?.user;
         if (user) {
@@ -57,16 +55,15 @@ const RegisterScreen = ({ navigation }) => {
           });
           navigation.replace("LogInScreen");
           console.log(user.displayName);
-          console.log("success");
+          Toast.show("success", Toast.SHORT);
         }
       } catch (error) {
         console.log(error.message);
       }
     } else {
-      console.log("please complete text fields");
+      Toast.show("Please complete all required fields.", Toast.BOTTOM);
     }
   };
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient
@@ -79,58 +76,34 @@ const RegisterScreen = ({ navigation }) => {
           style={styles.inputField}
           onChangeText={(text) => setEmail(text)}
           value={email}
-          placeholder="sample.email@neu.edu.ph"
-          placeholderTextColor="#A9A9A9"
-          placeholderStyle={{ fontFamily: "karma-light" }}
+          placeholder="Email"
+          placeholderTextColor="black"
+          placeholderStyle={{ fontFamily: "karma-semibold" }}
           keyboardType="email-address"
         />
         <TextInput
           style={styles.inputField}
           onChangeText={(text) => setUserName(text)}
           value={userName}
-          placeholder="romnoel02"
-          placeholderTextColor="#A9A9A9"
+          placeholder="Username"
+          placeholderTextColor="black"
         />
-        <View style={styles.inputFieldContainer}>
-          <TextInput
-            style={styles.inputField}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            placeholder="Password"
-            placeholderTextColor="#A9A9A9"
-            secureTextEntry={!showPassword}
-          />
-          <TouchableOpacity
-            style={styles.iconContainer}
-            onPress={() => setShowPassword(!showPassword)}
-          >
-            <Ionicons
-              name={showPassword ? "eye-off" : "eye"}
-              size={24}
-              color="#A9A9A9"
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.inputFieldContainer}>
-          <TextInput
-            style={styles.inputField}
-            onChangeText={(text) => setConfirmPassword(text)}
-            value={confirmPassword}
-            placeholder="Confirm Password"
-            placeholderTextColor="#A9A9A9"
-            secureTextEntry={!showConfirmPassword}
-          />
-          <TouchableOpacity
-            style={styles.iconContainer}
-            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-          >
-            <Ionicons
-              name={showConfirmPassword ? "eye-off" : "eye"}
-              size={24}
-              color="#A9A9A9"
-            />
-          </TouchableOpacity>
-        </View>
+        <TextInput
+          style={styles.inputField}
+          onChangeText={(text) => setPassword(text)}
+          value={password}
+          placeholder="Password"
+          placeholderTextColor="black"
+          secureTextEntry={true}
+        />
+        <TextInput
+          style={styles.inputField}
+          onChangeText={(text) => setConfirmPassword(text)}
+          value={confirmPassword}
+          placeholder="Confirm Password"
+          placeholderTextColor="black"
+          secureTextEntry={true}
+        />
         <Button
           title={"Register"}
           buttonStyle={styles.button}
@@ -143,14 +116,6 @@ const RegisterScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  inputFieldContainer: {
-    position: "relative",
-  },
-  iconContainer: {
-    position: "absolute",
-    right: wp("5%"),
-    top: hp("5%"),
-  },
   container: {
     flex: 1,
     alignItems: "center",
@@ -158,7 +123,7 @@ const styles = StyleSheet.create({
     marginTop: hp("-4%"),
   },
   title: {
-    fontFamily: "karma-bold",
+    fontFamily: "karma-light",
     fontSize: hp("4.5%"),
     color: "#EBF7F9",
   },
@@ -189,7 +154,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp("4%"),
     paddingVertical: hp("1%"),
     backgroundColor: "white",
-    fontSize: wp("3.5%"),
+    fontSize: wp("4%"),
   },
 });
 export default RegisterScreen;

@@ -18,6 +18,7 @@ import {
 import { auth, db } from "../../firebaseConfig";
 import { Button } from "@rneui/base";
 import { Ionicons } from "@expo/vector-icons";
+import Toast from 'react-native-simple-toast';
 
 const LogInScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -54,12 +55,12 @@ const LogInScreen = () => {
         );
       } catch (error) {
         if (password < 5) {
-          console.log("password must be at least 5 characters");
+          Toast.show("password must be at least 5 characters", Toast.LONG);
         }
         console.log(error.message);
       }
     } else {
-      console.log("please complete text fields");
+      Toast.show("Please enter both your email and password to proceed.", Toast.LONG);
     }
   };
 
