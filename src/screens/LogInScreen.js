@@ -19,6 +19,7 @@ import { auth, db } from "../../firebaseConfig";
 import { Button } from "@rneui/base";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-simple-toast";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LogInScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -29,6 +30,28 @@ const LogInScreen = () => {
 
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
+    const unsubscribe = async () => {
+      try {
+        const savedEmail = await AsyncStorage.getItem("email");
+        const savedPassword = await AsyncStorage.getItem("password");
+        if (savedEmail && savedPassword) {
+          await auth.signInWithEmailAndPassword(savedEmail, savedPassword);
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 1,
+              routes: [
+                {
+                  name: "TabToStack",
+                },
+              ],
+            })
+          );
+        }
+      } catch (error) {
+        Toast.show("Sign in again", Toast.SHORT);
+      }
+    };
+    unsubscribe();
   }, []);
 
   if (!fontLoaded) {
@@ -47,6 +70,8 @@ const LogInScreen = () => {
         }
 
         await auth.signInWithEmailAndPassword(userEmail.email, password);
+        AsyncStorage.setItem("email", userEmail.email);
+        AsyncStorage.setItem("password", password);
         navigation.dispatch(
           CommonActions.reset({
             index: 1,
