@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect } from "react";
@@ -41,7 +40,7 @@ const LandingScreen = ({ navigation }) => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            navigation.replace("LogInScreen"); // Reaplace with login screen 
+            navigation.navigate("LogInScreen"); // Reaplace with login screen
           }}
         >
           <Text style={styles.buttonText}>Login</Text>
@@ -49,9 +48,12 @@ const LandingScreen = ({ navigation }) => {
 
         <View style={styles.signup}>
           <Text style={[styles.nonTouchable]}>Don't have an account yet? </Text>
-          <TouchableOpacity onPress={() => {navigation.replace("RegisterScreen");}}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("RegisterScreen");
+            }}
+          >
             <Text style={styles.touchable}>Sign up here!</Text>
-            
           </TouchableOpacity>
         </View>
       </LinearGradient>
@@ -109,7 +111,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: hp("8%"),
-    fontSize: wp("1%")
+    fontSize: wp("1%"),
   },
   nonTouchable: {
     fontFamily: "karma-light",
