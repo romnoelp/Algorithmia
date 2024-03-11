@@ -25,6 +25,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { DeliveryProvider } from "./context/DeliveryContext";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -172,30 +173,32 @@ const TabtoSettingsStackNavigator = ({ navigation }) => (
 );
 
 const App = () => (
-  <NavigationContainer>
-    <Stack.Navigator initialRouteName="LandingScreen">
-      <Stack.Screen
-        name="LandingScreen"
-        component={LandingScreen}
-        options={{ headerShown: false, statusBarHidden: true }}
-      />
-      <Stack.Screen
-        name="LogInScreen"
-        component={LogInScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="RegisterScreen"
-        component={RegisterScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="TabToStack"
-        component={TabtoSettingsStackNavigator}
-        options={{ headerShown: false, statusBarHidden: true }}
-      />
-    </Stack.Navigator>
-  </NavigationContainer>
+  <DeliveryProvider>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="LandingScreen">
+        <Stack.Screen
+          name="LandingScreen"
+          component={LandingScreen}
+          options={{ headerShown: false, statusBarHidden: true }}
+        />
+        <Stack.Screen
+          name="LogInScreen"
+          component={LogInScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="RegisterScreen"
+          component={RegisterScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="TabToStack"
+          component={TabtoSettingsStackNavigator}
+          options={{ headerShown: false, statusBarHidden: true }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  </DeliveryProvider>
 );
 
 export default App;

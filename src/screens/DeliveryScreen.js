@@ -17,6 +17,10 @@ import {
 import { SVGDelivery, loadFont } from "../../loadFontSVG";
 import axios from "axios";
 import * as geolib from "geolib";
+import { Button } from "@rneui/base";
+import { useDeliveryContext } from "../../context/DeliveryContext";
+import { auth, db } from "../../firebaseConfig";
+import Toast from "react-native-simple-toast";
 
 const calculateDistance = (source, destination) => {
   return geolib.getDistance(source, destination);
@@ -58,16 +62,24 @@ const DeliveryScreen = () => {
   const [customerData, setCustomerData] = useState([]);
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
-  const [customerDistance, setDistance] = useState("");
+  //const [customerDistance, setDistance] = useState("");
   const [testKey, setTestKey] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [sortedCustomerData, setSortedCustomerData] = useState([]);
+  const { addDelivery, deliveries } = useDeliveryContext();
+  const [initialLoadFont, setInitialLoadFont] = useState(false);
 
+  const user = auth.currentUser;
   useEffect(() => {
-    loadFont().then(() => setFontLoaded(true));
-  }, []);
+    if (!initialLoadFont) {
+      loadFont().then(() => setFontLoaded(true));
+      setInitialLoadFont(true);
+    }
+
+    setCustomerData(deliveries);
+  }, [deliveries]);
 
   if (!fontLoaded) {
     return null;
@@ -108,21 +120,31 @@ const DeliveryScreen = () => {
           const distance = calculateDistance(sourceAddress, coordinates);
           const convertedDistance = (distance / 1000).toFixed(2);
 
-          const newCustomerData = [
-            ...customerData,
-            {
-              key: testKey,
+          if (user) {
+            const docRef = db
+              .collection("users")
+              .doc(user.displayName)
+              .collection("deliveries")
+              .add({
+                customerName,
+                customerAddress,
+                coordinates,
+                customerDistance: convertedDistance,
+              });
+
+            const newCustomerData = {
+              key: docRef.id,
               customerName,
               customerAddress,
               coordinates,
               customerDistance: convertedDistance,
-            },
-          ];
+            };
 
-          const sortedCustomerData = nearestNeighborSort(newCustomerData);
-
-          setCustomerData(sortedCustomerData);
-          setTestKey(testKey + 1);
+            addDelivery(newCustomerData);
+            Toast.show("Added Successfully", Toast.SHORT);
+            const sortedCustomerData = nearestNeighborSort(deliveries);
+            setCustomerData(sortedCustomerData);
+          }
         } else {
           console.error("Coordinates are undefined for the provided address.");
         }
@@ -245,12 +267,12 @@ const DeliveryScreen = () => {
                 <ActivityIndicator size="small" color="#EBF7F9" />
               </View>
             ) : (
-              <TouchableOpacity
-                style={styles.saveButton}
+              <Button
+                title={"Add Address"}
+                titleStyle={styles.saveButtonText}
+                buttonStyle={styles.saveButton}
                 onPress={handleAddAddress}
-              >
-                <Text style={styles.saveButtonText}>Add Address</Text>
-              </TouchableOpacity>
+              />
             )}
           </View>
         </View>

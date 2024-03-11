@@ -158,6 +158,7 @@ const FinderScreen = () => {
               <Text style={styles.addressText}>{selectedAddress}</Text>
               <Button
                 title={"Extract Word"}
+                titleStyle={styles.saveButtonText}
                 buttonStyle={styles.saveButton}
                 onPress={handleSearch}
               />
