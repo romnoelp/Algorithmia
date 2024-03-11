@@ -85,6 +85,15 @@ const LogInScreen = () => {
             signIn();
           }}
         />
+          <View style={styles.signup}>
+          <Text style={[styles.nonTouchable]}>Don't have an account yet? </Text>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("RegisterScreen");
+            }}>
+            <Text style={styles.touchable}>Sign in here!</Text>
+          </TouchableOpacity>
+          </View>
       </LinearGradient>
     </SafeAreaView>
   );
@@ -131,6 +140,22 @@ const styles = StyleSheet.create({
     paddingVertical: hp("1%"),
     backgroundColor: "white",
     fontSize: wp("4%"),
+  },
+  nonTouchable: {
+    fontFamily: "karma-light",
+    color: "#EBF7F9",
+    fontSize: hp("1.8%"),
+  },
+    signup: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: hp("8%"),
+    fontSize: wp("1%"),
+  },
+  touchable: {
+    fontFamily: "karma-light",
+    color: "#6FD1EB",
+    fontSize: hp("1.8%"),
   },
 });
 export default LogInScreen;
