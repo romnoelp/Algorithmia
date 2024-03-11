@@ -48,9 +48,9 @@ const WholeSaleScreen = () => {
       </View>
       <View style={styles.testContainer}>
         <View style={styles.addressRow}>
-          <Text style={styles.columnName}>Name</Text>
-          <Text style={styles.columnName}>Boxes</Text>
-          <Text style={styles.columnName}>Amount</Text>
+          <Text style={[styles.columnName, { flex: 1 }]}>Name</Text>
+          <Text style={[styles.columnName, { flex: 1 }]}>Boxes</Text>
+          <Text style={[styles.columnName, { flex: 1 }]}>Amount</Text>
         </View>
 
         <ScrollView style={styles.scrollContainer}>
@@ -118,10 +118,10 @@ export default WholeSaleScreen;
 
 const styles = StyleSheet.create({
   buttonTitle: {
-    fontFamily: "karma-light", 
-    fontSize: wp("4%"), 
+    fontFamily: "karma-light",
+    fontSize: wp("4%"),
     color: "#EBF7F9",
-},
+  },
   container: {
     flex: 1,
     backgroundColor: "#EBF7F9",
@@ -159,9 +159,9 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   columnName: {
-    flex: 1,
     fontFamily: "karma-bold",
     marginVertical: hp("1%"),
+    fontSize: hp("2%"),
     textAlign: "center",
   },
   scrollContainer: {
