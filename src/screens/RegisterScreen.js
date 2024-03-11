@@ -1,18 +1,23 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TouchableOpacity } from "react-native";
 import { loadFont, SVGLogo } from "../../loadFontSVG";
 import { SvgXml } from "react-native-svg";
+import { Button } from "@rneui/base";
+import { Ionicons } from "@expo/vector-icons";
+import Toast from "react-native-simple-toast";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { auth, db } from "../../firebaseConfig";
-import { Button } from "@rneui/base";
-import Toast from 'react-native-simple-toast';
 
 const RegisterScreen = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -20,6 +25,8 @@ const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
@@ -28,9 +35,10 @@ const RegisterScreen = ({ navigation }) => {
   const distinctUserName = async (userName) => {
     const userNameSnapshot = await db
       .collection("users")
-      .where("username", "==", userName)
+      .where("userName", "==", userName)
       .get();
-    return !userNameSnapshot.empty;
+    console.log(userNameSnapshot);
+    return userNameSnapshot.empty;
   };
 
   const signUp = async () => {
@@ -40,7 +48,10 @@ const RegisterScreen = ({ navigation }) => {
         const userCredential = userNameExist
           ? password === confirmPassword
             ? await auth.createUserWithEmailAndPassword(email, confirmPassword)
-            : Toast.show("The provided password does not match our records. Please try again.", Toast.LONG)
+            : Toast.show(
+                "The provided password does not match our records. Please try again.",
+                Toast.LONG
+              )
           : Toast.show("Username already taken.", Toast.LONG);
 
         const user = userCredential?.user;
@@ -64,6 +75,7 @@ const RegisterScreen = ({ navigation }) => {
       Toast.show("Please complete all required fields.", Toast.BOTTOM);
     }
   };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient
@@ -77,39 +89,71 @@ const RegisterScreen = ({ navigation }) => {
           onChangeText={(text) => setEmail(text)}
           value={email}
           placeholder="Email"
-          placeholderTextColor="black"
-          placeholderStyle={{ fontFamily: "karma-semibold" }}
-          keyboardType="email-address"
+          placeholderTextColor="#A9A9A9"
         />
         <TextInput
           style={styles.inputField}
           onChangeText={(text) => setUserName(text)}
           value={userName}
           placeholder="Username"
-          placeholderTextColor="black"
+          placeholderTextColor="#A9A9A9"
         />
-        <TextInput
-          style={styles.inputField}
-          onChangeText={(text) => setPassword(text)}
-          value={password}
-          placeholder="Password"
-          placeholderTextColor="black"
-          secureTextEntry={true}
-        />
-        <TextInput
-          style={styles.inputField}
-          onChangeText={(text) => setConfirmPassword(text)}
-          value={confirmPassword}
-          placeholder="Confirm Password"
-          placeholderTextColor="black"
-          secureTextEntry={true}
-        />
+        <View style={styles.inputFieldContainer}>
+          <TextInput
+            style={styles.inputField}
+            onChangeText={(text) => setPassword(text)}
+            value={password}
+            placeholder="Password"
+            placeholderTextColor="#A9A9A9"
+            secureTextEntry={!showPassword}
+          />
+          <TouchableOpacity
+            style={styles.iconContainer}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <Ionicons
+              name={showPassword ? "eye-off" : "eye"}
+              size={24}
+              color="#A9A9A9"
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.inputFieldContainer}>
+          <TextInput
+            style={styles.inputField}
+            onChangeText={(text) => setConfirmPassword(text)}
+            value={confirmPassword}
+            placeholder="Confirm Password"
+            placeholderTextColor="#A9A9A9"
+            secureTextEntry={!showConfirmPassword}
+          />
+          <TouchableOpacity
+            style={styles.iconContainer}
+            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            <Ionicons
+              name={showConfirmPassword ? "eye-off" : "eye"}
+              size={24}
+              color="#A9A9A9"
+            />
+          </TouchableOpacity>
+        </View>
         <Button
           title={"Register"}
           buttonStyle={styles.button}
           titleStyle={styles.buttonText}
           onPress={() => signUp(email, confirmPassword)}
         />
+        <View style={styles.signup}>
+          <Text style={styles.nonTouchable}>Already have an account? </Text>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("LogInScreen");
+            }}
+          >
+            <Text style={styles.touchable}>Sign in here!</Text>
+          </TouchableOpacity>
+        </View>
       </LinearGradient>
     </SafeAreaView>
   );
@@ -123,7 +167,7 @@ const styles = StyleSheet.create({
     marginTop: hp("-4%"),
   },
   title: {
-    fontFamily: "karma-light",
+    fontFamily: "karma-bold",
     fontSize: hp("4.5%"),
     color: "#EBF7F9",
   },
@@ -137,12 +181,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: hp("4%"),
     paddingVertical: hp("1%"),
     borderRadius: 25,
-    marginTop: hp("3%"),
+    marginTop: hp("2%"),
   },
   buttonText: {
     color: "#E6F2F6",
     fontSize: hp("2%"),
     fontFamily: "karma-semibold",
+    textAlign: "center",
   },
   inputField: {
     fontFamily: "karma-semibold",
@@ -156,5 +201,31 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     fontSize: wp("4%"),
   },
+  inputFieldContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  iconContainer: {
+    position: "absolute",
+    right: wp("5%"),
+    top: hp("5%"),
+  },
+  nonTouchable: {
+    fontFamily: "karma-light",
+    color: "#EBF7F9",
+    fontSize: hp("1.8%"),
+  },
+  signup: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: hp("8%"),
+    fontSize: wp("1%"),
+  },
+  touchable: {
+    fontFamily: "karma-light",
+    color: "#6FD1EB",
+    fontSize: hp("1.8%"),
+  },
 });
+
 export default RegisterScreen;
