@@ -1,10 +1,10 @@
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, FlatList, TouchableOpacity } from "react-native";
 import { SvgXml } from "react-native-svg";
 import * as Font from "expo-font";
-import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SVGTwo } from "../../loadFontSVG";
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign} from '@expo/vector-icons';
 
 const loadFont = () => {
   return Font.loadAsync({
@@ -73,31 +73,38 @@ const SortingScreen = () => {
   const handleSort = (field) => {
     if (field === sortField) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      setShowOrderDropdown(true);
     } else {
       setSortField(field);
       setSortOrder("asc");
+      setShowOrderDropdown(true);
     }
     setShowFieldDropdown(false);
-    setShowOrderDropdown(false);
   };
 
-  const toggleFieldDropdown = () => {
-    setShowFieldDropdown(!showFieldDropdown);
-    setShowOrderDropdown(false);
-  };
-
-  const toggleOrderDropdown = () => {
-    setShowOrderDropdown(!showOrderDropdown);
-    setShowFieldDropdown(false);
-  };
-
-  const sortedData = [...data].sort((a, b) => {
-    if (sortOrder === "asc") {
-      return a[sortField] > b[sortField] ? 1 : -1;
-    } else {
-      return a[sortField] < b[sortField] ? 1 : -1;
+  const selectionSort = (array) => {
+    const sortedArray = [...array];
+    for (let i = 0; i < sortedArray.length - 1; i++) {
+      let minIndex = i;
+      for (let j = i + 1; j < sortedArray.length; j++) {
+        const a = sortedArray[j][sortField];
+        const b = sortedArray[minIndex][sortField];
+        const compareResult =
+          sortOrder === "asc" ? a < b : a > b;
+        if (compareResult) {
+          minIndex = j;
+        }
+      }
+      if (minIndex !== i) {
+        const temp = sortedArray[i];
+        sortedArray[i] = sortedArray[minIndex];
+        sortedArray[minIndex] = temp;
+      }
     }
-  });
+    return sortedArray;
+  };
+
+  const sortedData = selectionSort(data);
 
   if (!fontLoaded) {
     return null;
@@ -132,31 +139,28 @@ const SortingScreen = () => {
         >
           Sort By
         </Text>
-        <TouchableOpacity onPress={toggleFieldDropdown}>
+        <TouchableOpacity onPress={() => setShowFieldDropdown(!showFieldDropdown)}>
           <AntDesign name="downcircle" size={24} color="black" />
         </TouchableOpacity>
         {showFieldDropdown && (
-          <View style={[styles.dropdown, { backgroundColor: '#6FD1EB' }]}>
-            <TouchableOpacity onPress={() => handleSort('name')}>
+          <View style={[styles.dropdown, { backgroundColor: '#EBF7F9'}]}>
+            <TouchableOpacity style={styles.dropdownItem} onPress={() => handleSort('name')}>
               <Text style={styles.dropdownText}>Name</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSort('boxes')}>
+            <TouchableOpacity style={styles.dropdownItem} onPress={() => handleSort('boxes')}>
               <Text style={styles.dropdownText}>Boxes</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSort('amount')}>
+            <TouchableOpacity style={styles.dropdownItem} onPress={() => handleSort('amount')}>
               <Text style={styles.dropdownText}>Amount</Text>
             </TouchableOpacity>
           </View>
         )}
-        <TouchableOpacity onPress={toggleOrderDropdown}>
-          <AntDesign name="downcircle" size={24} color="black" />
-        </TouchableOpacity>
         {showOrderDropdown && (
-          <View style={[styles.dropdown, { backgroundColor: '#6FD1EB' }]}>
-            <TouchableOpacity onPress={() => setSortOrder('asc')}>
+          <View style={[styles.dropdown, { backgroundColor: '#EBF7F9'}]}>
+            <TouchableOpacity style={styles.dropdownItem} onPress={() => setSortOrder('asc')}>
               <Text style={styles.dropdownText}>Ascending</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setSortOrder('desc')}>
+            <TouchableOpacity style={styles.dropdownItem} onPress={() => setSortOrder('desc')}>
               <Text style={styles.dropdownText}>Descending</Text>
             </TouchableOpacity>
           </View>
@@ -251,18 +255,22 @@ const SortingScreen = () => {
 const styles = StyleSheet.create({
   dropdown: {
     position: 'absolute',
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 10,
-    marginTop: 5,
+    borderRadius: 20,
+    borderWidth: 10,
+    borderColor: '#EBF7F9',
     zIndex: 1,
-    paddingTop: 5,
+  },
+  dropdownItem: {
+    backgroundColor: "#6FD1EB",
+    borderRadius: 20,
+    padding: 10,
+    marginBottom: 5
   },
   dropdownText: {
-    fontFamily: 'karma-regular',
+    color: "black",
+    fontFamily: "karma-regular",
     fontSize: 16,
-    marginTop: 5,
+    textAlign: "center"
   },
 });
 
