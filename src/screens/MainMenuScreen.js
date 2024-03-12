@@ -20,12 +20,43 @@ import {
 import { auth, db } from "../../firebaseConfig";
 import { useDeliveryContext } from "../../context/DeliveryContext";
 import Toast from "react-native-simple-toast";
+import { useProductContext } from "../../context/ProductContext";
 
 const MainMenuScreen = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const user = auth.currentUser;
   const { setDeliveryList } = useDeliveryContext();
   const [initialFetchDelivery, setInitialFetchDelivery] = useState(false);
+  const [initialFetchProduct, setInitialFetchProduct] = useState(false);
+  const { setProductList } = useProductContext();
+
+  const readProductData = async () => {
+    try {
+      if (user) {
+        const fetched = [];
+        const docRef = db
+          .collection("users")
+          .doc(user.displayName)
+          .collection("products");
+        const querySnapshot = await docRef.get();
+        querySnapshot.forEach((doc) => {
+          const { productName, productAmount, productWeight } = doc.data();
+          fetched.push({
+            key: doc.id,
+            productName,
+            productAmount,
+            productWeight,
+          });
+        });
+        if (!initialFetchProduct) {
+          setProductList(fetched);
+          setInitialFetchProduct(true);
+        }
+      }
+    } catch (error) {
+      Toast.show("Error getting data", Toast.SHORT);
+    }
+  };
 
   const readDeliveryData = async () => {
     try {
@@ -44,7 +75,7 @@ const MainMenuScreen = ({ navigation }) => {
             customerDistance,
           } = doc.data();
           fetched.push({
-            id: doc.id,
+            key: doc.id,
             customerName,
             customerAddress,
             coordinates,
@@ -63,6 +94,7 @@ const MainMenuScreen = ({ navigation }) => {
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
     readDeliveryData();
+    readProductData();
   }, []);
   if (!fontLoaded) {
     return null;
@@ -93,20 +125,20 @@ const MainMenuScreen = ({ navigation }) => {
             style={styles.square}
             activeOpacity={0.7}
           >
-            <View style={[styles.squareShapeView, {marginLeft: 25}]}>
+            <View style={[styles.squareShapeView, { marginLeft: 25 }]}>
               <SvgXml xml={SVGOne("white")} width="76" height="76" />
             </View>
-            <Text style={[styles.title, {marginLeft: 25}]}>Wholesale</Text>
+            <Text style={[styles.title, { marginLeft: 25 }]}>Wholesale</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate("MainTab", { screen: "List" })}
             style={styles.square}
             activeOpacity={0.7}
           >
-            <View style={[styles.squareShapeView, {marginRight: 25}]}>
+            <View style={[styles.squareShapeView, { marginRight: 25 }]}>
               <SvgXml xml={SVGTwo("white")} width="90" height="90" />
             </View>
-            <Text style={[styles.title, {marginRight: 25}]}>Sort Items</Text>
+            <Text style={[styles.title, { marginRight: 25 }]}>Sort Items</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
@@ -117,20 +149,20 @@ const MainMenuScreen = ({ navigation }) => {
             style={styles.square}
             activeOpacity={0.7}
           >
-            <View style={[styles.squareShapeView, {marginLeft: 25}]}>
+            <View style={[styles.squareShapeView, { marginLeft: 25 }]}>
               <SvgXml xml={SVGThree("white")} width="76" height="76" />
             </View>
-            <Text style={[styles.title, {marginLeft: 25}]}>Delivery</Text>
+            <Text style={[styles.title, { marginLeft: 25 }]}>Delivery</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate("MainTab", { screen: "Finder" })}
             style={styles.square}
             activeOpacity={0.7}
           >
-            <View style={[styles.squareShapeView, {marginRight: 25}]}>
+            <View style={[styles.squareShapeView, { marginRight: 25 }]}>
               <SvgXml xml={SVGFour("white")} width="90" height="90" />
             </View>
-            <Text style={[styles.title, {marginRight: 25}]}>Word Finder</Text>
+            <Text style={[styles.title, { marginRight: 25 }]}>Word Finder</Text>
           </TouchableOpacity>
         </View>
       </View>

@@ -4,9 +4,10 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ScrollView,
   Modal,
   TextInput,
+  ActivityIndicator,
+  FlatList,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 import {
@@ -15,6 +16,9 @@ import {
 } from "react-native-responsive-screen";
 import { SVGOne, loadFont } from "../../loadFontSVG";
 import { Button } from "@rneui/base";
+import { auth, db } from "../../firebaseConfig";
+import { useProductContext } from "../../context/ProductContext";
+import Toast from "react-native-simple-toast";
 
 const WholeSaleScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -22,7 +26,12 @@ const WholeSaleScreen = () => {
   const [productName, setProductName] = useState("");
   const [productWeight, setProductWeight] = useState("");
   const [productAmount, setProductAmount] = useState("");
-
+  const user = auth.currentUser;
+  const { addProduct, products, setProductList } = useProductContext();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  console.log(selectedItem);
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
@@ -34,10 +43,59 @@ const WholeSaleScreen = () => {
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
+  const toggleDeleteModal = (item) => {
+    setIsDeleteModalVisible(!isDeleteModalVisible);
+    setSelectedItem(item);
+  };
+  const handleDeleteProduct = async (selectedItem) => {
+    await db
+      .collection("users")
+      .doc(user.displayName)
+      .collection("products")
+      .doc(selectedItem.key)
+      .delete();
+    Toast.show("Product Deleted Successfully");
 
-  const handleAddProduct = () => {
-    // Add product function
-    setIsModalVisible(false);
+    setProductList(products.filter((item) => item.key !== selectedItem.key));
+    toggleDeleteModal();
+  };
+
+  const handleAddProduct = async () => {
+    try {
+      if (user && productName && productWeight && productAmount) {
+        const docRef = await db
+          .collection("users")
+          .doc(user.displayName)
+          .collection("products")
+          .add({
+            productName,
+            productWeight: parseFloat(productWeight),
+            productAmount: parseFloat(productAmount),
+          });
+
+        const newProduct = {
+          key: docRef.id,
+          productName,
+          productWeight: parseFloat(productWeight),
+          productAmount: parseFloat(productAmount),
+        };
+
+        addProduct(newProduct);
+        setIsLoading(true);
+        Toast.show("Added successfully", Toast.SHORT);
+        setIsModalVisible(false);
+
+        setProductName("");
+        setProductAmount("");
+        setProductWeight("");
+      } else {
+        Toast.show("Please complete the missing fields");
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -47,15 +105,80 @@ const WholeSaleScreen = () => {
         <SvgXml xml={SVGOne("black")} height={"29"} width={"21"} />
       </View>
       <View style={styles.testContainer}>
-        <View style={styles.addressRow}>
-          <Text style={styles.columnName}>Name</Text>
-          <Text style={styles.columnName}>Boxes</Text>
-          <Text style={styles.columnName}>Amount</Text>
+        <View style={{ flexDirection: "row", marginHorizontal: wp("2%") }}>
+          <Text style={[styles.columnName, { flex: 2 }]}>Name</Text>
+          <Text style={[styles.columnName, { flex: 1 }]}>Weight</Text>
+          <Text style={[styles.columnName, { flex: 1 }]}>Amount</Text>
         </View>
+        <FlatList
+          data={products}
+          renderItem={({ item }) => (
+            <View>
+              <TouchableOpacity
+                style={styles.productContainer}
+                onPress={() => toggleDeleteModal(item)}
+              >
+                <Text style={[styles.productInfo, { flex: 2 }]}>
+                  {item.productName}
+                </Text>
 
-        <ScrollView style={styles.scrollContainer}>
-          {/* Cards here */}
-        </ScrollView>
+                <Text style={[styles.productInfo, { flex: 1 / 2 }]}>
+                  {item.productWeight}
+                </Text>
+
+                <Text
+                  style={[styles.productInfo, { flex: 1, textAlign: "center" }]}
+                >
+                  {item.productAmount}
+                </Text>
+              </TouchableOpacity>
+              <Modal
+                animationType="fade"
+                transparent={true}
+                visible={isDeleteModalVisible}
+                onRequestClose={toggleDeleteModal}
+              >
+                <View style={styles.deleteModalParent}>
+                  <View style={styles.deleteModalContainer}>
+                    {selectedItem && (
+                      <View>
+                        <Text
+                          style={{
+                            marginLeft: wp("5%"),
+                            fontSize: hp("2.5%"),
+                            fontWeight: "bold",
+                            marginTop: hp("0.5%"),
+                          }}
+                        >
+                          Delete Item "{selectedItem.productName}"?
+                        </Text>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-evenly",
+                          }}
+                        >
+                          <Button
+                            title={"Cancel"}
+                            titleStyle={styles.buttonTitle}
+                            buttonStyle={styles.saveButton}
+                            onPress={() => toggleDeleteModal(null)}
+                          />
+                          <Button
+                            title={"Confirm"}
+                            titleStyle={styles.buttonTitle}
+                            buttonStyle={styles.saveButton}
+                            onPress={() => handleDeleteProduct(selectedItem)}
+                          />
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                </View>
+              </Modal>
+            </View>
+          )}
+        />
 
         <TouchableOpacity
           style={styles.floatingButtonContainer}
@@ -89,6 +212,7 @@ const WholeSaleScreen = () => {
                 style={styles.inputField}
                 onChangeText={setProductWeight}
                 value={productWeight}
+                keyboardType="numeric"
               />
             </View>
 
@@ -98,15 +222,22 @@ const WholeSaleScreen = () => {
                 style={styles.inputField}
                 onChangeText={setProductAmount}
                 value={productAmount}
+                keyboardType="numeric"
               />
             </View>
 
-            <Button
-              title={"Add Product"}
-              buttonStyle={styles.saveButton}
-              titleStyle={styles.buttonTitle}
-              onPress={handleAddProduct}
-            />
+            {isLoading ? (
+              <View style={styles.saveButton}>
+                <ActivityIndicator size="small" color="#EBF7F9" />
+              </View>
+            ) : (
+              <Button
+                title={"Add Product"}
+                titleStyle={styles.buttonTitle}
+                buttonStyle={styles.saveButton}
+                onPress={handleAddProduct}
+              />
+            )}
           </View>
         </View>
       </Modal>
@@ -118,15 +249,13 @@ export default WholeSaleScreen;
 
 const styles = StyleSheet.create({
   buttonTitle: {
-    fontFamily: "karma-light", 
-    fontSize: wp("4%"), 
+    fontFamily: "karma-light",
+    fontSize: wp("4%"),
     color: "#EBF7F9",
-},
+  },
   container: {
     flex: 1,
     backgroundColor: "#EBF7F9",
-    justifyContent: "center",
-    alignItems: "center",
   },
   headerTitleSVG: {
     flexDirection: "row",
@@ -135,14 +264,13 @@ const styles = StyleSheet.create({
     marginLeft: wp("8%"),
   },
   testContainer: {
-    height: hp("78%"),
-    width: wp("85%"),
-    alignItems: "center",
-    justifyContent: "flex-start",
-    marginTop: hp("1.5%"),
+    flex: 1,
+    marginHorizontal: wp("6%"),
     borderRadius: hp("2%"),
+    marginVertical: hp("2%"),
     backgroundColor: "#6FD1EB",
-    position: "relative",
+    padding: wp("2%"),
+    flexDirection: "column",
   },
   headerTitle: {
     fontFamily: "karma-bold",
@@ -155,14 +283,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: wp("5%"),
-    alignItems: "center",
-    width: "100%",
   },
   columnName: {
-    flex: 1,
     fontFamily: "karma-bold",
     marginVertical: hp("1%"),
-    textAlign: "center",
+    fontSize: hp("2%"),
   },
   scrollContainer: {
     flex: 1,
@@ -234,5 +359,35 @@ const styles = StyleSheet.create({
     padding: wp("3%"),
     paddingHorizontal: wp("8%"),
     borderRadius: wp("2%"),
+  },
+  productContainer: {
+    flexDirection: "row",
+    marginBottom: hp("1%"),
+    elevation: 2,
+    backgroundColor: "#10ABD5",
+    borderRadius: wp("4%"),
+    paddingHorizontal: wp("4%"),
+    paddingVertical: hp("2%"),
+    minWidth: wp("40%"),
+    height: hp("8%"),
+    alignItems: "center",
+  },
+  productInfo: {
+    fontFamily: "karma-regular",
+    fontSize: wp("3.5%"),
+    color: "#09171B",
+  },
+  deleteModalParent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(9, 23, 27, .6)",
+  },
+  deleteModalContainer: {
+    backgroundColor: "#EBF7F9",
+    height: hp("15%"),
+    width: wp("90%"),
+    borderRadius: wp("5%"),
+    paddingBottom: hp("2%"),
   },
 });

@@ -9,7 +9,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from "react-native";
-import { SvgXml, err } from "react-native-svg";
+import { SvgXml } from "react-native-svg";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -121,7 +121,7 @@ const DeliveryScreen = () => {
           const convertedDistance = (distance / 1000).toFixed(2);
 
           if (user) {
-            const docRef = db
+            const docRef = await db
               .collection("users")
               .doc(user.displayName)
               .collection("deliveries")
@@ -310,7 +310,6 @@ const DeliveryScreen = () => {
                   </Text>
                 </View>
               )}
-              keyExtractor={(item, index) => index.toString()}
             />
           </View>
         </View>
@@ -378,7 +377,6 @@ const styles = StyleSheet.create({
   columnName: {
     fontFamily: "karma-bold",
     marginVertical: hp("1%"),
-
     fontSize: hp("2%"),
   },
   container: {
