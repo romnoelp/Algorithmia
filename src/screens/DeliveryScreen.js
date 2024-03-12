@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -8,6 +7,7 @@ import {
   TextInput,
   FlatList,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 import {
@@ -26,32 +26,50 @@ const calculateDistance = (source, destination) => {
   return geolib.getDistance(source, destination);
 };
 
-const nearestNeighborSort = (customerData) => {
-  if (customerData.length <= 1) {
-    return customerData;
-  }
+const twoOptSort = (customerData) => {
+  const swap = (route, i, k) => {
+    const newRoute = [...route];
+    while (i < k) {
+      const temp = newRoute[i];
+      newRoute[i] = newRoute[k];
+      newRoute[k] = temp;
+      i++;
+      k--;
+    }
+    return newRoute;
+  };
 
-  const sortedData = [customerData[0]];
-  const remainingData = [...customerData.slice(1)];
+  const getTourLength = (route) => {
+    let distance = 0;
+    for (let i = 0; i < route.length - 1; i++) {
+      distance += calculateDistance(
+        route[i].coordinates,
+        route[i + 1].coordinates
+      );
+    }
+    return distance;
+  };
 
-  while (remainingData.length > 0) {
-    let minDistance = Number.MAX_VALUE;
-    let nearestCustomer = null;
+  let bestRoute = customerData;
+  let bestDistance = getTourLength(customerData);
+  let improved = true;
 
-    for (const customer of remainingData) {
-      const distance = parseFloat(customer.customerDistance);
-
-      if (distance < minDistance) {
-        minDistance = distance;
-        nearestCustomer = customer;
+  while (improved) {
+    improved = false;
+    for (let i = 0; i < bestRoute.length - 1; i++) {
+      for (let k = i + 1; k < bestRoute.length; k++) {
+        const newRoute = swap(bestRoute, i, k);
+        const newDistance = getTourLength(newRoute);
+        if (newDistance < bestDistance) {
+          bestRoute = newRoute;
+          bestDistance = newDistance;
+          improved = true;
+        }
       }
     }
-
-    sortedData.push(nearestCustomer);
-    remainingData.splice(remainingData.indexOf(nearestCustomer), 1);
   }
 
-  return sortedData;
+  return bestRoute;
 };
 
 const DeliveryScreen = () => {
@@ -62,28 +80,24 @@ const DeliveryScreen = () => {
   const [customerData, setCustomerData] = useState([]);
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
-  //const [customerDistance, setDistance] = useState("");
-  const [testKey, setTestKey] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [sortedCustomerData, setSortedCustomerData] = useState([]);
-  const { addDelivery, deliveries } = useDeliveryContext();
-  const [initialLoadFont, setInitialLoadFont] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState(null);
 
+  const { addDelivery, deliveries } = useDeliveryContext();
   const user = auth.currentUser;
+
   useEffect(() => {
-    if (!initialLoadFont) {
+    if (!fontLoaded) {
       loadFont().then(() => setFontLoaded(true));
-      setInitialLoadFont(true);
     }
 
-    setCustomerData(deliveries);
-  }, [deliveries]);
-
-  if (!fontLoaded) {
-    return null;
-  }
+    if (deliveries.length > 0) {
+      const sortedDeliveries = twoOptSort(deliveries);
+      setCustomerData(sortedDeliveries);
+    }
+  }, [deliveries, fontLoaded]);
 
   const toggleAddAddressModal = () => {
     setIsAddAddressModalVisible(!isAddAddressModalVisible);
@@ -134,16 +148,19 @@ const DeliveryScreen = () => {
 
             const newCustomerData = {
               key: docRef.id,
+
               customerName,
               customerAddress,
               coordinates,
               customerDistance: convertedDistance,
             };
 
-            addDelivery(newCustomerData);
+            addDelivery(newAddress);
+
+            const sortedData = twoOptSort([...deliveries, newAddress]);
+            setCustomerData(sortedData);
+
             Toast.show("Added Successfully", Toast.SHORT);
-            const sortedCustomerData = nearestNeighborSort(deliveries);
-            setCustomerData(sortedCustomerData);
           }
         } else {
           console.error("Coordinates are undefined for the provided address.");
@@ -153,24 +170,64 @@ const DeliveryScreen = () => {
       }
     } catch (error) {
       console.error("Error occurred while fetching coordinates:", error);
+      Toast.show("Error occurred while adding address", Toast.LONG);
     } finally {
-      console.log(customerData);
       setIsLoading(false);
+      setCustomerName("");
+      setCustomerAddress("");
+      setIsAddAddressModalVisible(false);
     }
-
-    setCustomerName("");
-    setCustomerAddress;
-    setIsAddAddressModalVisible(false);
   };
 
   const handleContainerPress = (customer) => {
-    setSelectedCustomer(customer);
-    const filteredCustomerData = customerData.filter(
-      (item) => item.key !== customer.key
+    const temporarySourceAddress = customer.coordinates;
+    const sortedData = twoOptSort(
+      customerData.map((item, index) => ({
+        ...item,
+        customerDistance: calculateDistance(
+          temporarySourceAddress,
+          item.coordinates
+        ),
+      }))
     );
-    const sortedCustomerData = nearestNeighborSort([...filteredCustomerData]);
-    setSortedCustomerData(sortedCustomerData);
+
+    setCustomerData(sortedData);
     setIsEmptyModalVisible(true);
+  };
+
+  const handleContainerLongPress = (customer) => {
+    setAddressToDelete(customer.key);
+    setDeleteModalVisible(true);
+  };
+
+  const handleDeleteAddress = async () => {
+    try {
+      if (addressToDelete) {
+        console.log("Deleting address with key:", addressToDelete);
+        await db
+          .collection("users")
+          .doc(user.displayName)
+          .collection("deliveries")
+          .doc(addressToDelete)
+          .delete();
+
+        console.log("Address deleted successfully from the database.");
+
+        const updatedCustomerData = customerData.filter(
+          (item) => item.key !== addressToDelete
+        );
+        console.log(
+          "Updated customer data after deletion:",
+          updatedCustomerData
+        );
+        setCustomerData(updatedCustomerData);
+      }
+    } catch (error) {
+      console.error("Error deleting address:", error);
+    } finally {
+      setDeleteModalVisible(false);
+      setAddressToDelete(null);
+    }
   };
 
   return (
@@ -194,6 +251,7 @@ const DeliveryScreen = () => {
             <TouchableOpacity
               style={styles.customerContainer}
               onPress={() => handleContainerPress(item)}
+              onLongPress={() => handleContainerLongPress(item)}
             >
               <Text style={[styles.customerInfo, { flex: 1 + 1 / 2 }]}>
                 {item.customerName}
@@ -288,7 +346,7 @@ const DeliveryScreen = () => {
           <View style={styles.sortedAddressFrame}>
             <Text style={styles.sortedModalTitle}>Ordered Destination</Text>
             <FlatList
-              data={sortedCustomerData}
+              data={twoOptSort(customerData)}
               renderItem={({ item }) => (
                 <View
                   style={styles.sortedCustomerContainer}
@@ -311,6 +369,34 @@ const DeliveryScreen = () => {
                 </View>
               )}
             />
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={deleteModalVisible}
+        onRequestClose={() => setDeleteModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.deleteAddressFrame}>
+            <Text style={styles.modalTitle}>Delete Address?</Text>
+            <Text style={styles.modalText}>
+              Are you sure you want to delete this address?
+            </Text>
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Cancel"
+                onPress={() => setDeleteModalVisible(false)}
+                buttonStyle={[styles.deleteButton, styles.cancelButton]}
+              />
+              <Button
+                title="Delete"
+                onPress={handleDeleteAddress}
+                buttonStyle={styles.deleteButton}
+              />
+            </View>
           </View>
         </View>
       </Modal>
@@ -432,9 +518,9 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(9, 23, 27, .6)",
   },
   modalText: {
-    fontSize: 24,
-    fontFamily: "karma-bold",
-    color: "#FFF",
+    fontSize: 18,
+    fontFamily: "karma-regular",
+    color: "#09171B",
     marginBottom: 20,
   },
   addAddressFrame: {
@@ -487,6 +573,30 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 80,
     right: 20,
+  },
+  deleteAddressFrame: {
+    backgroundColor: "#EBF7F9",
+    height: hp("30%"),
+    width: wp("80%"),
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: wp("5%"),
+  },
+  deleteButton: {
+    backgroundColor: "#147691",
+    marginTop: hp("3%"),
+    padding: wp("3%"),
+    paddingHorizontal: wp("8%"),
+    borderRadius: wp("2%"),
+  },
+  cancelButton: {
+    backgroundColor: "#B9BABB",
+    marginRight: wp("2%"),
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

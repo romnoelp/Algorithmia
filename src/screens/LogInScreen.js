@@ -66,7 +66,7 @@ const LogInScreen = () => {
         if (docRefEmail.exists) {
           userEmail = docRefEmail.data();
         } else {
-          Toast.show("Error occured try again later", Toast.SHORT);
+          Toast.show("Error occured try again later.", Toast.SHORT);
         }
 
         await auth.signInWithEmailAndPassword(userEmail.email, password);
@@ -79,11 +79,11 @@ const LogInScreen = () => {
           })
         );
       } catch (error) {
-        Toast.show("Error signing in", Toast.SHORT);
+        Toast.show("Error signing in.", Toast.SHORT);
       }
     } else {
       Toast.show(
-        "Please enter both your email and password to proceed.",
+        "Please enter your credentials to sign in.",
         Toast.LONG
       );
     }
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#147691",
     paddingHorizontal: hp("4%"),
     paddingVertical: hp("1%"),
-    borderRadius: 25,
+    borderRadius: hp("2%"),
     marginTop: hp("2%"),
   },
   buttonText: {

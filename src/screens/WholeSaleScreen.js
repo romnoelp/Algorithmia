@@ -105,6 +105,7 @@ const WholeSaleScreen = () => {
         <SvgXml xml={SVGOne("black")} height={"29"} width={"21"} />
       </View>
       <View style={styles.testContainer}>
+
         <View style={{ flexDirection: "row", marginHorizontal: wp("2%") }}>
           <Text style={[styles.columnName, { flex: 2 }]}>Name</Text>
           <Text style={[styles.columnName, { flex: 1 }]}>Weight</Text>

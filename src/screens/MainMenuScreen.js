@@ -114,7 +114,7 @@ const MainMenuScreen = ({ navigation }) => {
         <StatusBar hidden />
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>
-            Greetings {user.displayName}, What to do?
+            Greetings {user.displayName}, what to do?
           </Text>
         </View>
         <View style={styles.row}>
@@ -196,12 +196,14 @@ const styles = StyleSheet.create({
   },
   sectionContainer: {
     marginBottom: 20,
-    alignItems: "center",
+    alignItems: "center", // Align items to the start (left)
+    paddingHorizontal: 20, // Add horizontal padding to create space from the edges
   },
   sectionTitle: {
     fontFamily: "karma-semibold",
     color: "black",
-    fontSize: 24,
+    fontSize: 20,
+    textAlign: "left", // Align text to the left
   },
   row: {
     flexDirection: "row",
