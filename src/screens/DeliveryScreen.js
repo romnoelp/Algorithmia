@@ -135,7 +135,20 @@ const DeliveryScreen = () => {
           const convertedDistance = (distance / 1000).toFixed(2);
 
           if (user) {
-            const newAddress = {
+            const docRef = await db
+              .collection("users")
+              .doc(user.displayName)
+              .collection("deliveries")
+              .add({
+                customerName,
+                customerAddress,
+                coordinates,
+                customerDistance: convertedDistance,
+              });
+
+            const newCustomerData = {
+              key: docRef.id,
+
               customerName,
               customerAddress,
               coordinates,
@@ -355,7 +368,6 @@ const DeliveryScreen = () => {
                   </Text>
                 </View>
               )}
-              keyExtractor={(item, index) => index.toString()}
             />
           </View>
         </View>
@@ -451,7 +463,6 @@ const styles = StyleSheet.create({
   columnName: {
     fontFamily: "karma-bold",
     marginVertical: hp("1%"),
-
     fontSize: hp("2%"),
   },
   container: {

@@ -20,12 +20,43 @@ import {
 import { auth, db } from "../../firebaseConfig";
 import { useDeliveryContext } from "../../context/DeliveryContext";
 import Toast from "react-native-simple-toast";
+import { useProductContext } from "../../context/ProductContext";
 
 const MainMenuScreen = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const user = auth.currentUser;
   const { setDeliveryList } = useDeliveryContext();
   const [initialFetchDelivery, setInitialFetchDelivery] = useState(false);
+  const [initialFetchProduct, setInitialFetchProduct] = useState(false);
+  const { setProductList } = useProductContext();
+
+  const readProductData = async () => {
+    try {
+      if (user) {
+        const fetched = [];
+        const docRef = db
+          .collection("users")
+          .doc(user.displayName)
+          .collection("products");
+        const querySnapshot = await docRef.get();
+        querySnapshot.forEach((doc) => {
+          const { productName, productAmount, productWeight } = doc.data();
+          fetched.push({
+            key: doc.id,
+            productName,
+            productAmount,
+            productWeight,
+          });
+        });
+        if (!initialFetchProduct) {
+          setProductList(fetched);
+          setInitialFetchProduct(true);
+        }
+      }
+    } catch (error) {
+      Toast.show("Error getting data", Toast.SHORT);
+    }
+  };
 
   const readDeliveryData = async () => {
     try {
@@ -44,7 +75,7 @@ const MainMenuScreen = ({ navigation }) => {
             customerDistance,
           } = doc.data();
           fetched.push({
-            id: doc.id,
+            key: doc.id,
             customerName,
             customerAddress,
             coordinates,
@@ -63,6 +94,7 @@ const MainMenuScreen = ({ navigation }) => {
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
     readDeliveryData();
+    readProductData();
   }, []);
   if (!fontLoaded) {
     return null;

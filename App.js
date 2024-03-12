@@ -26,6 +26,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { DeliveryProvider } from "./context/DeliveryContext";
+import { ProductProvider } from "./context/ProductContext";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -159,42 +160,57 @@ const TabtoSettingsStackNavigator = ({ navigation }) => (
             activeOpacity={0.7}
             onPress={() => navigation.navigate("SettingsScreen")}
           >
-            <SvgXml xml={SVGSettings("white")} width={"35"} height={"35"}style={{ marginRight: wp("5%") }}  />
+            <SvgXml
+              xml={SVGSettings("white")}
+              width={"35"}
+              height={"35"}
+              style={{ marginRight: wp("5%") }}
+            />
           </TouchableOpacity>
         ),
-        headerLeft: () => <SvgXml xml={SVGLogo} width={"35"} height={"35"}style={{ marginLeft: wp("4.5%") }} />,
+        headerLeft: () => (
+          <SvgXml
+            xml={SVGLogo}
+            width={"35"}
+            height={"35"}
+            style={{ marginLeft: wp("4.5%") }}
+          />
+        ),
         statusBarHidden: false,
       }}
     />
   </TabtoSettingsStack.Navigator>
 );
 const App = () => (
-  <DeliveryProvider>
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="LandingScreen">
-        <Stack.Screen
-          name="LandingScreen"
-          component={LandingScreen}
-          options={{ headerShown: false, statusBarHidden: true }}
-        />
-        <Stack.Screen
-          name="LogInScreen"
-          component={LogInScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="RegisterScreen"
-          component={RegisterScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="TabToStack"
-          component={TabtoSettingsStackNavigator}
-          options={{ headerShown: false, statusBarHidden: true }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-  </DeliveryProvider>
+  <ProductProvider>
+    <DeliveryProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="LandingScreen">
+          <Stack.Screen
+            name="LandingScreen"
+            component={LandingScreen}
+            options={{ headerShown: false, statusBarHidden: true }}
+          />
+
+          <Stack.Screen
+            name="LogInScreen"
+            component={LogInScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="RegisterScreen"
+            component={RegisterScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="TabToStack"
+            component={TabtoSettingsStackNavigator}
+            options={{ headerShown: false, statusBarHidden: true }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </DeliveryProvider>
+  </ProductProvider>
 );
 
 export default App;
