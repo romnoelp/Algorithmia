@@ -148,16 +148,15 @@ const DeliveryScreen = () => {
 
             const newCustomerData = {
               key: docRef.id,
-
               customerName,
               customerAddress,
               coordinates,
               customerDistance: convertedDistance,
             };
 
-            addDelivery(newAddress);
+            addDelivery(newCustomerData);
 
-            const sortedData = twoOptSort([...deliveries, newAddress]);
+            const sortedData = twoOptSort([...deliveries, newCustomerData]);
             setCustomerData(sortedData);
 
             Toast.show("Added Successfully", Toast.SHORT);
@@ -211,7 +210,7 @@ const DeliveryScreen = () => {
           .doc(addressToDelete)
           .delete();
 
-        console.log("Address deleted successfully from the database.");
+        Toast.show("Address deleted successfully", Toast.SHORT);
 
         const updatedCustomerData = customerData.filter(
           (item) => item.key !== addressToDelete
