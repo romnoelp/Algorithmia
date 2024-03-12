@@ -82,7 +82,7 @@ const MainMenuScreen = ({ navigation }) => {
         <StatusBar hidden />
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>
-            Greetings {user.displayName}, What to do?
+            Greetings {user.displayName}, what to do?
           </Text>
         </View>
         <View style={styles.row}>
@@ -93,20 +93,20 @@ const MainMenuScreen = ({ navigation }) => {
             style={styles.square}
             activeOpacity={0.7}
           >
-            <View style={[styles.squareShapeView, {marginLeft: 25}]}>
+            <View style={[styles.squareShapeView, { marginLeft: 25 }]}>
               <SvgXml xml={SVGOne("white")} width="76" height="76" />
             </View>
-            <Text style={[styles.title, {marginLeft: 25}]}>Wholesale</Text>
+            <Text style={[styles.title, { marginLeft: 25 }]}>Wholesale</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate("MainTab", { screen: "List" })}
             style={styles.square}
             activeOpacity={0.7}
           >
-            <View style={[styles.squareShapeView, {marginRight: 25}]}>
+            <View style={[styles.squareShapeView, { marginRight: 25 }]}>
               <SvgXml xml={SVGTwo("white")} width="90" height="90" />
             </View>
-            <Text style={[styles.title, {marginRight: 25}]}>Sort Items</Text>
+            <Text style={[styles.title, { marginRight: 25 }]}>Sort Items</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
@@ -117,20 +117,20 @@ const MainMenuScreen = ({ navigation }) => {
             style={styles.square}
             activeOpacity={0.7}
           >
-            <View style={[styles.squareShapeView, {marginLeft: 25}]}>
+            <View style={[styles.squareShapeView, { marginLeft: 25 }]}>
               <SvgXml xml={SVGThree("white")} width="76" height="76" />
             </View>
-            <Text style={[styles.title, {marginLeft: 25}]}>Delivery</Text>
+            <Text style={[styles.title, { marginLeft: 25 }]}>Delivery</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate("MainTab", { screen: "Finder" })}
             style={styles.square}
             activeOpacity={0.7}
           >
-            <View style={[styles.squareShapeView, {marginRight: 25}]}>
+            <View style={[styles.squareShapeView, { marginRight: 25 }]}>
               <SvgXml xml={SVGFour("white")} width="90" height="90" />
             </View>
-            <Text style={[styles.title, {marginRight: 25}]}>Word Finder</Text>
+            <Text style={[styles.title, { marginRight: 25 }]}>Word Finder</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -164,12 +164,14 @@ const styles = StyleSheet.create({
   },
   sectionContainer: {
     marginBottom: 20,
-    alignItems: "center",
+    alignItems: "center", // Align items to the start (left)
+    paddingHorizontal: 20, // Add horizontal padding to create space from the edges
   },
   sectionTitle: {
     fontFamily: "karma-semibold",
     color: "black",
-    fontSize: 24,
+    fontSize: 20,
+    textAlign: "left", // Align text to the left
   },
   row: {
     flexDirection: "row",

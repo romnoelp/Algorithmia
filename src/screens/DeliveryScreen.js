@@ -9,7 +9,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from "react-native";
-import { SvgXml, err } from "react-native-svg";
+import { SvgXml } from "react-native-svg";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -62,7 +62,6 @@ const DeliveryScreen = () => {
   const [customerData, setCustomerData] = useState([]);
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
-  //const [customerDistance, setDistance] = useState("");
   const [testKey, setTestKey] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,8 +69,11 @@ const DeliveryScreen = () => {
   const [sortedCustomerData, setSortedCustomerData] = useState([]);
   const { addDelivery, deliveries } = useDeliveryContext();
   const [initialLoadFont, setInitialLoadFont] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState(null);
 
   const user = auth.currentUser;
+
   useEffect(() => {
     if (!initialLoadFont) {
       loadFont().then(() => setFontLoaded(true));
@@ -121,7 +123,7 @@ const DeliveryScreen = () => {
           const convertedDistance = (distance / 1000).toFixed(2);
 
           if (user) {
-            const docRef = db
+            const docRef = await db
               .collection("users")
               .doc(user.displayName)
               .collection("deliveries")
@@ -142,7 +144,10 @@ const DeliveryScreen = () => {
 
             addDelivery(newCustomerData);
             Toast.show("Added Successfully", Toast.SHORT);
-            const sortedCustomerData = nearestNeighborSort(deliveries);
+            const sortedCustomerData = nearestNeighborSort([
+              ...deliveries,
+              newCustomerData,
+            ]);
             setCustomerData(sortedCustomerData);
           }
         } else {
@@ -154,23 +159,55 @@ const DeliveryScreen = () => {
     } catch (error) {
       console.error("Error occurred while fetching coordinates:", error);
     } finally {
-      console.log(customerData);
       setIsLoading(false);
     }
 
     setCustomerName("");
-    setCustomerAddress;
+    setCustomerAddress("");
     setIsAddAddressModalVisible(false);
   };
 
   const handleContainerPress = (customer) => {
     setSelectedCustomer(customer);
-    const filteredCustomerData = customerData.filter(
-      (item) => item.key !== customer.key
-    );
-    const sortedCustomerData = nearestNeighborSort([...filteredCustomerData]);
+    const sortedCustomerData = nearestNeighborSort([...customerData, customer]);
     setSortedCustomerData(sortedCustomerData);
     setIsEmptyModalVisible(true);
+  };
+
+  const handleContainerLongPress = (customer) => {
+    setAddressToDelete(customer.key); // Set the key of the address to delete
+    setDeleteModalVisible(true);
+  };
+
+  const handleDeleteAddress = async () => {
+    try {
+      if (addressToDelete) {
+        console.log("Deleting address with key:", addressToDelete);
+        await db
+          .collection("users")
+          .doc(user.displayName)
+          .collection("deliveries")
+          .doc(addressToDelete)
+          .delete();
+
+        console.log("Address deleted successfully from the database.");
+
+        // Update the local state to remove the deleted address
+        const updatedCustomerData = customerData.filter(
+          (item) => item.key !== addressToDelete
+        );
+        console.log(
+          "Updated customer data after deletion:",
+          updatedCustomerData
+        );
+        setCustomerData(updatedCustomerData);
+      }
+    } catch (error) {
+      console.error("Error deleting address:", error);
+    } finally {
+      setDeleteModalVisible(false);
+      setAddressToDelete(null);
+    }
   };
 
   return (
@@ -194,6 +231,7 @@ const DeliveryScreen = () => {
             <TouchableOpacity
               style={styles.customerContainer}
               onPress={() => handleContainerPress(item)}
+              onLongPress={() => handleContainerLongPress(item)}
             >
               <Text style={[styles.customerInfo, { flex: 1 + 1 / 2 }]}>
                 {item.customerName}
@@ -312,6 +350,34 @@ const DeliveryScreen = () => {
               )}
               keyExtractor={(item, index) => index.toString()}
             />
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={deleteModalVisible}
+        onRequestClose={() => setDeleteModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.deleteAddressFrame}>
+            <Text style={styles.modalTitle}>Delete Address?</Text>
+            <Text style={styles.modalText}>
+              Are you sure you want to delete this address?
+            </Text>
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Cancel"
+                onPress={() => setDeleteModalVisible(false)}
+                buttonStyle={[styles.deleteButton, styles.cancelButton]}
+              />
+              <Button
+                title="Delete"
+                onPress={handleDeleteAddress}
+                buttonStyle={styles.deleteButton}
+              />
+            </View>
           </View>
         </View>
       </Modal>
@@ -434,9 +500,9 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(9, 23, 27, .6)",
   },
   modalText: {
-    fontSize: 24,
-    fontFamily: "karma-bold",
-    color: "#FFF",
+    fontSize: 18,
+    fontFamily: "karma-regular",
+    color: "#09171B",
     marginBottom: 20,
   },
   addAddressFrame: {
@@ -489,6 +555,30 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 80,
     right: 20,
+  },
+  deleteAddressFrame: {
+    backgroundColor: "#EBF7F9",
+    height: hp("30%"),
+    width: wp("80%"),
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: wp("5%"),
+  },
+  deleteButton: {
+    backgroundColor: "#147691",
+    marginTop: hp("3%"),
+    padding: wp("3%"),
+    paddingHorizontal: wp("8%"),
+    borderRadius: wp("2%"),
+  },
+  cancelButton: {
+    backgroundColor: "#B9BABB",
+    marginRight: wp("2%"),
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
