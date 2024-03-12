@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -8,6 +7,7 @@ import {
   TextInput,
   FlatList,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 import {
@@ -26,32 +26,50 @@ const calculateDistance = (source, destination) => {
   return geolib.getDistance(source, destination);
 };
 
-const nearestNeighborSort = (customerData) => {
-  if (customerData.length <= 1) {
-    return customerData;
-  }
+const twoOptSort = (customerData) => {
+  const swap = (route, i, k) => {
+    const newRoute = [...route];
+    while (i < k) {
+      const temp = newRoute[i];
+      newRoute[i] = newRoute[k];
+      newRoute[k] = temp;
+      i++;
+      k--;
+    }
+    return newRoute;
+  };
 
-  const sortedData = [customerData[0]];
-  const remainingData = [...customerData.slice(1)];
+  const getTourLength = (route) => {
+    let distance = 0;
+    for (let i = 0; i < route.length - 1; i++) {
+      distance += calculateDistance(
+        route[i].coordinates,
+        route[i + 1].coordinates
+      );
+    }
+    return distance;
+  };
 
-  while (remainingData.length > 0) {
-    let minDistance = Number.MAX_VALUE;
-    let nearestCustomer = null;
+  let bestRoute = customerData;
+  let bestDistance = getTourLength(customerData);
+  let improved = true;
 
-    for (const customer of remainingData) {
-      const distance = parseFloat(customer.customerDistance);
-
-      if (distance < minDistance) {
-        minDistance = distance;
-        nearestCustomer = customer;
+  while (improved) {
+    improved = false;
+    for (let i = 0; i < bestRoute.length - 1; i++) {
+      for (let k = i + 1; k < bestRoute.length; k++) {
+        const newRoute = swap(bestRoute, i, k);
+        const newDistance = getTourLength(newRoute);
+        if (newDistance < bestDistance) {
+          bestRoute = newRoute;
+          bestDistance = newDistance;
+          improved = true;
+        }
       }
     }
-
-    sortedData.push(nearestCustomer);
-    remainingData.splice(remainingData.indexOf(nearestCustomer), 1);
   }
 
-  return sortedData;
+  return bestRoute;
 };
 
 const DeliveryScreen = () => {
@@ -62,30 +80,24 @@ const DeliveryScreen = () => {
   const [customerData, setCustomerData] = useState([]);
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
-  const [testKey, setTestKey] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [sortedCustomerData, setSortedCustomerData] = useState([]);
-  const { addDelivery, deliveries } = useDeliveryContext();
-  const [initialLoadFont, setInitialLoadFont] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState(null);
 
+  const { addDelivery, deliveries } = useDeliveryContext();
   const user = auth.currentUser;
 
   useEffect(() => {
-    if (!initialLoadFont) {
+    if (!fontLoaded) {
       loadFont().then(() => setFontLoaded(true));
-      setInitialLoadFont(true);
     }
 
-    setCustomerData(deliveries);
-  }, [deliveries]);
-
-  if (!fontLoaded) {
-    return null;
-  }
+    if (deliveries.length > 0) {
+      const sortedDeliveries = twoOptSort(deliveries);
+      setCustomerData(sortedDeliveries);
+    }
+  }, [deliveries, fontLoaded]);
 
   const toggleAddAddressModal = () => {
     setIsAddAddressModalVisible(!isAddAddressModalVisible);
@@ -123,32 +135,19 @@ const DeliveryScreen = () => {
           const convertedDistance = (distance / 1000).toFixed(2);
 
           if (user) {
-            const docRef = await db
-              .collection("users")
-              .doc(user.displayName)
-              .collection("deliveries")
-              .add({
-                customerName,
-                customerAddress,
-                coordinates,
-                customerDistance: convertedDistance,
-              });
-
-            const newCustomerData = {
-              key: docRef.id,
+            const newAddress = {
               customerName,
               customerAddress,
               coordinates,
               customerDistance: convertedDistance,
             };
 
-            addDelivery(newCustomerData);
+            addDelivery(newAddress);
+
+            const sortedData = twoOptSort([...deliveries, newAddress]);
+            setCustomerData(sortedData);
+
             Toast.show("Added Successfully", Toast.SHORT);
-            const sortedCustomerData = nearestNeighborSort([
-              ...deliveries,
-              newCustomerData,
-            ]);
-            setCustomerData(sortedCustomerData);
           }
         } else {
           console.error("Coordinates are undefined for the provided address.");
@@ -158,24 +157,33 @@ const DeliveryScreen = () => {
       }
     } catch (error) {
       console.error("Error occurred while fetching coordinates:", error);
+      Toast.show("Error occurred while adding address", Toast.LONG);
     } finally {
       setIsLoading(false);
+      setCustomerName("");
+      setCustomerAddress("");
+      setIsAddAddressModalVisible(false);
     }
-
-    setCustomerName("");
-    setCustomerAddress("");
-    setIsAddAddressModalVisible(false);
   };
 
   const handleContainerPress = (customer) => {
-    setSelectedCustomer(customer);
-    const sortedCustomerData = nearestNeighborSort([...customerData, customer]);
-    setSortedCustomerData(sortedCustomerData);
+    const temporarySourceAddress = customer.coordinates;
+    const sortedData = twoOptSort(
+      customerData.map((item, index) => ({
+        ...item,
+        customerDistance: calculateDistance(
+          temporarySourceAddress,
+          item.coordinates
+        ),
+      }))
+    );
+
+    setCustomerData(sortedData);
     setIsEmptyModalVisible(true);
   };
 
   const handleContainerLongPress = (customer) => {
-    setAddressToDelete(customer.key); // Set the key of the address to delete
+    setAddressToDelete(customer.key);
     setDeleteModalVisible(true);
   };
 
@@ -192,7 +200,6 @@ const DeliveryScreen = () => {
 
         console.log("Address deleted successfully from the database.");
 
-        // Update the local state to remove the deleted address
         const updatedCustomerData = customerData.filter(
           (item) => item.key !== addressToDelete
         );
@@ -326,7 +333,7 @@ const DeliveryScreen = () => {
           <View style={styles.sortedAddressFrame}>
             <Text style={styles.sortedModalTitle}>Ordered Destination</Text>
             <FlatList
-              data={sortedCustomerData}
+              data={twoOptSort(customerData)}
               renderItem={({ item }) => (
                 <View
                   style={styles.sortedCustomerContainer}
