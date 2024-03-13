@@ -176,7 +176,7 @@ const TabtoSettingsStackNavigator = ({ navigation }) => (
             style={{ marginLeft: wp("4.5%") }}
           />
         ),
-        statusBarHidden: false,
+        statusBarHidden: true,
       }}
     />
   </TabtoSettingsStack.Navigator>

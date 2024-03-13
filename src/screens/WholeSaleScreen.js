@@ -98,6 +98,21 @@ const WholeSaleScreen = () => {
     setIsLoading(false);
   };
 
+  const max = (a, b) => {
+    return a > b ? a : b;
+  };
+
+  const knapSack = (maxWeight, weight, value, size) => {
+    if (n == 0 || W == 0) return 0;
+
+    if (wt[n - 1] > W) return knapSack(W, wt, val, n - 1);
+    else
+      return max(
+        val[n - 1] + knapSack(W - wt[n - 1], wt, val, n - 1),
+        knapSack(W, wt, val, n - 1)
+      );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerTitleSVG}>
@@ -105,7 +120,6 @@ const WholeSaleScreen = () => {
         <SvgXml xml={SVGOne("black")} height={"29"} width={"21"} />
       </View>
       <View style={styles.testContainer}>
-
         <View style={{ flexDirection: "row", marginHorizontal: wp("2%") }}>
           <Text style={[styles.columnName, { flex: 2 }]}>Name</Text>
           <Text style={[styles.columnName, { flex: 1 }]}>Weight</Text>
@@ -133,53 +147,53 @@ const WholeSaleScreen = () => {
                   {item.productAmount}
                 </Text>
               </TouchableOpacity>
-              <Modal
-                animationType="fade"
-                transparent={true}
-                visible={isDeleteModalVisible}
-                onRequestClose={toggleDeleteModal}
-              >
-                <View style={styles.deleteModalParent}>
-                  <View style={styles.deleteModalContainer}>
-                    {selectedItem && (
-                      <View>
-                        <Text
-                          style={{
-                            marginLeft: wp("5%"),
-                            fontSize: hp("2.5%"),
-                            fontWeight: "bold",
-                            marginTop: hp("0.5%"),
-                          }}
-                        >
-                          Delete Item "{selectedItem.productName}"?
-                        </Text>
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-evenly",
-                          }}
-                        >
-                          <Button
-                            title={"Cancel"}
-                            titleStyle={styles.buttonTitle}
-                            buttonStyle={styles.saveButton}
-                            onPress={() => toggleDeleteModal(null)}
-                          />
-                          <Button
-                            title={"Confirm"}
-                            titleStyle={styles.buttonTitle}
-                            buttonStyle={styles.saveButton}
-                            onPress={() => handleDeleteProduct(selectedItem)}
-                          />
-                        </View>
-                      </View>
-                    )}
-                  </View>
-                </View>
-              </Modal>
             </View>
           )}
         />
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={isDeleteModalVisible}
+          onRequestClose={() => toggleDeleteModal(null)}
+        >
+          <View style={styles.deleteModalParent}>
+            <View style={styles.deleteModalContainer}>
+              {selectedItem && (
+                <View>
+                  <Text
+                    style={{
+                      marginLeft: wp("5%"),
+                      fontSize: hp("2.5%"),
+                      fontWeight: "bold",
+                      marginTop: hp("0.5%"),
+                    }}
+                  >
+                    Delete Item "{selectedItem.productName}"?
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-evenly",
+                    }}
+                  >
+                    <Button
+                      title={"Cancel"}
+                      titleStyle={styles.buttonTitle}
+                      buttonStyle={styles.saveButton}
+                      onPress={() => toggleDeleteModal(null)}
+                    />
+                    <Button
+                      title={"Confirm"}
+                      titleStyle={styles.buttonTitle}
+                      buttonStyle={styles.saveButton}
+                      onPress={() => handleDeleteProduct(selectedItem)}
+                    />
+                  </View>
+                </View>
+              )}
+            </View>
+          </View>
+        </Modal>
 
         <TouchableOpacity
           style={styles.floatingButtonContainer}

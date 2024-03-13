@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { SvgXml } from "react-native-svg";
 import * as Font from "expo-font";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SVGTwo } from "../../loadFontSVG";
-import { AntDesign} from '@expo/vector-icons';
+import { AntDesign } from "@expo/vector-icons";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
 const loadFont = () => {
   return Font.loadAsync({
@@ -61,8 +71,8 @@ const SortingScreen = () => {
       amount: "6,200",
     },
   ]);
-  const [sortField, setSortField] = useState("name"); 
-  const [sortOrder, setSortOrder] = useState("asc"); 
+  const [sortField, setSortField] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
   const [showFieldDropdown, setShowFieldDropdown] = useState(false);
   const [showOrderDropdown, setShowOrderDropdown] = useState(false);
 
@@ -89,8 +99,7 @@ const SortingScreen = () => {
       for (let j = i + 1; j < sortedArray.length; j++) {
         const a = sortedArray[j][sortField];
         const b = sortedArray[minIndex][sortField];
-        const compareResult =
-          sortOrder === "asc" ? a < b : a > b;
+        const compareResult = sortOrder === "asc" ? a < b : a > b;
         if (compareResult) {
           minIndex = j;
         }
@@ -139,28 +148,45 @@ const SortingScreen = () => {
         >
           Sort By
         </Text>
-        <TouchableOpacity onPress={() => setShowFieldDropdown(!showFieldDropdown)}>
+        <TouchableOpacity
+          onPress={() => setShowFieldDropdown(!showFieldDropdown)}
+        >
           <AntDesign name="downcircle" size={24} color="black" />
         </TouchableOpacity>
         {showFieldDropdown && (
-          <View style={[styles.dropdown, { backgroundColor: '#EBF7F9'}]}>
-            <TouchableOpacity style={styles.dropdownItem} onPress={() => handleSort('name')}>
+          <View style={[styles.dropdown, { backgroundColor: "#EBF7F9" }]}>
+            <TouchableOpacity
+              style={styles.dropdownItem}
+              onPress={() => handleSort("name")}
+            >
               <Text style={styles.dropdownText}>Name</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.dropdownItem} onPress={() => handleSort('boxes')}>
+            <TouchableOpacity
+              style={styles.dropdownItem}
+              onPress={() => handleSort("boxes")}
+            >
               <Text style={styles.dropdownText}>Boxes</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.dropdownItem} onPress={() => handleSort('amount')}>
+            <TouchableOpacity
+              style={styles.dropdownItem}
+              onPress={() => handleSort("amount")}
+            >
               <Text style={styles.dropdownText}>Amount</Text>
             </TouchableOpacity>
           </View>
         )}
         {showOrderDropdown && (
-          <View style={[styles.dropdown, { backgroundColor: '#EBF7F9'}]}>
-            <TouchableOpacity style={styles.dropdownItem} onPress={() => setSortOrder('asc')}>
+          <View style={[styles.dropdown, { backgroundColor: "#EBF7F9" }]}>
+            <TouchableOpacity
+              style={styles.dropdownItem}
+              onPress={() => setSortOrder("asc")}
+            >
               <Text style={styles.dropdownText}>Ascending</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.dropdownItem} onPress={() => setSortOrder('desc')}>
+            <TouchableOpacity
+              style={styles.dropdownItem}
+              onPress={() => setSortOrder("desc")}
+            >
               <Text style={styles.dropdownText}>Descending</Text>
             </TouchableOpacity>
           </View>
@@ -168,36 +194,19 @@ const SortingScreen = () => {
       </View>
       <View
         style={{
-          backgroundColor: "#6FD1EB",
           flex: 1,
-          margin: 20,
-          borderRadius: 20,
-          padding: 20,
+          marginHorizontal: wp("6%"),
+          borderRadius: hp("2%"),
+          marginVertical: hp("2%"),
+          backgroundColor: "#6FD1EB",
+          padding: wp("2%"),
+          flexDirection: "column",
         }}
       >
         <View style={{ flexDirection: "row", paddingHorizontal: 25 }}>
-          <Text
-            style={{
-              color: "#09171B",
-              flex: 2,
-              fontFamily: "karma-semibold",
-            }}
-          >
-            Name
-          </Text>
-          <Text
-            style={{ color: "#09171B", flex: 1, fontFamily: "karma-semibold" }}
-          >
-            Boxes
-          </Text>
-          <Text
-            style={{
-              color: "#09171B",
-              fontFamily: "karma-semibold",
-            }}
-          >
-            Amount
-          </Text>
+          <Text style={[styles.columnName, { flex: 2 }]}>Name</Text>
+          <Text style={[styles.columnName, { flex: 1 }]}>Boxes</Text>
+          <Text style={[styles.columnName, { flex: 1 }]}>Amount</Text>
         </View>
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -206,41 +215,23 @@ const SortingScreen = () => {
             <View
               style={{
                 flexDirection: "row",
+                marginBottom: hp("1%"),
+                elevation: 2,
                 backgroundColor: "#10ABD5",
-                marginVertical: 5,
-                borderRadius: 20,
-                padding: 25,
+                borderRadius: wp("4%"),
+                paddingHorizontal: wp("4%"),
+                paddingVertical: hp("2%"),
+                minWidth: wp("40%"),
+                height: hp("8%"),
+                alignItems: "center",
               }}
             >
-              <Text
-                style={{
-                  flex: 3,
-                  color: "#09171B",
-                  fontFamily: "karma-regular",
-                  fontSize: 12,
-                  maxWidth: "80%",
-                }}
-              >
-                {item.name}
-              </Text>
-              <Text
-                style={{
-                  flex: 1,
-                  color: "#09171B",
-                  fontFamily: "karma-regular",
-                  fontSize: 13,
-                }}
-              >
+              <Text style={[styles.productInfo, { flex: 2 }]}>{item.name}</Text>
+              <Text style={[styles.productInfo, { flex: 1 / 2 }]}>
                 {item.boxes}
               </Text>
               <Text
-                style={{
-                  color: "#09171B",
-                  fontFamily: "karma-regular",
-                  fontSize: 13,
-                  maxWidth: "80%",
-                  flex: 1,
-                }}
+                style={[styles.productInfo, { flex: 1, textAlign: "center" }]}
               >
                 {item.amount}
               </Text>
@@ -254,23 +245,33 @@ const SortingScreen = () => {
 
 const styles = StyleSheet.create({
   dropdown: {
-    position: 'absolute',
+    position: "absolute",
     borderRadius: 20,
     borderWidth: 10,
-    borderColor: '#EBF7F9',
+    borderColor: "#EBF7F9",
     zIndex: 1,
   },
   dropdownItem: {
     backgroundColor: "#6FD1EB",
     borderRadius: 20,
     padding: 10,
-    marginBottom: 5
+    marginBottom: 5,
   },
   dropdownText: {
     color: "black",
     fontFamily: "karma-regular",
     fontSize: 16,
-    textAlign: "center"
+    textAlign: "center",
+  },
+  columnName: {
+    fontFamily: "karma-bold",
+    marginVertical: hp("1%"),
+    fontSize: hp("2%"),
+  },
+  productInfo: {
+    fontFamily: "karma-regular",
+    fontSize: wp("3.5%"),
+    color: "#09171B",
   },
 });
 
