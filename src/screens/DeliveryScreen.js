@@ -15,6 +15,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { SVGDelivery, loadFont } from "../../loadFontSVG";
+import FloatingButton from "../FloatingButton";
 import axios from "axios";
 import * as geolib from "geolib";
 import { Button } from "@rneui/base";
@@ -24,52 +25,6 @@ import Toast from "react-native-simple-toast";
 
 const calculateDistance = (source, destination) => {
   return geolib.getDistance(source, destination);
-};
-
-const twoOptSort = (customerData) => {
-  const swap = (route, i, k) => {
-    const newRoute = [...route];
-    while (i < k) {
-      const temp = newRoute[i];
-      newRoute[i] = newRoute[k];
-      newRoute[k] = temp;
-      i++;
-      k--;
-    }
-    return newRoute;
-  };
-
-  const getTourLength = (route) => {
-    let distance = 0;
-    for (let i = 0; i < route.length - 1; i++) {
-      distance += calculateDistance(
-        route[i].coordinates,
-        route[i + 1].coordinates
-      );
-    }
-    return distance;
-  };
-
-  let bestRoute = customerData;
-  let bestDistance = getTourLength(customerData);
-  let improved = true;
-
-  while (improved) {
-    improved = false;
-    for (let i = 0; i < bestRoute.length - 1; i++) {
-      for (let k = i + 1; k < bestRoute.length; k++) {
-        const newRoute = swap(bestRoute, i, k);
-        const newDistance = getTourLength(newRoute);
-        if (newDistance < bestDistance) {
-          bestRoute = newRoute;
-          bestDistance = newDistance;
-          improved = true;
-        }
-      }
-    }
-  }
-
-  return bestRoute;
 };
 
 const DeliveryScreen = () => {
@@ -84,20 +39,16 @@ const DeliveryScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState(null);
+  const [sourceAddress, setSourceAddress] = useState(null);
 
-  const { addDelivery, deliveries } = useDeliveryContext();
+  const { addDelivery } = useDeliveryContext();
   const user = auth.currentUser;
 
   useEffect(() => {
     if (!fontLoaded) {
       loadFont().then(() => setFontLoaded(true));
     }
-
-    if (deliveries.length > 0) {
-      const sortedDeliveries = twoOptSort(deliveries);
-      setCustomerData(sortedDeliveries);
-    }
-  }, [deliveries, fontLoaded]);
+  }, [fontLoaded]);
 
   const toggleAddAddressModal = () => {
     setIsAddAddressModalVisible(!isAddAddressModalVisible);
@@ -105,10 +56,6 @@ const DeliveryScreen = () => {
       setCustomerName("");
       setCustomerAddress("");
     }
-  };
-
-  const toggleEmptyModal = () => {
-    setIsEmptyModalVisible(!isEmptyModalVisible);
   };
 
   const handleAddAddress = async () => {
@@ -126,12 +73,12 @@ const DeliveryScreen = () => {
             longitude: parseFloat(lon),
           };
 
-          const sourceAddress = {
+          const sourceAddressCoords = {
             latitude: 14.663979273045632,
             longitude: 121.05794500238676,
           };
 
-          const distance = calculateDistance(sourceAddress, coordinates);
+          const distance = calculateDistance(sourceAddressCoords, coordinates);
           const convertedDistance = (distance / 1000).toFixed(2);
 
           if (user) {
@@ -156,10 +103,10 @@ const DeliveryScreen = () => {
 
             addDelivery(newCustomerData);
 
-            const sortedData = twoOptSort([...deliveries, newCustomerData]);
-            setCustomerData(sortedData);
-
-            Toast.show("Added Successfully", Toast.SHORT);
+            setIsLoading(false);
+            setCustomerName("");
+            setCustomerAddress("");
+            setIsAddAddressModalVisible(false);
           }
         } else {
           console.error("Coordinates are undefined for the provided address.");
@@ -178,26 +125,7 @@ const DeliveryScreen = () => {
     }
   };
 
-  const handleContainerPress = (customer) => {
-    const temporarySourceAddress = customer.coordinates;
-    const sortedData = twoOptSort(
-      customerData.map((item, index) => ({
-        ...item,
-        customerDistance: calculateDistance(
-          temporarySourceAddress,
-          item.coordinates
-        ),
-      }))
-    );
-
-    setCustomerData(sortedData);
-    setIsEmptyModalVisible(true);
-  };
-
-  const handleContainerLongPress = (customer) => {
-    setAddressToDelete(customer.key);
-    setDeleteModalVisible(true);
-  };
+  const handleContainerPress = (item) => {};
 
   const handleDeleteAddress = async () => {
     try {
@@ -229,6 +157,16 @@ const DeliveryScreen = () => {
     }
   };
 
+  const handleDeleteAllAddressesPress = () => {
+    console.log("Delete All Addresses Pressed from DeliveryScreen");
+    // logic here
+  };
+
+  const handleAddAddressPress = () => {
+    console.log("Add Address Pressed from DeliveryScreen");
+    // logic here
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerTitleSVG}>
@@ -243,7 +181,6 @@ const DeliveryScreen = () => {
             Distance
           </Text>
         </View>
-
         <FlatList
           data={customerData}
           renderItem={({ item }) => (
@@ -271,17 +208,10 @@ const DeliveryScreen = () => {
           onScrollEndDrag={() => setIsScrolling(false)}
         />
 
-        <TouchableOpacity
-          style={styles.floatingButtonContainer}
-          onPress={toggleAddAddressModal}
-        >
-          <Text
-            style={[styles.floatingButton, { opacity: isScrolling ? 0.2 : 1 }]}
-          >
-            +
-          </Text>
-        </TouchableOpacity>
-
+        <FloatingButton
+          onDeleteAllAddressesPress={this.handleDeleteAllAddressesPress}
+          onAddAddressPress={this.handleAddAddressPress}
+        />
         {isLoading && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#10ABD5" />
@@ -338,43 +268,6 @@ const DeliveryScreen = () => {
       <Modal
         animationType="fade"
         transparent={true}
-        visible={isEmptyModalVisible}
-        onRequestClose={toggleEmptyModal}
-      >
-        <View style={styles.sortedModalContainer}>
-          <View style={styles.sortedAddressFrame}>
-            <Text style={styles.sortedModalTitle}>Ordered Destination</Text>
-            <FlatList
-              data={twoOptSort(customerData)}
-              renderItem={({ item }) => (
-                <View
-                  style={styles.sortedCustomerContainer}
-                  onPress={() => handleContainerPress(item)}
-                >
-                  <Text style={[styles.customerInfo, { flex: 1 + 1 / 2 }]}>
-                    {item.customerName}
-                  </Text>
-                  <Text style={[styles.customerInfo, { flex: 1 }]}>
-                    {item.customerAddress}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.customerInfo,
-                      { flex: 1, textAlign: "right" },
-                    ]}
-                  >
-                    {item.customerDistance}
-                  </Text>
-                </View>
-              )}
-            />
-          </View>
-        </View>
-      </Modal>
-
-      <Modal
-        animationType="fade"
-        transparent={true}
         visible={deleteModalVisible}
         onRequestClose={() => setDeleteModalVisible(false)}
       >
@@ -404,6 +297,29 @@ const DeliveryScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    marginHorizontal: wp("6%"),
+  },
+  calculateButton: {
+    backgroundColor: "#10ABD5",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  clearButton: {
+    backgroundColor: "#FF6347",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    fontFamily: "karma-bold",
+    fontSize: 16,
+    color: "#EBF7F9",
+  },
   sortedAddressFrame: {
     backgroundColor: "#EBF7F9",
     height: hp("50%"),
@@ -491,11 +407,12 @@ const styles = StyleSheet.create({
     marginRight: wp("3"),
   },
 
-  floatingButtonContainer: {
+  floating: {
     position: "absolute",
-    bottom: 20,
+    alignContent: "center",
+    justifyContent: "center",
+    bottom: hp("20"),
     right: 20,
-    backgroundColor: "transparent",
   },
   floatingButton: {
     backgroundColor: "#09171B",
