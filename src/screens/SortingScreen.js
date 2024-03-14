@@ -5,7 +5,7 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  Button
+  Modal,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 import * as Font from "expo-font";
@@ -28,10 +28,19 @@ const SortingScreen = () => {
   const [sortField, setSortField] = useState("productName");
   const [sortOrder, setSortOrder] = useState("asc");
   const { products } = useProductContext();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
+    setSearchTerm("");
+    setOccurrences("");
+    setPosition("");
+  };
+
 
   const handleSort = (field) => {
     if (field === sortField) {
@@ -42,9 +51,7 @@ const SortingScreen = () => {
     }
   };
 
-  const resetList = () => {
-    setSortField(products);
-  };
+
 
   const selectionSort = (array) => {
     const sortedArray = [...array];
@@ -86,36 +93,53 @@ const SortingScreen = () => {
           <Text style={styles.headerText}>Sorted List</Text>
           <SvgXml xml={SVGTwo("black")} width={30} height={30} style={styles.svgIcon} />
         </View>
-        <View style={styles.buttonContainer}>
-          <Button 
-            title="Reset" 
-            onPress={resetList} 
-            color="#6FD1EB" 
-            buttonStyle={styles.button} 
-            titleStyle={{ fontFamily: "karma-bold", fontSize: wp("3.5%") }} 
-          />
-        </View>
       </View>
 
       <View style={styles.mainContainer}>
         <View style={styles.labelRow}>
-          <TouchableOpacity onPress={() => handleSort("productName")} style={{ flex: 2 }}>
+          <TouchableOpacity onPress={() => handleSort("productName")} style={{ flex: 2, flexDirection: 'row', alignItems: 'center' }}>
             <Text style={styles.label}>Name</Text>
+            {sortField === "productName" && (
+              <Text>{sortOrder === "asc" ? " ▲" : " ▼"}</Text>
+            )}
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleSort("productWeight")} style={{ flex: 1 }}>
+          <TouchableOpacity onPress={() => handleSort("productWeight")} style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
             <Text style={styles.label}>Weight</Text>
+            {sortField === "productWeight" && (
+              <Text>{sortOrder === "asc" ? " ▲" : " ▼"}</Text>
+            )}
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleSort("productAmount")} style={{ flex: 1 }}>
+          <TouchableOpacity onPress={() => handleSort("productAmount")} style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
             <Text style={styles.label}>Amount</Text>
+            {sortField === "productAmount" && (
+              <Text>{sortOrder === "asc" ? " ▲" : " ▼"}</Text>
+            )}
           </TouchableOpacity>
         </View>
+        <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={toggleModal}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}> 
+              <View style={styles.modalContent}> 
+
+              </View>
+
+            </View>
+
+          </View>
+
+        </Modal>
         <FlatList
           style={{ flex: 1 }}
           data={sortedData}
           renderItem={({ item }) => (
             <View style={styles.item}>
               <Text style={[styles.productInfo, { flex: 2 }]}>{item.productName}</Text>
-              <Text style={[styles.productInfo, { flex: 1 }]}>{item.productWeight}</Text>
+              <Text style={[styles.productInfo, { flex: 1/2 }]}>{item.productWeight}</Text>
               <Text style={[styles.productInfo, { flex: 1, textAlign: "center" }]}>{item.productAmount}</Text>
             </View>
           )}
@@ -196,6 +220,18 @@ const styles = StyleSheet.create({
   },
   svgIcon: {
     marginBottom: wp("2%"),
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: wp("80%"),
+    backgroundColor: "#EBF7F9",
+    borderRadius: 10,
+    padding: 20,
   },
 });
 
