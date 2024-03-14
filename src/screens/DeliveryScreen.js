@@ -15,7 +15,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { SVGDelivery, loadFont } from "../../loadFontSVG";
-import FloatingButton from "../FloatingButton";
+import FloatingButton from "../components/FloatingButton";
 import axios from "axios";
 import * as geolib from "geolib";
 import { Button } from "@rneui/base";
