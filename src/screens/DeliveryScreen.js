@@ -23,7 +23,7 @@ import { useDeliveryContext } from "../../context/DeliveryContext";
 import { auth, db } from "../../firebaseConfig";
 import Toast from "react-native-simple-toast";
 
-const calculateDistances = async (sourceAddress, destinationAddresses) => {
+const calculateTotalDistance = async (sourceAddress, destinationAddresses) => {
   try {
     const sourceResponse = await axios.get(
       `https://nominatim.openstreetmap.org/search?q=${sourceAddress}&format=json&limit=1`
@@ -45,13 +45,70 @@ const calculateDistances = async (sourceAddress, destinationAddresses) => {
       destinationCoords.push(destCoord);
     }
 
-    const distances = destinationCoords.map((destinationCoord) =>
-      geolib.getDistance(sourceCoords, destinationCoord)
-    );
+    const distances = [];
+    for (let i = 0; i < destinationCoords.length; i++) {
+      const distance = await calculateDistanceFromSource(
+        sourceCoords,
+        destinationCoords[i]
+      );
+      distances.push(distance);
+    }
 
     return distances;
   } catch (error) {
-    console.error("Error calculating distances:", error);
+    console.error("Error calculating total distance:", error);
+    throw error;
+  }
+};
+
+const calculateDistanceFromSource = async (sourceCoords, destinationCoords) => {
+  try {
+    const distance = geolib.getDistance(sourceCoords, destinationCoords);
+    return distance;
+  } catch (error) {
+    console.error("Error calculating distance from source:", error);
+    throw error;
+  }
+};
+
+const generatePermutations = (array) => {
+  const result = [];
+
+  const permute = (arr, m = []) => {
+    if (arr.length === 0) {
+      result.push(m);
+    } else {
+      for (let i = 0; i < arr.length; i++) {
+        const curr = arr.slice();
+        const next = curr.splice(i, 1);
+        permute(curr.slice(), m.concat(next));
+      }
+    }
+  };
+
+  permute(array);
+
+  return result;
+};
+
+const sortAddressesExhaustive = async (sourceAddress, destinationAddresses) => {
+  try {
+    const permutations = generatePermutations(destinationAddresses);
+
+    let minDistance = Infinity;
+    let minPermutation = [];
+
+    for (const permutation of permutations) {
+      const distance = await calculateTotalDistance(sourceAddress, permutation);
+      if (distance < minDistance) {
+        minDistance = distance;
+        minPermutation = permutation;
+      }
+    }
+
+    return minPermutation;
+  } catch (error) {
+    console.error("Error sorting addresses:", error);
     throw error;
   }
 };
@@ -231,10 +288,23 @@ const DeliveryScreen = () => {
   const handleCalculateAddressPress = async () => {
     setIsCalculateAllAddressModalVisible(true);
     try {
+      // Extract addresses from customer data
+      const addresses = customerData.map((item) => item.customerAddress);
+
+      // Ensure there are at least two addresses
+      if (addresses.length < 2) {
+        console.error("At least two addresses are required for calculation.");
+        return;
+      }
+
+      // Set the first and last addresses as source and destination
+      const sourceAddress = addresses[0];
+      const destinationAddresses = [...addresses, sourceAddress];
+
       // Calculate distances
-      const calculatedDistances = await calculateDistances(
+      const calculatedDistances = await calculateTotalDistance(
         sourceAddress,
-        customerData.map((item) => item.customerAddress)
+        destinationAddresses
       );
 
       // Convert distances from meters to kilometers
@@ -242,9 +312,12 @@ const DeliveryScreen = () => {
         (distance / 1000).toFixed(2)
       );
 
-      setDistances(distancesInKm); // Update distances state with distances in kilometers
+      // Update distances state with distances in kilometers
+      setDistances(distancesInKm);
       console.log("Distances:", distancesInKm);
-      // Handle displaying distances in the modal
+
+      // Sort addresses based on the new source address
+      await handleSortAddresses();
     } catch (error) {
       console.error("Error calculating distances:", error);
       // Handle error
@@ -445,7 +518,7 @@ const DeliveryScreen = () => {
                       {item.customerName}
                     </Text>
                     <Text
-                      style={[sort
+                      style={[
                         styles.sortedCustomerInfo,
                         { textAlign: "center" },
                       ]}
