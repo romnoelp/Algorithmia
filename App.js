@@ -1,7 +1,8 @@
+import React from "react";
 import { TouchableOpacity } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LandingScreen from "./src/screens/LandingScreen";
 import { NavigationContainer } from "@react-navigation/native";
+import LandingScreen from "./src/screens/LandingScreen";
 import LogInScreen from "./src/screens/LogInScreen";
 import MainMenuScreen from "./src/screens/MainMenuScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -21,6 +22,7 @@ import {
 } from "./loadFontSVG";
 import { SvgXml } from "react-native-svg";
 import SettingsScreen from "./src/screens/SettingsScreen";
+import DevelopersScreen from "./src/screens/DevelopersScreen"; // Import DevelopersScreen
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -179,8 +181,32 @@ const TabtoSettingsStackNavigator = ({ navigation }) => (
         statusBarHidden: false,
       }}
     />
+    <TabtoSettingsStack.Screen
+      name="DevelopersScreen" // Define DevelopersScreen
+      component={DevelopersScreen} // Use DevelopersScreen component
+      options={{
+        headerStyle: {
+          backgroundColor: "#147691",
+        },
+        headerTitle: "Developers", // Set the header title
+        headerLeft: () => (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => navigation.goBack()} // Go back when left icon is pressed
+          >
+            <SvgXml
+              xml={SVGHome("white")} // Use appropriate icon
+              width={"25"}
+              height={"25"}
+            />
+          </TouchableOpacity>
+        ),
+        statusBarHidden: true,
+      }}
+    />
   </TabtoSettingsStack.Navigator>
 );
+
 const App = () => (
   <ProductProvider>
     <DeliveryProvider>
