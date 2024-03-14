@@ -355,10 +355,29 @@ const DeliveryScreen = () => {
         animationOutTiming={2000}
       >
         <View style={styles.sortedAddressContainer}>
-          <View style={[styles.addAddressFrame, { height: hp("65%") }]}>
-            <Text style={styles.modalTitle}>Nearest addresses</Text>
-            <Text style={styles.modalText}></Text>
-            <View style={styles.buttonContainer}></View>
+          <View style={[styles.sortedAddressFrame, { height: hp("65%") }]}>
+            <Text style={styles.nearestTitle}>Delivery Tracker</Text>
+            <View style={styles.trackerContainer}>
+              <View style={styles.header}>
+                <Text style={styles.columnHeader}>Customer</Text>
+                <Text style={styles.columnHeader}>Address</Text>
+                <Text style={styles.columnHeader}>Distance</Text>
+              </View>
+              {customerData.map((item, index) => (
+                <View key={index} style={styles.customerContainer}>
+                  <Text
+                    style={[styles.sortedCustomerInfo, { textAlign: "left" }]}
+                  >
+                    {item.customerName}
+                  </Text>
+                  <Text
+                    style={[styles.sortedCustomerInfo, { textAlign: "center" }]}
+                  >
+                    {item.customerAddress}
+                  </Text>
+                </View>
+              ))}
+            </View>
           </View>
         </View>
       </Modal>
@@ -367,6 +386,40 @@ const DeliveryScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  sortedCustomerInfo: {
+    fontFamily: "karma-regular",
+    fontSize: wp("2.7%"),
+    color: "#09171B",
+    flexDirection: "row",
+    flex: 1,
+    textAlign: "center",
+  },
+  columnHeader: {
+    fontFamily: "karma-semibold",
+    marginVertical: hp("1%"),
+    fontSize: hp("1.8%"),
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    marginHorizontal: wp("1%"),
+  },
+  trackerContainer: {
+    flex: 1,
+    marginHorizontal: wp("6%"),
+    borderRadius: hp("2%"),
+    backgroundColor: "#6FD1EB",
+    padding: wp("2%"),
+    flexDirection: "column",
+    width: wp("80%"),
+  },
+  nearestTitle: {
+    fontFamily: "karma-bold",
+    fontSize: wp("5%"),
+    marginTop: hp("1%"),
+    marginRight: wp("32%"),
+  },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -415,7 +468,7 @@ const styles = StyleSheet.create({
   sortedAddressFrame: {
     backgroundColor: "#EBF7F9",
     height: hp("50%"),
-    width: wp("80%"),
+    width: wp("85%"),
     alignItems: "center",
     justifyContent: "center",
     borderRadius: wp("5%"),
@@ -470,7 +523,6 @@ const styles = StyleSheet.create({
   columnName: {
     fontFamily: "karma-bold",
     marginVertical: hp("1%"),
-
     fontSize: hp("2%"),
   },
   container: {
