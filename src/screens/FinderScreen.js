@@ -1,99 +1,86 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Modal, TouchableOpacity, TextInput, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Modal,
+  TouchableOpacity,
+  TextInput,
+  FlatList,
+} from "react-native";
 import { SvgXml } from "react-native-svg";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 import { SVGFour, loadFont } from "../../loadFontSVG";
-import { auth, db } from "../../firebaseConfig";
+import { Button } from "@rneui/base";
+import { useDeliveryContext } from "../../context/DeliveryContext";
 
 
 const FinderScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedAddress, setSelectedAddress] = useState('');
-  const [occurrences, setOccurrences] = useState('');
-  const [position, setPosition] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedAddress, setSelectedAddress] = useState("");
+  const [occurrences, setOccurrences] = useState("");
+  const [position, setPosition] = useState("");
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    loadFont().then(() => setFontLoaded(true));
-  }, []);
+  const {deliveries} = useDeliveryContext();
+
 
   useEffect(() => {
-    if (!isModalVisible) {
-      setSearchTerm('');
-      setOccurrences("");
-      setPosition("");
-    }
-  }, [isModalVisible]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const user = auth.currentUser;
-        if (user) {
-          const fetchedData = [];
-          const docRef = db.collection("users").doc(user.displayName).collection("deliveries");
-          const querySnapshot = await docRef.get();
-          querySnapshot.forEach((doc) => {
-            const { customerName, customerAddress, customerDistance } = doc.data();
-            fetchedData.push({
-              key: doc.id,
-              name: customerName,
-              address: customerAddress,
-            });
-          });
-          setData(fetchedData);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
+    if (!fontLoaded){
+      loadFont().then(() => setFontLoaded(true));
     };
-
-    fetchData();
   }, []);
+  if (!fontLoaded){
+    return null;
+  }
+
+
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
+    setSearchTerm("");
+    setOccurrences("");
+    setPosition("");
   };
 
   const handleItemPress = (item) => {
-    setSelectedAddress(item.address);
+    setSelectedAddress(item.customerAddress);
     toggleModal();
   };
 
   const handleSearch = () => {
-    const cleanedSearchTerm = searchTerm.replace(/[^\w\s]/gi, '');
+    const cleanedSearchTerm = searchTerm.replace(/[^\w\s]/gi, "");
 
-    if (cleanedSearchTerm.trim() === '') {
-        setOccurrences('');
-        setPosition('');
-        return;
+    if (cleanedSearchTerm.trim() === "") {
+      setOccurrences("");
+      setPosition("");
+      return;
     }
 
-    const words = selectedAddress.split(' ');
+    const words = selectedAddress.split(" ");
 
     let occurrences = 0;
     let positions = [];
 
     for (let i = 0; i < words.length; i++) {
-        const cleanedWord = words[i].replace(/[^\w\s]/gi, '');
+      const cleanedWord = words[i].replace(/[^\w\s]/gi, "");
 
-        if (cleanedWord.toLowerCase() === cleanedSearchTerm.toLowerCase()) {
-            occurrences++;
-            positions.push(i + 1); 
-        }
+      if (cleanedWord.toLowerCase() === cleanedSearchTerm.toLowerCase()) {
+        occurrences++;
+        positions.push(i + 1);
+      }
     }
-
     setOccurrences(occurrences);
-    setPosition(positions.join(', '));
-};
+    setPosition(positions.join(", "));
+  };
 
   if (!fontLoaded) {
     return null;
   }
-
   return (
     <View style={styles.container}>
       <View style={styles.headerTitleSVG}>
@@ -103,22 +90,25 @@ const FinderScreen = () => {
 
       <View style={styles.mainContainer}>
         <View style={{ flexDirection: "row", marginHorizontal: wp("4%") }}>
-          <Text style={[styles.columnName, { flex: 1}]}>Customer</Text>
+          <Text style={[styles.columnName, { flex: 1 }]}>Customer</Text>
           <Text style={[styles.columnName, { flex: 1, textAlign: "center" }]}>Address</Text>
         </View>
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={data}
+          data={deliveries}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleItemPress(item)}>
-              <View style={styles.dataContainer}>
-                <Text style={[styles.customerInfo, {flex: 1}]}>{item.name}</Text>
-                <Text style={[styles.customerInfo,{ flex: 1, textAlign: "center" }]}>{item.address}</Text>
-              </View>
+            <TouchableOpacity
+              onPress={() => handleItemPress(item)}
+              style={styles.dataContainer}
+            >
+              <Text style={[styles.customerInfo, { flex: 1 }]}>
+                {item.customerName}
+              </Text>
+              <Text style={[styles.customerInfo, { flex: 1, textAlign:"center" }]}>
+                {item.customerAddress}
+              </Text>
             </TouchableOpacity>
           )}
-          onScroll={() => setIsScrolling(true)}
-          onScrollEndDrag={() => setIsScrolling(false)}
         />
       </View>
       <Modal
@@ -127,7 +117,7 @@ const FinderScreen = () => {
         visible={isModalVisible}
         onRequestClose={toggleModal}
       >
-        <TouchableOpacity
+        <View
           style={styles.modalBackground}
           onPress={toggleModal}
           activeOpacity={1}
@@ -136,30 +126,33 @@ const FinderScreen = () => {
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Word Finder</Text>
               <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Search</Text>
-              <TextInput
-                style={styles.inputField}
-                onChangeText={setSearchTerm}
-                value={searchTerm}
-                placeholder="Search Word"
-                placeholderTextColor="#999"
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
+                <Text style={[styles.inputLabel]}>Search</Text>
+                <TextInput
+                  style={styles.inputField}
+                  onChangeText={setSearchTerm}
+                  value={searchTerm}
+                  placeholder="Search Word"
+                  placeholderTextColor="#999"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
               </View>
+              
               <Text style={styles.addressText}>{selectedAddress}</Text>
-              <TouchableOpacity
-                style={styles.saveButton}
+              <Button
+                title={"Extract Word"}
+                titleStyle={styles.saveButtonText}
+                buttonStyle={styles.saveButton}
                 onPress={handleSearch}
-              >
-                <Text style={styles.saveButtonText}>Extract word</Text>
-              </TouchableOpacity>
+              />
 
-              <Text style={styles.occurrencesText}>Number of word instance : {occurrences} </Text>
+              <Text style={styles.occurrencesText}>
+                Number of word instance : {occurrences}{" "}
+              </Text>
               <Text style={styles.occurrencesText}>Position : {position}</Text>
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     </View>
   );
@@ -213,7 +206,6 @@ const styles = StyleSheet.create({
     minWidth: wp("40%"),
     height: hp("8%"),
     alignItems: "center",
-    
   },
   modalBackground: {
     flex: 1,
@@ -254,7 +246,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp("3%"),
     paddingVertical: hp(".8%"),
     fontSize: wp("4%"),
-    
   },
   saveButton: {
     backgroundColor: "#175F73",
