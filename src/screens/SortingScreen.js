@@ -28,19 +28,10 @@ const SortingScreen = () => {
   const [sortField, setSortField] = useState("productName");
   const [sortOrder, setSortOrder] = useState("asc");
   const { products } = useProductContext();
-  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
-
-  const toggleModal = () => {
-    setIsModalVisible(!isModalVisible);
-    setSearchTerm("");
-    setOccurrences("");
-    setPosition("");
-  };
-
 
   const handleSort = (field) => {
     if (field === sortField) {
@@ -116,23 +107,6 @@ const SortingScreen = () => {
             )}
           </TouchableOpacity>
         </View>
-        <Modal
-        animationType="fade"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={toggleModal}
-        >
-          <View style={styles.modalBackground}>
-            <View style={styles.modalContainer}> 
-              <View style={styles.modalContent}> 
-
-              </View>
-
-            </View>
-
-          </View>
-
-        </Modal>
         <FlatList
           style={{ flex: 1 }}
           data={sortedData}
