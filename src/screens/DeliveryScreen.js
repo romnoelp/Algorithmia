@@ -31,7 +31,8 @@ const DeliveryScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const [isAddAddressModalVisible, setIsAddAddressModalVisible] =
     useState(false);
-  const [isEmptyModalVisible, setIsEmptyModalVisible] = useState(false);
+  const [isDeleteAllAddressModalVisible, setIsDeleteAlAddressModalVisible] =
+    useState(false);
   const [customerData, setCustomerData] = useState([]);
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
@@ -39,7 +40,6 @@ const DeliveryScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState(null);
-  const [sourceAddress, setSourceAddress] = useState(null);
 
   const { addDelivery } = useDeliveryContext();
   const user = auth.currentUser;
@@ -48,7 +48,28 @@ const DeliveryScreen = () => {
     if (!fontLoaded) {
       loadFont().then(() => setFontLoaded(true));
     }
-  }, [fontLoaded]);
+    fetchAddresses();
+  }, []);
+
+  const fetchAddresses = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const snapshot = await db
+          .collection("users")
+          .doc(user.displayName)
+          .collection("deliveries")
+          .get();
+        const data = snapshot.docs.map((doc) => ({
+          key: doc.id,
+          ...doc.data(),
+        }));
+        setCustomerData(data);
+      }
+    } catch (error) {
+      console.error("Error fetching data from the database:", error);
+    }
+  };
 
   const toggleAddAddressModal = () => {
     setIsAddAddressModalVisible(!isAddAddressModalVisible);
@@ -56,6 +77,10 @@ const DeliveryScreen = () => {
       setCustomerName("");
       setCustomerAddress("");
     }
+  };
+
+  const toggleDeleteAllAddressModal = () => {
+    setIsDeleteAlAddressModalVisible(!isDeleteAllAddressModalVisible);
   };
 
   const handleAddAddress = async () => {
@@ -107,6 +132,7 @@ const DeliveryScreen = () => {
             setCustomerName("");
             setCustomerAddress("");
             setIsAddAddressModalVisible(false);
+            fetchAddresses();
           }
         } else {
           console.error("Coordinates are undefined for the provided address.");
@@ -159,12 +185,12 @@ const DeliveryScreen = () => {
 
   const handleDeleteAllAddressesPress = () => {
     console.log("Delete All Addresses Pressed from DeliveryScreen");
-    // logic here
+    toggleDeleteAllAddressModal(true);
   };
 
   const handleAddAddressPress = () => {
     console.log("Add Address Pressed from DeliveryScreen");
-    // logic here
+    setIsAddAddressModalVisible(true);
   };
 
   return (
@@ -268,25 +294,25 @@ const DeliveryScreen = () => {
       <Modal
         animationType="fade"
         transparent={true}
-        visible={deleteModalVisible}
-        onRequestClose={() => setDeleteModalVisible(false)}
+        visible={isDeleteAllAddressModalVisible}
+        onRequestClose={toggleDeleteAllAddressModal}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.deleteAddressFrame}>
-            <Text style={styles.modalTitle}>Delete Address?</Text>
-            <Text style={styles.modalText}>
-              Are you sure you want to delete this address?
-            </Text>
+          <View style={styles.addAddressFrame}>
+            <Text style={styles.modalTitle}>Delete all addresses?</Text>
+            <Text style={styles.modalText}>This change cannot be undone.</Text>
             <View style={styles.buttonContainer}>
               <Button
                 title="Cancel"
+                titleStyle={styles.saveButtonText}
                 onPress={() => setDeleteModalVisible(false)}
-                buttonStyle={[styles.deleteButton, styles.cancelButton]}
+                buttonStyle={[styles.cancelDeleteButton]}
               />
               <Button
                 title="Delete"
-                onPress={handleDeleteAddress}
-                buttonStyle={styles.deleteButton}
+                titleStyle={styles.saveButtonText}
+                onPress={handleDeleteAllAddressesPress}
+                buttonStyle={styles.deleteAllButton}
               />
             </View>
           </View>
@@ -297,6 +323,28 @@ const DeliveryScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: wp("10%"),
+    marginTop: hp("2%"), 
+  },
+  cancelDeleteButton: {
+    margin: wp("2%"),
+    backgroundColor: "#9FA0A0",
+    paddingVertical: hp("2%"), 
+    paddingHorizontal: wp("8%"), 
+    borderRadius: wp("2%"),
+    width: wp("30%"), 
+  },
+  deleteAllButton: {
+    margin: wp("2%"),
+    backgroundColor: "#175F73",
+    paddingVertical: hp("2%"), 
+    paddingHorizontal: wp("8%"),
+    borderRadius: wp("2%"),
+    width: wp("30%"), 
+  },
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
