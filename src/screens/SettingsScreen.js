@@ -53,7 +53,8 @@ const SettingsScreen = ({ navigation }) => {
       case 1:
         return alert("Appearance");
       case 2:
-        return alert("Developers");
+        navigation.navigate("DevelopersScreen");
+        break;
       case 3:
         return alert("About the app");
       case 4:

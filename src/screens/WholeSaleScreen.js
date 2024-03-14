@@ -358,12 +358,12 @@ const WholeSaleScreen = () => {
               styles.addAddressFrame,
               {
                 height:
-                  productSelectedList.length === 0 ? hp("35%") : hp("60%"),
+                  productSelectedList.length === 0 ? hp("35%") : hp("65%"),
               },
             ]}
           >
             <Text style={styles.modalTitle}>Calculate</Text>
-            <Text style={styles.modalText}>
+            <Text style={[styles.modalText,{marginHorizontal: wp("5%"), fontSize: hp("1.5%"), fontFamily: "karma-semibold"}]}>
               Determine the products, weight and total amount
             </Text>
 
@@ -381,10 +381,11 @@ const WholeSaleScreen = () => {
               onPress={() => calculate(weightLimit)}
               buttonStyle={styles.deleteButton}
             />
+            <Text style={styles.modalText}>Knapsack Content</Text>
             {productSelectedList.length === 0 ? null : (
               <View style={{ height: hp("25%") }}>
                 <View
-                  style={{ flexDirection: "row", marginHorizontal: wp("2%") }}
+                  style={{ flexDirection: "row"}}
                 >
                   <Text style={[styles.modalColumnName, { flex: 2 }]}>
                     Name
@@ -392,7 +393,7 @@ const WholeSaleScreen = () => {
                   <Text style={[styles.modalColumnName, { flex: 1 }]}>
                     Weight
                   </Text>
-                  <Text style={[styles.modalColumnName, { flex: 1 }]}>
+                  <Text style={[styles.modalColumnName, { flex: 1}]}>
                     Amount
                   </Text>
                 </View>
@@ -407,7 +408,7 @@ const WholeSaleScreen = () => {
                         {item.productName}
                       </Text>
 
-                      <Text style={[styles.productInfo, { flex: 1 / 2 }]}>
+                      <Text style={[styles.productInfo, { flex: 1 / 2}]}>
                         {item.productWeight}
                       </Text>
 
@@ -509,12 +510,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(9, 23, 27, .6)",
+    
   },
   modalTitle: {
     marginTop: wp("2%"),
     fontFamily: "karma-bold",
     fontSize: wp("5%"),
     marginBottom: hp("2%"),
+  
   },
   addAddressFrame: {
     backgroundColor: "#EBF7F9",
@@ -566,8 +569,6 @@ const styles = StyleSheet.create({
   modalProductContainer: {
     flexDirection: "row",
     marginBottom: hp("0.5%"),
-    paddingHorizontal: wp("4%"),
-    paddingVertical: hp("2%"),
     minWidth: wp("60%"),
   },
   productInfo: {
@@ -602,5 +603,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+  },
+  modalText: {
+    fontSize: hp("2%"),
+    fontFamily: "karma-regular",
+    color: "#09171B",
   },
 });
