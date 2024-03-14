@@ -168,15 +168,19 @@ const WholeSaleScreen = () => {
   };
 
   const calculate = (maxWeight) => {
-    if (!maxWeight) {
-      Toast.show("Enter a Weight Limit");
-    } else {
-      const weight = products.map((item) => item.productWeight);
-      const value = products.map((item) => item.productAmount);
+    if (products.length !== 0) {
+      if (!maxWeight) {
+        Toast.show("Enter a Weight Limit");
+      } else {
+        const weight = products.map((item) => item.productWeight);
+        const value = products.map((item) => item.productAmount);
 
-      const result = knapSack(maxWeight, weight, value, products.length);
-      setProductSelectedList(result.selectedItem);
-      setTotalAmount(result.maxValue);
+        const result = knapSack(maxWeight, weight, value, products.length);
+        setProductSelectedList(result.selectedItem);
+        setTotalAmount(result.maxValue);
+      }
+    } else {
+      Toast.show("You have no products in the list", Toast.SHORT);
     }
   };
 
@@ -363,7 +367,16 @@ const WholeSaleScreen = () => {
             ]}
           >
             <Text style={styles.modalTitle}>Calculate</Text>
-            <Text style={[styles.modalText,{marginHorizontal: wp("5%"), fontSize: hp("1.5%"), fontFamily: "karma-semibold"}]}>
+            <Text
+              style={[
+                styles.modalText,
+                {
+                  marginHorizontal: wp("5%"),
+                  fontSize: hp("1.5%"),
+                  fontFamily: "karma-semibold",
+                },
+              ]}
+            >
               Determine the products, weight and total amount
             </Text>
 
@@ -384,16 +397,14 @@ const WholeSaleScreen = () => {
             <Text style={styles.modalText}>Knapsack Content</Text>
             {productSelectedList.length === 0 ? null : (
               <View style={{ height: hp("25%") }}>
-                <View
-                  style={{ flexDirection: "row"}}
-                >
+                <View style={{ flexDirection: "row" }}>
                   <Text style={[styles.modalColumnName, { flex: 2 }]}>
                     Name
                   </Text>
                   <Text style={[styles.modalColumnName, { flex: 1 }]}>
                     Weight
                   </Text>
-                  <Text style={[styles.modalColumnName, { flex: 1}]}>
+                  <Text style={[styles.modalColumnName, { flex: 1 }]}>
                     Amount
                   </Text>
                 </View>
@@ -408,7 +419,7 @@ const WholeSaleScreen = () => {
                         {item.productName}
                       </Text>
 
-                      <Text style={[styles.productInfo, { flex: 1 / 2}]}>
+                      <Text style={[styles.productInfo, { flex: 1 / 2 }]}>
                         {item.productWeight}
                       </Text>
 
@@ -510,14 +521,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(9, 23, 27, .6)",
-    
   },
   modalTitle: {
     marginTop: wp("2%"),
     fontFamily: "karma-bold",
     fontSize: wp("5%"),
     marginBottom: hp("2%"),
-  
   },
   addAddressFrame: {
     backgroundColor: "#EBF7F9",
