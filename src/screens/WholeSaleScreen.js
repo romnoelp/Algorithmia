@@ -8,6 +8,7 @@ import {
   TextInput,
   ActivityIndicator,
   FlatList,
+  ScrollView,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 import {
@@ -33,7 +34,12 @@ const WholeSaleScreen = () => {
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isDeleteAllModalVisible, setIsDeleteAllModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  console.log(selectedItem);
+  const [isCalculateModalVisible, setIsCalculateModalVisible] = useState(false);
+  const [weightLimit, setWeightLimit] = useState("");
+  const [productSelectedList, setProductSelectedList] = useState([]);
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  console.log(productSelectedList);
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
@@ -52,6 +58,13 @@ const WholeSaleScreen = () => {
 
   const toggleIsDeleteAllModal = () => {
     setIsDeleteAllModalVisible(!isDeleteAllModalVisible);
+  };
+
+  const toggleCalculateModal = () => {
+    setIsCalculateModalVisible(!isCalculateModalVisible);
+    setProductSelectedList([]);
+    setTotalAmount(0);
+    setWeightLimit("");
   };
   const handleDeleteProduct = async (selectedItem) => {
     await db
@@ -123,21 +136,48 @@ const WholeSaleScreen = () => {
     }
   };
 
-  const max = (a, b) => {
-    return a > b ? a : b;
+  const knapSack = (maxWeight, weight, value, size) => {
+    if (size == 0 || maxWeight == 0) return { maxValue: 0, selectedItem: [] };
+
+    if (weight[size - 1] > maxWeight)
+      return knapSack(maxWeight, weight, value, size - 1);
+    else {
+      const includedItem = knapSack(
+        maxWeight - weight[size - 1],
+        weight,
+        value,
+        size - 1
+      );
+      const excludedItem = knapSack(maxWeight, weight, value, size - 1);
+
+      const valueWithIncludedItem = value[size - 1] + includedItem.maxValue;
+      if (valueWithIncludedItem > excludedItem.maxValue) {
+        const selectedItem = {
+          productName: products[size - 1].productName,
+          productWeight: weight[size - 1],
+          productAmount: value[size - 1],
+        };
+        return {
+          maxValue: valueWithIncludedItem,
+          selectedItem: [...includedItem.selectedItem, selectedItem],
+        };
+      } else {
+        return excludedItem;
+      }
+    }
   };
 
-  const knapSack = (maxWeight, weight, value, size) => {
-    if (size == 0 || maxWeight == 0) return 0;
+  const calculate = (maxWeight) => {
+    if (!maxWeight) {
+      Toast.show("Enter a Weight Limit");
+    } else {
+      const weight = products.map((item) => item.productWeight);
+      const value = products.map((item) => item.productAmount);
 
-    if (weight[n - 1] > maxWeight)
-      return knapSack(maxWeight, weight, value, size - 1);
-    else
-      return max(
-        value[size - 1] +
-          knapSack(maxWeight - weight[size - 1], weight, value, size - 1),
-        knapSack(maxWeight, weight, value, size - 1)
-      );
+      const result = knapSack(maxWeight, weight, value, products.length);
+      setProductSelectedList(result.selectedItem);
+      setTotalAmount(result.maxValue);
+    }
   };
 
   return (
@@ -180,6 +220,7 @@ const WholeSaleScreen = () => {
         <FloatingButton
           onAddItemsPress={toggleModal}
           onDeleteAllItemsPress={toggleIsDeleteAllModal}
+          onCalculateAllItemsPress={() => toggleCalculateModal()}
         />
         <Modal
           animationType="fade"
@@ -240,7 +281,7 @@ const WholeSaleScreen = () => {
               <Text style={styles.inputLabel}>Name</Text>
               <TextInput
                 style={styles.inputField}
-                onChangeText={setProductName}
+                onChangeText={(text) => setProductName(text)}
                 value={productName}
               />
             </View>
@@ -249,7 +290,7 @@ const WholeSaleScreen = () => {
               <Text style={styles.inputLabel}>Weight</Text>
               <TextInput
                 style={styles.inputField}
-                onChangeText={setProductWeight}
+                onChangeText={(text) => setProductWeight(text)}
                 value={productWeight}
                 keyboardType="numeric"
               />
@@ -259,7 +300,7 @@ const WholeSaleScreen = () => {
               <Text style={styles.inputLabel}>Amount</Text>
               <TextInput
                 style={styles.inputField}
-                onChangeText={setProductAmount}
+                onChangeText={(text) => setProductAmount(text)}
                 value={productAmount}
                 keyboardType="numeric"
               />
@@ -302,6 +343,88 @@ const WholeSaleScreen = () => {
                 buttonStyle={styles.deleteButton}
               />
             </View>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isCalculateModalVisible}
+        onRequestClose={() => toggleCalculateModal()}
+      >
+        <View style={styles.modalContainer}>
+          <View
+            style={[
+              styles.addAddressFrame,
+              {
+                height:
+                  productSelectedList.length === 0 ? hp("35%") : hp("60%"),
+              },
+            ]}
+          >
+            <Text style={styles.modalTitle}>Calculate</Text>
+            <Text style={styles.modalText}>
+              Determine the products, weight and total amount
+            </Text>
+
+            <View style={[styles.inputContainer, { marginTop: hp("2%") }]}>
+              <Text style={styles.inputLabel}>Set Weight Limit</Text>
+              <TextInput
+                style={styles.inputField}
+                onChangeText={(text) => setWeightLimit(text)}
+                value={weightLimit}
+                keyboardType="numeric"
+              />
+            </View>
+            <Button
+              title="Calculate"
+              onPress={() => calculate(weightLimit)}
+              buttonStyle={styles.deleteButton}
+            />
+            {productSelectedList.length === 0 ? null : (
+              <View style={{ height: hp("25%") }}>
+                <View
+                  style={{ flexDirection: "row", marginHorizontal: wp("2%") }}
+                >
+                  <Text style={[styles.modalColumnName, { flex: 2 }]}>
+                    Name
+                  </Text>
+                  <Text style={[styles.modalColumnName, { flex: 1 }]}>
+                    Weight
+                  </Text>
+                  <Text style={[styles.modalColumnName, { flex: 1 }]}>
+                    Amount
+                  </Text>
+                </View>
+                <FlatList
+                  data={productSelectedList}
+                  renderItem={({ item }) => (
+                    <View
+                      style={styles.modalProductContainer}
+                      onPress={() => toggleDeleteModal(item)}
+                    >
+                      <Text style={[styles.productInfo, { flex: 2 }]}>
+                        {item.productName}
+                      </Text>
+
+                      <Text style={[styles.productInfo, { flex: 1 / 2 }]}>
+                        {item.productWeight}
+                      </Text>
+
+                      <Text
+                        style={[
+                          styles.productInfo,
+                          { flex: 1, textAlign: "center" },
+                        ]}
+                      >
+                        {item.productAmount}
+                      </Text>
+                    </View>
+                  )}
+                />
+                <Text>Total Amount: {totalAmount}</Text>
+              </View>
+            )}
           </View>
         </View>
       </Modal>
@@ -352,6 +475,11 @@ const styles = StyleSheet.create({
     fontFamily: "karma-bold",
     marginVertical: hp("1%"),
     fontSize: hp("2%"),
+  },
+  modalColumnName: {
+    fontFamily: "karma-bold",
+    marginVertical: hp("1%"),
+    fontSize: hp("1.8%"),
   },
   scrollContainer: {
     flex: 1,
@@ -435,6 +563,13 @@ const styles = StyleSheet.create({
     height: hp("8%"),
     alignItems: "center",
   },
+  modalProductContainer: {
+    flexDirection: "row",
+    marginBottom: hp("0.5%"),
+    paddingHorizontal: wp("4%"),
+    paddingVertical: hp("2%"),
+    minWidth: wp("60%"),
+  },
   productInfo: {
     fontFamily: "karma-regular",
     fontSize: wp("3.5%"),
@@ -455,7 +590,6 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: "#147691",
-    marginTop: hp("3%"),
     padding: wp("3%"),
     paddingHorizontal: wp("8%"),
     borderRadius: wp("2%"),
