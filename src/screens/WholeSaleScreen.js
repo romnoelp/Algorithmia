@@ -394,9 +394,17 @@ const WholeSaleScreen = () => {
               onPress={() => calculate(weightLimit)}
               buttonStyle={styles.deleteButton}
             />
-            <Text style={styles.modalText}>Knapsack Content</Text>
+
             {productSelectedList.length === 0 ? null : (
-              <View style={{ height: hp("25%") }}>
+              <View style={{ height: hp("25%"), marginTop: hp("1%") }}>
+                <Text
+                  style={[
+                    styles.modalText,
+                    { textAlign: "center", fontFamily: "karma-bold" },
+                  ]}
+                >
+                  Knapsack Content
+                </Text>
                 <View style={{ flexDirection: "row" }}>
                   <Text style={[styles.modalColumnName, { flex: 2 }]}>
                     Name
