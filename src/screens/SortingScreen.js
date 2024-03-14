@@ -5,7 +5,6 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  Button
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 import * as Font from "expo-font";
@@ -16,6 +15,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { useProductContext } from "../../context/ProductContext";
+import { AntDesign } from "@expo/vector-icons";
 
 const loadFont = () => {
   return Font.loadAsync({
@@ -33,6 +33,8 @@ const SortingScreen = () => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
 
+  console.log(products);
+
   const handleSort = (field) => {
     if (field === sortField) {
       setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
@@ -42,10 +44,6 @@ const SortingScreen = () => {
     }
   };
 
-  const resetList = () => {
-    setSortField(products);
-  };
-
   const selectionSort = (array) => {
     const sortedArray = [...array];
     sortedArray.sort((a, b) => {
@@ -53,7 +51,7 @@ const SortingScreen = () => {
       const valB = b[sortField];
 
       if (valA === undefined || valB === undefined) {
-        return 0; 
+        return 0;
       }
 
       if (sortOrder === "asc") {
@@ -82,31 +80,57 @@ const SortingScreen = () => {
   return (
     <SafeAreaView style={{ backgroundColor: "#EBF7F9", flex: 1 }}>
       <View style={styles.header}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={styles.headerText}>Sorted List</Text>
-          <SvgXml xml={SVGTwo("black")} width={30} height={30} style={styles.svgIcon} />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button 
-            title="Reset" 
-            onPress={resetList} 
-            color="#6FD1EB" 
-            buttonStyle={styles.button} 
-            titleStyle={{ fontFamily: "karma-bold", fontSize: wp("3.5%") }} 
+          <SvgXml
+            xml={SVGTwo("black")}
+            width={30}
+            height={30}
+            style={styles.svgIcon}
           />
         </View>
       </View>
 
       <View style={styles.mainContainer}>
         <View style={styles.labelRow}>
-          <TouchableOpacity onPress={() => handleSort("productName")} style={{ flex: 2 }}>
+          <TouchableOpacity
+            onPress={() => handleSort("productName")}
+            style={{ flex: 2, flexDirection: "row" }}
+          >
             <Text style={styles.label}>Name</Text>
+            {sortField === "productName" ? (
+              sortOrder === "asc" ? (
+                <AntDesign name="arrowup" size={20} color="black" />
+              ) : (
+                <AntDesign name="arrowdown" size={20} color="black" />
+              )
+            ) : null}
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleSort("productWeight")} style={{ flex: 1 }}>
+          <TouchableOpacity
+            onPress={() => handleSort("productWeight")}
+            style={{ flex: 1, flexDirection: "row" }}
+          >
             <Text style={styles.label}>Weight</Text>
+            {sortField === "productWeight" ? (
+              sortOrder === "asc" ? (
+                <AntDesign name="arrowup" size={20} color="black" />
+              ) : (
+                <AntDesign name="arrowdown" size={20} color="black" />
+              )
+            ) : null}
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleSort("productAmount")} style={{ flex: 1 }}>
+          <TouchableOpacity
+            onPress={() => handleSort("productAmount")}
+            style={{ flex: 1, flexDirection: "row" }}
+          >
             <Text style={styles.label}>Amount</Text>
+            {sortField === "productAmount" ? (
+              sortOrder === "asc" ? (
+                <AntDesign name="arrowup" size={20} color="black" />
+              ) : (
+                <AntDesign name="arrowdown" size={20} color="black" />
+              )
+            ) : null}
           </TouchableOpacity>
         </View>
         <FlatList
@@ -114,12 +138,20 @@ const SortingScreen = () => {
           data={sortedData}
           renderItem={({ item }) => (
             <View style={styles.item}>
-              <Text style={[styles.productInfo, { flex: 2 }]}>{item.productName}</Text>
-              <Text style={[styles.productInfo, { flex: 1 }]}>{item.productWeight}</Text>
-              <Text style={[styles.productInfo, { flex: 1, textAlign: "center" }]}>{item.productAmount}</Text>
+              <Text style={[styles.productInfo, { flex: 2 }]}>
+                {item.productName}
+              </Text>
+              <Text style={[styles.productInfo, { flex: 1 / 2 }]}>
+                {item.productWeight}
+              </Text>
+              <Text
+                style={[styles.productInfo, { flex: 1, textAlign: "center" }]}
+              >
+                {item.productAmount}
+              </Text>
             </View>
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.key.toString()}
         />
       </View>
     </SafeAreaView>
@@ -187,15 +219,27 @@ const styles = StyleSheet.create({
     fontSize: wp("3.5%"),
     fontFamily: "karma-bold",
     textAlign: "center",
-    marginBottom: wp("2%")
+    marginBottom: wp("2%"),
   },
   buttonContainer: {
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: "flex-end",
+    flexDirection: "row",
+    alignItems: "center",
   },
   svgIcon: {
     marginBottom: wp("2%"),
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: wp("80%"),
+    backgroundColor: "#EBF7F9",
+    borderRadius: 10,
+    padding: 20,
   },
 });
 

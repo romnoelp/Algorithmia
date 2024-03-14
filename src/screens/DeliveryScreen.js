@@ -324,8 +324,6 @@ const DeliveryScreen = () => {
     }
   };
 
-  
-
   const handleSortAddresses = async () => {
     try {
       const sorted = await sortAddressesExhaustive(
@@ -510,8 +508,8 @@ const DeliveryScreen = () => {
               </View>
               <FlatList
                 data={customerData}
-                renderItem={({ item, index }) => (
-                  <View key={index} style={styles.customerContainer}>
+                renderItem={({ item }) => (
+                  <View key={item.key} style={styles.customerContainer}>
                     <Text
                       style={[styles.sortedCustomerInfo, { textAlign: "left" }]}
                     >
