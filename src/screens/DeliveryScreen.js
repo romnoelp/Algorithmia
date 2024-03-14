@@ -67,62 +67,31 @@ const DeliveryScreen = () => {
   const handleAddAddress = async () => {
     setIsLoading(true);
     try {
-      const apiResponse = await axios.get(
-        `https://nominatim.openstreetmap.org/search?q=${customerAddress}&format=json&limit=1`
-      );
+      if (user) {
+        const docRef = await db
+          .collection("users")
+          .doc(user.displayName)
+          .collection("deliveries")
+          .add({
+            customerName,
+            customerAddress,
+          });
 
-      if (apiResponse.data && apiResponse.data.length > 0) {
-        const { lat, lon } = apiResponse.data[0];
-        if (lat && lon) {
-          const coordinates = {
-            latitude: parseFloat(lat),
-            longitude: parseFloat(lon),
-          };
+        const newCustomerData = {
+          key: docRef.id,
+          customerName,
+          customerAddress,
+        };
 
-          const sourceAddressCoords = {
-            latitude: 14.663979273045632,
-            longitude: 121.05794500238676,
-          };
+        addDelivery(newCustomerData);
 
-          const distance = calculateDistance(sourceAddressCoords, coordinates);
-          const convertedDistance = (distance / 1000).toFixed(2);
-
-          if (user) {
-            const docRef = await db
-              .collection("users")
-              .doc(user.displayName)
-              .collection("deliveries")
-              .add({
-                customerName,
-                customerAddress,
-                coordinates,
-                customerDistance: convertedDistance,
-              });
-
-            const newCustomerData = {
-              key: docRef.id,
-              customerName,
-              customerAddress,
-              coordinates,
-              customerDistance: convertedDistance,
-            };
-
-            addDelivery(newCustomerData);
-
-            setIsLoading(false);
-            setCustomerName("");
-            setCustomerAddress("");
-            setIsAddAddressModalVisible(false);
-            fetchAddresses();
-          }
-        } else {
-          console.error("Coordinates are undefined for the provided address.");
-        }
-      } else {
-        console.error("Unable to find coordinates for the provided address.");
+        setIsLoading(false);
+        setCustomerName("");
+        setCustomerAddress("");
+        setIsAddAddressModalVisible(false);
       }
     } catch (error) {
-      console.error("Error occurred while fetching coordinates:", error);
+      console.error("Error occurred while adding address:", error);
       Toast.show("Error occurred while adding address", Toast.LONG);
     } finally {
       setIsLoading(false);
@@ -212,12 +181,9 @@ const DeliveryScreen = () => {
         <SvgXml xml={SVGDelivery} />
       </View>
       <View style={styles.testContainer}>
-        <View style={{ flexDirection: "row", marginHorizontal: wp("2%") }}>
-          <Text style={[styles.columnName, { flex: 1 + 1 / 2 }]}>Customer</Text>
-          <Text style={[styles.columnName, { flex: 1 }]}>Address</Text>
-          <Text style={[styles.columnName, { flex: 1, textAlign: "right" }]}>
-            Distance
-          </Text>
+        <View style={{ flexDirection: "row", marginHorizontal: wp("10%") }}>
+          <Text style={[styles.columnName, { flex: 1 }]}>Customer</Text>
+          <Text style={[styles.columnName, { flex: 1  }]}>Address</Text>
         </View>
         <FlatList
           data={customerData}
@@ -346,7 +312,7 @@ const DeliveryScreen = () => {
             </Text>
             <View style={styles.buttonContainer}>
               <Button
-                title="Cancel"
+                title="Source"
                 titleStyle={styles.saveButtonText}
                 buttonStyle={[styles.cancelDeleteButton]}
                 onPress={() => setContainerOptionsVisible(false)}
@@ -469,6 +435,7 @@ const styles = StyleSheet.create({
   columnName: {
     fontFamily: "karma-bold",
     marginVertical: hp("1%"),
+    marginHorizontal: wp("7%"),
     fontSize: hp("2%"),
   },
   container: {
