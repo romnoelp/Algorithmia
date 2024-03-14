@@ -12,7 +12,11 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 
-const FloatingButton = ({ onDeleteAllItemsPress, onAddItemsPress }) => {
+const FloatingButton = ({
+  onDeleteAllItemsPress,
+  onAddItemsPress,
+  onCalculateAllItemsPress,
+}) => {
   const [animation] = useState(new Animated.Value(0));
   const [open, setOpen] = useState(false);
 
@@ -33,7 +37,7 @@ const FloatingButton = ({ onDeleteAllItemsPress, onAddItemsPress }) => {
       {
         translateY: animation.interpolate({
           inputRange: [0, 1],
-          outputRange: [0, -80],
+          outputRange: [0, -70],
         }),
       },
     ],
@@ -45,7 +49,19 @@ const FloatingButton = ({ onDeleteAllItemsPress, onAddItemsPress }) => {
       {
         translateY: animation.interpolate({
           inputRange: [0, 1],
-          outputRange: [0, -140],
+          outputRange: [0, -130],
+        }),
+      },
+    ],
+  };
+
+  const calculateItemsStyle = {
+    transform: [
+      { scale: animation },
+      {
+        translateY: animation.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -190],
         }),
       },
     ],
@@ -74,6 +90,19 @@ const FloatingButton = ({ onDeleteAllItemsPress, onAddItemsPress }) => {
           ]}
         >
           <Entypo name="trash" size={25} color="#EBF7F9" />
+        </Animated.View>
+      </TouchableWithoutFeedback>
+
+      <TouchableWithoutFeedback onPress={() => onCalculateAllItemsPress()}>
+        <Animated.View
+          style={[
+            styles.button,
+            styles.secondary,
+            styles.menu,
+            calculateItemsStyle,
+          ]}
+        >
+          <Entypo name="calculator" size={24} color="#EBF7F9" />
         </Animated.View>
       </TouchableWithoutFeedback>
 
