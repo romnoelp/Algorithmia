@@ -5,7 +5,6 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  Modal,
 } from "react-native";
 import { SvgXml } from "react-native-svg";
 import * as Font from "expo-font";
@@ -32,6 +31,7 @@ const SortingScreen = () => {
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
+
 
   const handleSort = (field) => {
     if (field === sortField) {
