@@ -37,6 +37,7 @@ const DeliveryScreen = () => {
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [isScrolling, setIsScrolling] = useState(false);
+  const [containerOptionsVisible, setContainerOptionsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState(null);
@@ -147,7 +148,7 @@ const DeliveryScreen = () => {
           });
 
         Toast.show("All addresses deleted successfully", Toast.SHORT);
-        setCustomerData([]); // Clear the customer data array
+        setCustomerData([]);
       }
     } catch (error) {
       console.error("Error deleting all addresses:", error);
@@ -157,12 +158,15 @@ const DeliveryScreen = () => {
     }
   };
 
-  const handleContainerPress = (item) => {};
+  const handleContainerPress = (item) => {
+    setAddressToDelete(item.key);
+    setContainerOptionsVisible(true);
+  };
 
   const handleDeleteAddress = async () => {
     try {
-      if (addressToDelete) {
-        console.log("Deleting address with key:", addressToDelete);
+      console.log("Deleting address with key:", addressToDelete);
+      if (addressToDelete && user) {
         await db
           .collection("users")
           .doc(user.displayName)
@@ -183,8 +187,9 @@ const DeliveryScreen = () => {
       }
     } catch (error) {
       console.error("Error deleting address:", error);
+      Toast.show("Error occurred while deleting address", Toast.LONG);
     } finally {
-      setDeleteModalVisible(false);
+      setContainerOptionsVisible(false);
       setAddressToDelete(null);
     }
   };
@@ -313,13 +318,43 @@ const DeliveryScreen = () => {
               <Button
                 title="Cancel"
                 titleStyle={styles.saveButtonText}
-                onPress={() => setDeleteModalVisible(false)}
                 buttonStyle={[styles.cancelDeleteButton]}
+                onPress={() => setDeleteModalVisible(false)}
               />
               <Button
                 title="Delete"
                 titleStyle={styles.saveButtonText}
                 onPress={handleDeleteAllAddress}
+                buttonStyle={styles.deleteAllButton}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={containerOptionsVisible}
+        onRequestClose={() => setContainerOptionsVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={[styles.addAddressFrame, { height: hp("30%") }]}>
+            <Text style={styles.modalTitle}>Operation</Text>
+            <Text style={styles.modalText}>
+              Select an operation for the selected address.
+            </Text>
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Cancel"
+                titleStyle={styles.saveButtonText}
+                buttonStyle={[styles.cancelDeleteButton]}
+                onPress={() => setContainerOptionsVisible(false)}
+              />
+              <Button
+                title="Delete"
+                titleStyle={styles.saveButtonText}
+                onPress={handleDeleteAddress}
                 buttonStyle={styles.deleteAllButton}
               />
             </View>
