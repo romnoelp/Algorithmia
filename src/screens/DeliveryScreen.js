@@ -181,9 +181,11 @@ const DeliveryScreen = () => {
         <SvgXml xml={SVGDelivery} />
       </View>
       <View style={styles.testContainer}>
-        <View style={{ flexDirection: "row", marginHorizontal: wp("10%") }}>
+        <View style={{ flexDirection: "row", marginHorizontal: wp("4%") }}>
           <Text style={[styles.columnName, { flex: 1 }]}>Customer</Text>
-          <Text style={[styles.columnName, { flex: 1  }]}>Address</Text>
+          <Text style={[styles.columnName, { flex: 1, textAlign: "center" }]}>
+            Address
+          </Text>
         </View>
         <FlatList
           data={customerData}
@@ -193,18 +195,14 @@ const DeliveryScreen = () => {
               onPress={() => handleContainerPress(item)}
               onLongPress={() => handleContainerLongPress(item)}
             >
-              <Text style={[styles.customerInfo, { flex: 1 + 1 / 2 }]}>
+              <Text style={[styles.customerInfo, { flex: 1 }]}>
                 {item.customerName}
               </Text>
 
-              <Text style={[styles.customerInfo, { flex: 1 }]}>
-                {item.customerAddress}
-              </Text>
-
               <Text
-                style={[styles.customerInfo, { flex: 1, textAlign: "right" }]}
+                style={[styles.customerInfo, { flex: 1, textAlign: "center" }]}
               >
-                {item.customerDistance}
+                {item.customerAddress}
               </Text>
             </TouchableOpacity>
           )}
@@ -435,7 +433,7 @@ const styles = StyleSheet.create({
   columnName: {
     fontFamily: "karma-bold",
     marginVertical: hp("1%"),
-    marginHorizontal: wp("7%"),
+
     fontSize: hp("2%"),
   },
   container: {
