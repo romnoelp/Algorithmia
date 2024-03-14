@@ -33,6 +33,10 @@ const DeliveryScreen = () => {
     useState(false);
   const [isDeleteAllAddressModalVisible, setIsDeleteAlAddressModalVisible] =
     useState(false);
+  const [
+    isCalculateAllAddressModalVisible,
+    setIsCalculateAllAddressModalVisible,
+  ] = useState(false);
   const [customerData, setCustomerData] = useState([]);
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
@@ -41,7 +45,8 @@ const DeliveryScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState(null);
-
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [sourceAddress, setSourceAddress] = useState("");
   const { addDelivery, deliveries } = useDeliveryContext();
   const user = auth.currentUser;
 
@@ -127,14 +132,27 @@ const DeliveryScreen = () => {
     }
   };
 
+  const toggleCalculateAddressModal = () => {
+    setIsCalculateAllAddressModalVisible(!isCalculateAllAddressModalVisible);
+  };
+
   const handleContainerPress = (item) => {
+    setSelectedItem(item); // Store the clicked item
     setAddressToDelete(item.key);
     setContainerOptionsVisible(true);
   };
 
+  const handleSourceAddress = () => {
+    if (selectedItem) {
+      const sourceAddress = selectedItem.customerAddress;
+      setSourceAddress(sourceAddress);
+      console.log("Source Address: ", sourceAddress);
+      setContainerOptionsVisible(false);
+    }
+  };
+
   const handleDeleteAddress = async () => {
     try {
-      console.log("Deleting address with key:", addressToDelete);
       if (addressToDelete && user) {
         await db
           .collection("users")
@@ -147,10 +165,6 @@ const DeliveryScreen = () => {
 
         const updatedCustomerData = customerData.filter(
           (item) => item.key !== addressToDelete
-        );
-        console.log(
-          "Updated customer data after deletion:",
-          updatedCustomerData
         );
         setCustomerData(updatedCustomerData);
       }
@@ -168,11 +182,17 @@ const DeliveryScreen = () => {
   };
 
   const handleAddAddressPress = () => {
-    console.log("Add Address Pressed from DeliveryScreen");
     setIsAddAddressModalVisible(true);
   };
 
-  const handleCalculateAddressPres = () => {};
+  const handleContainerOptionsClose = () => {
+    setSelectedItem(null);
+    setAddressToDelete(null);
+  };
+
+  const handleCalculateAddressPress = () => {
+    setIsCalculateAllAddressModalVisible(true);
+  };
 
   return (
     <View style={styles.container}>
@@ -213,7 +233,7 @@ const DeliveryScreen = () => {
         <FloatingButton
           onDeleteAllItemsPress={handleDeleteAllAddressesPress}
           onAddItemsPress={handleAddAddressPress}
-          onCalculateAllItemsPress={handleCalculateAddressPres}
+          onCalculateAllItemsPress={handleCalculateAddressPress}
         />
         {isLoading && (
           <View style={styles.loadingContainer}>
@@ -300,7 +320,7 @@ const DeliveryScreen = () => {
         animationType="fade"
         transparent={true}
         visible={containerOptionsVisible}
-        onRequestClose={() => setContainerOptionsVisible(false)}
+        onRequestClose={handleContainerOptionsClose}
       >
         <View style={styles.modalContainer}>
           <View style={[styles.addAddressFrame, { height: hp("30%") }]}>
@@ -313,7 +333,7 @@ const DeliveryScreen = () => {
                 title="Source"
                 titleStyle={styles.saveButtonText}
                 buttonStyle={[styles.cancelDeleteButton]}
-                onPress={() => setContainerOptionsVisible(false)}
+                onPress={handleSourceAddress}
               />
               <Button
                 title="Delete"
@@ -322,6 +342,23 @@ const DeliveryScreen = () => {
                 buttonStyle={styles.deleteAllButton}
               />
             </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isCalculateAllAddressModalVisible}
+        onRequestClose={toggleCalculateAddressModal}
+        animationInTiming={2000}
+        animationOutTiming={2000}
+      >
+        <View style={styles.sortedAddressContainer}>
+          <View style={[styles.addAddressFrame, { height: hp("65%") }]}>
+            <Text style={styles.modalTitle}>Nearest addresses</Text>
+            <Text style={styles.modalText}></Text>
+            <View style={styles.buttonContainer}></View>
           </View>
         </View>
       </Modal>
@@ -482,6 +519,12 @@ const styles = StyleSheet.create({
     fontSize: wp("6%"),
     elevation: 10,
     overflow: "hidden", //This makes the button rounded in IOS
+  },
+  sortedAddressContainer: {
+    marginTop: hp("16.4%"),
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContainer: {
     flex: 1,
