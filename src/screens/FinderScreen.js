@@ -17,7 +17,6 @@ import { SVGFour, loadFont } from "../../loadFontSVG";
 import { Button } from "@rneui/base";
 import { useDeliveryContext } from "../../context/DeliveryContext";
 
-
 const FinderScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -25,20 +24,11 @@ const FinderScreen = () => {
   const [selectedAddress, setSelectedAddress] = useState("");
   const [occurrences, setOccurrences] = useState("");
   const [position, setPosition] = useState("");
-  const [loading, setLoading] = useState(true);
-  const {deliveries} = useDeliveryContext();
-
+  const { deliveries } = useDeliveryContext();
 
   useEffect(() => {
-    if (!fontLoaded){
-      loadFont().then(() => setFontLoaded(true));
-    };
+    loadFont().then(() => setFontLoaded(true));
   }, []);
-  if (!fontLoaded){
-    return null;
-  }
-
-
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
@@ -66,14 +56,15 @@ const FinderScreen = () => {
     let occurrences = 0;
     let positions = [];
 
-    for (let i = 0; i < words.length; i++) {
-      const cleanedWord = words[i].replace(/[^\w\s]/gi, "");
+    words.forEach((word, index) => {
+      const cleanedWord = word.replace(/[^\w\s]/gi, "");
 
       if (cleanedWord.toLowerCase() === cleanedSearchTerm.toLowerCase()) {
         occurrences++;
-        positions.push(i + 1);
+        positions.push(index + 1);
       }
-    }
+    });
+
     setOccurrences(occurrences);
     setPosition(positions.join(", "));
   };
@@ -81,6 +72,7 @@ const FinderScreen = () => {
   if (!fontLoaded) {
     return null;
   }
+
   return (
     <View style={styles.container}>
       <View style={styles.headerTitleSVG}>
@@ -117,16 +109,12 @@ const FinderScreen = () => {
         visible={isModalVisible}
         onRequestClose={toggleModal}
       >
-        <View
-          style={styles.modalBackground}
-          onPress={toggleModal}
-          activeOpacity={1}
-        >
+        <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Word Finder</Text>
               <View style={styles.inputContainer}>
-                <Text style={[styles.inputLabel]}>Search</Text>
+                <Text style={styles.inputLabel}>Search</Text>
                 <TextInput
                   style={styles.inputField}
                   onChangeText={setSearchTerm}
@@ -137,7 +125,6 @@ const FinderScreen = () => {
                   autoCorrect={false}
                 />
               </View>
-              
               <Text style={styles.addressText}>{selectedAddress}</Text>
               <Button
                 title={"Extract Word"}
@@ -145,11 +132,10 @@ const FinderScreen = () => {
                 buttonStyle={styles.saveButton}
                 onPress={handleSearch}
               />
-
               <Text style={styles.occurrencesText}>
-                Number of word instance : {occurrences}{" "}
+                Number of word instances: {occurrences}{" "}
               </Text>
-              <Text style={styles.occurrencesText}>Position : {position}</Text>
+              <Text style={styles.occurrencesText}>Position: {position}</Text>
             </View>
           </View>
         </View>
@@ -258,10 +244,6 @@ const styles = StyleSheet.create({
     fontFamily: "karma-light",
     color: "#EBF7F9",
     fontSize: 16,
-  },
-  modalTextDesign: {
-    alignSelf: "flex-start",
-    top: 100,
   },
   occurrencesText: {
     fontFamily: "karma-regular",
