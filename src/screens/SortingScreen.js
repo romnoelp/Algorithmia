@@ -15,6 +15,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { useProductContext } from "../../context/ProductContext";
+import { AntDesign } from "@expo/vector-icons";
 
 const loadFont = () => {
   return Font.loadAsync({
@@ -94,30 +95,42 @@ const SortingScreen = () => {
         <View style={styles.labelRow}>
           <TouchableOpacity
             onPress={() => handleSort("productName")}
-            style={{ flex: 2, flexDirection: "row", alignItems: "center" }}
+            style={{ flex: 2, flexDirection: "row" }}
           >
             <Text style={styles.label}>Name</Text>
-            {sortField === "productName" && (
-              <Text>{sortOrder === "asc" ? " ▲" : " ▼"}</Text>
-            )}
+            {sortField === "productName" ? (
+              sortOrder === "asc" ? (
+                <AntDesign name="arrowup" size={20} color="black" />
+              ) : (
+                <AntDesign name="arrowdown" size={20} color="black" />
+              )
+            ) : null}
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => handleSort("productWeight")}
-            style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
+            style={{ flex: 1, flexDirection: "row" }}
           >
             <Text style={styles.label}>Weight</Text>
-            {sortField === "productWeight" && (
-              <Text>{sortOrder === "asc" ? " ▲" : " ▼"}</Text>
-            )}
+            {sortField === "productWeight" ? (
+              sortOrder === "asc" ? (
+                <AntDesign name="arrowup" size={20} color="black" />
+              ) : (
+                <AntDesign name="arrowdown" size={20} color="black" />
+              )
+            ) : null}
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => handleSort("productAmount")}
-            style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
+            style={{ flex: 1, flexDirection: "row" }}
           >
             <Text style={styles.label}>Amount</Text>
-            {sortField === "productAmount" && (
-              <Text>{sortOrder === "asc" ? " ▲" : " ▼"}</Text>
-            )}
+            {sortField === "productAmount" ? (
+              sortOrder === "asc" ? (
+                <AntDesign name="arrowup" size={20} color="black" />
+              ) : (
+                <AntDesign name="arrowdown" size={20} color="black" />
+              )
+            ) : null}
           </TouchableOpacity>
         </View>
         <FlatList
