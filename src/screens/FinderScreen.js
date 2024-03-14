@@ -15,6 +15,8 @@ import {
 } from "react-native-responsive-screen";
 import { SVGFour, loadFont } from "../../loadFontSVG";
 import { Button } from "@rneui/base";
+import { useDeliveryContext } from "../../context/DeliveryContext";
+
 
 const FinderScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -23,25 +25,30 @@ const FinderScreen = () => {
   const [selectedAddress, setSelectedAddress] = useState("");
   const [occurrences, setOccurrences] = useState("");
   const [position, setPosition] = useState("");
+  const [loading, setLoading] = useState(true);
+  const {deliveries} = useDeliveryContext();
+
 
   useEffect(() => {
-    loadFont().then(() => setFontLoaded(true));
+    if (!fontLoaded){
+      loadFont().then(() => setFontLoaded(true));
+    };
   }, []);
+  if (!fontLoaded){
+    return null;
+  }
 
-  useEffect(() => {
-    if (!isModalVisible) {
-      setSearchTerm("");
-      setOccurrences("");
-      setPosition("");
-    }
-  }, [isModalVisible]);
+
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
+    setSearchTerm("");
+    setOccurrences("");
+    setPosition("");
   };
 
   const handleItemPress = (item) => {
-    setSelectedAddress(item.address);
+    setSelectedAddress(item.customerAddress);
     toggleModal();
   };
 
@@ -67,30 +74,13 @@ const FinderScreen = () => {
         positions.push(i + 1);
       }
     }
-
     setOccurrences(occurrences);
     setPosition(positions.join(", "));
   };
 
-  const data = [
-    {
-      key: 1,
-      name: "Elden Lord, Godfrey",
-      address: "Lands Between",
-      amount: "300",
-    },
-    {
-      key: 2,
-      name: "Legolas, Russian",
-      address: "Serbia, Russia, serbia",
-      amount: "600",
-    },
-  ];
-
   if (!fontLoaded) {
     return null;
   }
-
   return (
     <View style={styles.container}>
       <View style={styles.headerTitleSVG}>
@@ -99,31 +89,23 @@ const FinderScreen = () => {
       </View>
 
       <View style={styles.mainContainer}>
-        <View style={{ flexDirection: "row", marginHorizontal: wp("2%") }}>
-          <Text style={[styles.columnName, { flex: 1 + 1 / 2 }]}>Customer</Text>
-          <Text style={[styles.columnName, { flex: 1 }]}>Address</Text>
-          <Text style={[styles.columnName, { flex: 1, textAlign: "right" }]}>
-            Distance
-          </Text>
+        <View style={{ flexDirection: "row", marginHorizontal: wp("4%") }}>
+          <Text style={[styles.columnName, { flex: 1 }]}>Customer</Text>
+          <Text style={[styles.columnName, { flex: 1, textAlign: "center" }]}>Address</Text>
         </View>
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={data}
+          data={deliveries}
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => handleItemPress(item)}
               style={styles.dataContainer}
             >
-              <Text style={[styles.customerInfo, { flex: 1 + 1 / 2 }]}>
-                {item.name}
-              </Text>
               <Text style={[styles.customerInfo, { flex: 1 }]}>
-                {item.address}
+                {item.customerName}
               </Text>
-              <Text
-                style={[styles.customerInfo, { flex: 1, textAlign: "right" }]}
-              >
-                {item.amount}
+              <Text style={[styles.customerInfo, { flex: 1, textAlign:"center" }]}>
+                {item.customerAddress}
               </Text>
             </TouchableOpacity>
           )}
@@ -155,6 +137,7 @@ const FinderScreen = () => {
                   autoCorrect={false}
                 />
               </View>
+              
               <Text style={styles.addressText}>{selectedAddress}</Text>
               <Button
                 title={"Extract Word"}
