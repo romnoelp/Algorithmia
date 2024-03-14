@@ -41,35 +41,15 @@ const DeliveryScreen = () => {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState(null);
 
-  const { addDelivery } = useDeliveryContext();
+  const { addDelivery, deliveries } = useDeliveryContext();
   const user = auth.currentUser;
 
   useEffect(() => {
     if (!fontLoaded) {
       loadFont().then(() => setFontLoaded(true));
     }
-    fetchAddresses();
-  }, []);
-
-  const fetchAddresses = async () => {
-    try {
-      const user = auth.currentUser;
-      if (user) {
-        const snapshot = await db
-          .collection("users")
-          .doc(user.displayName)
-          .collection("deliveries")
-          .get();
-        const data = snapshot.docs.map((doc) => ({
-          key: doc.id,
-          ...doc.data(),
-        }));
-        setCustomerData(data);
-      }
-    } catch (error) {
-      console.error("Error fetching data from the database:", error);
-    }
-  };
+    setCustomerData(deliveries);
+  }, [deliveries]);
 
   const toggleAddAddressModal = () => {
     setIsAddAddressModalVisible(!isAddAddressModalVisible);
@@ -218,9 +198,7 @@ const DeliveryScreen = () => {
     setIsAddAddressModalVisible(true);
   };
 
-  const handleCalculateAddressPres = () => {
-
-  }
+  const handleCalculateAddressPres = () => {};
 
   return (
     <View style={styles.container}>
