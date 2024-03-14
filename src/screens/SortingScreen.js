@@ -32,6 +32,7 @@ const SortingScreen = () => {
     loadFont().then(() => setFontLoaded(true));
   }, []);
 
+  console.log(products);
 
   const handleSort = (field) => {
     if (field === sortField) {
@@ -42,8 +43,6 @@ const SortingScreen = () => {
     }
   };
 
-
-
   const selectionSort = (array) => {
     const sortedArray = [...array];
     sortedArray.sort((a, b) => {
@@ -51,7 +50,7 @@ const SortingScreen = () => {
       const valB = b[sortField];
 
       if (valA === undefined || valB === undefined) {
-        return 0; 
+        return 0;
       }
 
       if (sortOrder === "asc") {
@@ -80,27 +79,41 @@ const SortingScreen = () => {
   return (
     <SafeAreaView style={{ backgroundColor: "#EBF7F9", flex: 1 }}>
       <View style={styles.header}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={styles.headerText}>Sorted List</Text>
-          <SvgXml xml={SVGTwo("black")} width={30} height={30} style={styles.svgIcon} />
+          <SvgXml
+            xml={SVGTwo("black")}
+            width={30}
+            height={30}
+            style={styles.svgIcon}
+          />
         </View>
       </View>
 
       <View style={styles.mainContainer}>
         <View style={styles.labelRow}>
-          <TouchableOpacity onPress={() => handleSort("productName")} style={{ flex: 2, flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity
+            onPress={() => handleSort("productName")}
+            style={{ flex: 2, flexDirection: "row", alignItems: "center" }}
+          >
             <Text style={styles.label}>Name</Text>
             {sortField === "productName" && (
               <Text>{sortOrder === "asc" ? " ▲" : " ▼"}</Text>
             )}
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleSort("productWeight")} style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity
+            onPress={() => handleSort("productWeight")}
+            style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
+          >
             <Text style={styles.label}>Weight</Text>
             {sortField === "productWeight" && (
               <Text>{sortOrder === "asc" ? " ▲" : " ▼"}</Text>
             )}
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleSort("productAmount")} style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity
+            onPress={() => handleSort("productAmount")}
+            style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
+          >
             <Text style={styles.label}>Amount</Text>
             {sortField === "productAmount" && (
               <Text>{sortOrder === "asc" ? " ▲" : " ▼"}</Text>
@@ -112,12 +125,20 @@ const SortingScreen = () => {
           data={sortedData}
           renderItem={({ item }) => (
             <View style={styles.item}>
-              <Text style={[styles.productInfo, { flex: 2 }]}>{item.productName}</Text>
-              <Text style={[styles.productInfo, { flex: 1/2 }]}>{item.productWeight}</Text>
-              <Text style={[styles.productInfo, { flex: 1, textAlign: "center" }]}>{item.productAmount}</Text>
+              <Text style={[styles.productInfo, { flex: 2 }]}>
+                {item.productName}
+              </Text>
+              <Text style={[styles.productInfo, { flex: 1 / 2 }]}>
+                {item.productWeight}
+              </Text>
+              <Text
+                style={[styles.productInfo, { flex: 1, textAlign: "center" }]}
+              >
+                {item.productAmount}
+              </Text>
             </View>
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.key.toString()}
         />
       </View>
     </SafeAreaView>
@@ -185,12 +206,12 @@ const styles = StyleSheet.create({
     fontSize: wp("3.5%"),
     fontFamily: "karma-bold",
     textAlign: "center",
-    marginBottom: wp("2%")
+    marginBottom: wp("2%"),
   },
   buttonContainer: {
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: "flex-end",
+    flexDirection: "row",
+    alignItems: "center",
   },
   svgIcon: {
     marginBottom: wp("2%"),
