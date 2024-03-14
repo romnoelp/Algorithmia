@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     position: "absolute",
-    bottom: hp("9%"),
-    right: wp("11%"),
+    bottom: hp("7%"),
+    right: wp("8%"),
   },
   button: {
     position: "absolute",

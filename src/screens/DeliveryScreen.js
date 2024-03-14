@@ -23,8 +23,37 @@ import { useDeliveryContext } from "../../context/DeliveryContext";
 import { auth, db } from "../../firebaseConfig";
 import Toast from "react-native-simple-toast";
 
-const calculateDistance = (source, destination) => {
-  return geolib.getDistance(source, destination);
+const calculateDistances = async (sourceAddress, destinationAddresses) => {
+  try {
+    const sourceResponse = await axios.get(
+      `https://nominatim.openstreetmap.org/search?q=${sourceAddress}&format=json&limit=1`
+    );
+    const sourceCoords = {
+      latitude: parseFloat(sourceResponse.data[0].lat),
+      longitude: parseFloat(sourceResponse.data[0].lon),
+    };
+
+    const destinationCoords = [];
+    for (const address of destinationAddresses) {
+      const destinationResponse = await axios.get(
+        `https://nominatim.openstreetmap.org/search?q=${address}&format=json&limit=1`
+      );
+      const destCoord = {
+        latitude: parseFloat(destinationResponse.data[0].lat),
+        longitude: parseFloat(destinationResponse.data[0].lon),
+      };
+      destinationCoords.push(destCoord);
+    }
+
+    const distances = destinationCoords.map((destinationCoord) =>
+      geolib.getDistance(sourceCoords, destinationCoord)
+    );
+
+    return distances;
+  } catch (error) {
+    console.error("Error calculating distances:", error);
+    throw error;
+  }
 };
 
 const DeliveryScreen = () => {
@@ -48,14 +77,23 @@ const DeliveryScreen = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [sourceAddress, setSourceAddress] = useState("");
   const { addDelivery, deliveries } = useDeliveryContext();
+  const [distances, setDistances] = useState([]);
+  const [sortedAddresses, setSortedAddresses] = useState([]);
   const user = auth.currentUser;
 
-  useEffect(() => {
-    if (!fontLoaded) {
-      loadFont().then(() => setFontLoaded(true));
-    }
-    setCustomerData(deliveries);
-  }, [deliveries]);
+  useEffect(
+    () => {
+      if (!fontLoaded) {
+        loadFont().then(() => setFontLoaded(true));
+      }
+      if (isCalculateAllAddressModalVisible) {
+        handleSortAddresses();
+      }
+      setCustomerData(deliveries);
+    },
+    [deliveries],
+    [isCalculateAllAddressModalVisible]
+  );
 
   const toggleAddAddressModal = () => {
     setIsAddAddressModalVisible(!isAddAddressModalVisible);
@@ -190,8 +228,42 @@ const DeliveryScreen = () => {
     setAddressToDelete(null);
   };
 
-  const handleCalculateAddressPress = () => {
+  const handleCalculateAddressPress = async () => {
     setIsCalculateAllAddressModalVisible(true);
+    try {
+      // Calculate distances
+      const calculatedDistances = await calculateDistances(
+        sourceAddress,
+        customerData.map((item) => item.customerAddress)
+      );
+
+      // Convert distances from meters to kilometers
+      const distancesInKm = calculatedDistances.map((distance) =>
+        (distance / 1000).toFixed(2)
+      );
+
+      setDistances(distancesInKm); // Update distances state with distances in kilometers
+      console.log("Distances:", distancesInKm);
+      // Handle displaying distances in the modal
+    } catch (error) {
+      console.error("Error calculating distances:", error);
+      // Handle error
+    }
+  };
+
+  
+
+  const handleSortAddresses = async () => {
+    try {
+      const sorted = await sortAddressesExhaustive(
+        sourceAddress,
+        customerData.map((item) => item.customerAddress)
+      );
+      setSortedAddresses(sorted);
+    } catch (error) {
+      console.error("Error sorting addresses:", error);
+      // Handle error
+    }
   };
 
   return (
@@ -363,20 +435,35 @@ const DeliveryScreen = () => {
                 <Text style={styles.columnHeader}>Address</Text>
                 <Text style={styles.columnHeader}>Distance</Text>
               </View>
-              {customerData.map((item, index) => (
-                <View key={index} style={styles.customerContainer}>
-                  <Text
-                    style={[styles.sortedCustomerInfo, { textAlign: "left" }]}
-                  >
-                    {item.customerName}
-                  </Text>
-                  <Text
-                    style={[styles.sortedCustomerInfo, { textAlign: "center" }]}
-                  >
-                    {item.customerAddress}
-                  </Text>
-                </View>
-              ))}
+              <FlatList
+                data={customerData}
+                renderItem={({ item, index }) => (
+                  <View key={index} style={styles.customerContainer}>
+                    <Text
+                      style={[styles.sortedCustomerInfo, { textAlign: "left" }]}
+                    >
+                      {item.customerName}
+                    </Text>
+                    <Text
+                      style={[sort
+                        styles.sortedCustomerInfo,
+                        { textAlign: "center" },
+                      ]}
+                    >
+                      {item.customerAddress}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.sortedCustomerInfo,
+                        { textAlign: "right" },
+                      ]}
+                    >
+                      {distances[index]}km
+                    </Text>
+                  </View>
+                )}
+                keyExtractor={(item) => item.key.toString()}
+              />
             </View>
           </View>
         </View>
@@ -413,6 +500,7 @@ const styles = StyleSheet.create({
     padding: wp("2%"),
     flexDirection: "column",
     width: wp("80%"),
+    paddingBottom: hp("2.5%"),
   },
   nearestTitle: {
     fontFamily: "karma-bold",
