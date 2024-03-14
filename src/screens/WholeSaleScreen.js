@@ -31,6 +31,7 @@ const WholeSaleScreen = () => {
   const { addProduct, products, setProductList } = useProductContext();
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [isDeleteAllModalVisible, setIsDeleteAllModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   console.log(selectedItem);
   useEffect(() => {
@@ -47,6 +48,10 @@ const WholeSaleScreen = () => {
   const toggleDeleteModal = (item) => {
     setIsDeleteModalVisible(!isDeleteModalVisible);
     setSelectedItem(item);
+  };
+
+  const toggleIsDeleteAllModal = () => {
+    setIsDeleteAllModalVisible(!isDeleteAllModalVisible);
   };
   const handleDeleteProduct = async (selectedItem) => {
     await db
@@ -99,18 +104,39 @@ const WholeSaleScreen = () => {
     setIsLoading(false);
   };
 
+  const handleDeleteAllProducts = async () => {
+    try {
+      const docRef = db
+        .collection("users")
+        .doc(user.displayName)
+        .collection("products");
+      const querySnapshot = await docRef.get();
+      querySnapshot.forEach(async (doc) => {
+        await doc.ref.delete();
+      });
+
+      setProductList([]);
+      Toast.show("All products deleted successfully", Toast.SHORT);
+      toggleIsDeleteAllModal();
+    } catch (error) {
+      Toast.show("Error Deleting", Toast.SHORT);
+    }
+  };
+
   const max = (a, b) => {
     return a > b ? a : b;
   };
 
   const knapSack = (maxWeight, weight, value, size) => {
-    if (n == 0 || W == 0) return 0;
+    if (size == 0 || maxWeight == 0) return 0;
 
-    if (wt[n - 1] > W) return knapSack(W, wt, val, n - 1);
+    if (weight[n - 1] > maxWeight)
+      return knapSack(maxWeight, weight, value, size - 1);
     else
       return max(
-        val[n - 1] + knapSack(W - wt[n - 1], wt, val, n - 1),
-        knapSack(W, wt, val, n - 1)
+        value[size - 1] +
+          knapSack(maxWeight - weight[size - 1], weight, value, size - 1),
+        knapSack(maxWeight, weight, value, size - 1)
       );
   };
 
@@ -150,6 +176,10 @@ const WholeSaleScreen = () => {
               </TouchableOpacity>
             </View>
           )}
+        />
+        <FloatingButton
+          onAddItemsPress={toggleModal}
+          onDeleteAllItemsPress={toggleIsDeleteAllModal}
         />
         <Modal
           animationType="fade"
@@ -195,11 +225,6 @@ const WholeSaleScreen = () => {
             </View>
           </View>
         </Modal>
-
-        {/*<FloatingButton
-          onDeleteAllAddressesPress={this.handleDeleteAllAddressesPress}
-          onAddAddressPress={this.handleAddAddressPress}
-                  />*/}
       </View>
 
       <Modal
@@ -209,7 +234,7 @@ const WholeSaleScreen = () => {
         onRequestClose={toggleModal}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.addAddressFrame}>
+          <View style={[styles.addAddressFrame, { height: hp("50%") }]}>
             <Text style={styles.modalTitle}>Add Product</Text>
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Name</Text>
@@ -252,6 +277,31 @@ const WholeSaleScreen = () => {
                 onPress={handleAddProduct}
               />
             )}
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isDeleteAllModalVisible}
+        onRequestClose={() => toggleIsDeleteAllModal()}
+      >
+        <View style={styles.modalContainer}>
+          <View style={[styles.addAddressFrame, { height: hp("25%") }]}>
+            <Text style={styles.modalTitle}> Delete all products?</Text>
+            <Text style={styles.modalText}>This change cannot be undone.</Text>
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Cancel"
+                onPress={() => toggleIsDeleteAllModal()}
+                buttonStyle={[styles.deleteButton, styles.cancelButton]}
+              />
+              <Button
+                title="Delete"
+                onPress={() => handleDeleteAllProducts()}
+                buttonStyle={styles.deleteButton}
+              />
+            </View>
           </View>
         </View>
       </Modal>
@@ -340,7 +390,6 @@ const styles = StyleSheet.create({
   },
   addAddressFrame: {
     backgroundColor: "#EBF7F9",
-    height: hp("50%"),
     width: wp("80%"),
     alignItems: "center",
     justifyContent: "center",
@@ -403,5 +452,21 @@ const styles = StyleSheet.create({
     width: wp("90%"),
     borderRadius: wp("5%"),
     paddingBottom: hp("2%"),
+  },
+  deleteButton: {
+    backgroundColor: "#147691",
+    marginTop: hp("3%"),
+    padding: wp("3%"),
+    paddingHorizontal: wp("8%"),
+    borderRadius: wp("2%"),
+  },
+  cancelButton: {
+    backgroundColor: "#B9BABB",
+    marginRight: wp("2%"),
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
