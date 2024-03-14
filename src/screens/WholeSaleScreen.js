@@ -19,6 +19,7 @@ import { Button } from "@rneui/base";
 import { auth, db } from "../../firebaseConfig";
 import { useProductContext } from "../../context/ProductContext";
 import Toast from "react-native-simple-toast";
+import FloatingButton from "../components/FloatingButton";
 
 const WholeSaleScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -195,12 +196,10 @@ const WholeSaleScreen = () => {
           </View>
         </Modal>
 
-        <TouchableOpacity
-          style={styles.floatingButtonContainer}
-          onPress={toggleModal}
-        >
-          <Text style={styles.floatingButton}>+</Text>
-        </TouchableOpacity>
+        {/*<FloatingButton
+          onDeleteAllAddressesPress={this.handleDeleteAllAddressesPress}
+          onAddAddressPress={this.handleAddAddressPress}
+                  />*/}
       </View>
 
       <Modal

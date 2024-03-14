@@ -209,8 +209,8 @@ const DeliveryScreen = () => {
         />
 
         <FloatingButton
-          onDeleteAllAddressesPress={this.handleDeleteAllAddressesPress}
-          onAddAddressPress={this.handleAddAddressPress}
+          onDeleteAllItemsPress={handleDeleteAllAddressesPress}
+          onAddItemsPress={handleAddAddressPress}
         />
         {isLoading && (
           <View style={styles.loadingContainer}>

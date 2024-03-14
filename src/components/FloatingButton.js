@@ -27,7 +27,7 @@ const FloatingButton = ({ onDeleteAllItemsPress, onAddItemsPress }) => {
     }).start();
   };
 
-  const deleteAllAddressesStyle = {
+  const deleteAllItemStyle = {
     transform: [
       { scale: animation },
       {
@@ -39,7 +39,7 @@ const FloatingButton = ({ onDeleteAllItemsPress, onAddItemsPress }) => {
     ],
   };
 
-  const addAddressStyle = {
+  const addItemStyle = {
     transform: [
       { scale: animation },
       {
@@ -64,27 +64,22 @@ const FloatingButton = ({ onDeleteAllItemsPress, onAddItemsPress }) => {
 
   return (
     <View style={[styles.container]}>
-      <TouchableWithoutFeedback onPress={onDeleteAllItemsPress}>
+      <TouchableWithoutFeedback onPress={() => onDeleteAllItemsPress()}>
         <Animated.View
           style={[
             styles.button,
             styles.secondary,
             styles.menu,
-            deleteAllAddressesStyle,
+            deleteAllItemStyle,
           ]}
         >
           <Entypo name="trash" size={25} color="#EBF7F9" />
         </Animated.View>
       </TouchableWithoutFeedback>
 
-      <TouchableWithoutFeedback onPress={onAddItemsPress}>
+      <TouchableWithoutFeedback onPress={() => onAddItemsPress()}>
         <Animated.View
-          style={[
-            styles.button,
-            styles.secondary,
-            styles.menu,
-            addAddressStyle,
-          ]}
+          style={[styles.button, styles.secondary, styles.menu, addItemStyle]}
         >
           <Entypo name="plus" size={24} color="#EBF7F9" />
         </Animated.View>
