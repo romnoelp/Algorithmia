@@ -271,7 +271,6 @@ const DeliveryScreen = () => {
         }));
 
         setSortedAddresses(combinedData);
-        setIsCalculateAllAddressModalVisible(true);
       } catch (error) {
         console.error("Error calculating distances:", error);
       }
