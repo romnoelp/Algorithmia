@@ -470,7 +470,7 @@ const DeliveryScreen = () => {
                 )}
                 keyExtractor={shortestPath.distance}
               />
-              <Text>Total Distance:{totalDistance.toFixed(2)} km</Text>
+              <Text style={styles.totalDistance}>Total Distance:{totalDistance.toFixed(2)} km</Text>
             </View>
           </View>
         </View>

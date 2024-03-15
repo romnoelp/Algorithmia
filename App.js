@@ -29,6 +29,7 @@ import {
 } from "react-native-responsive-screen";
 import { DeliveryProvider } from "./context/DeliveryContext";
 import { ProductProvider } from "./context/ProductContext";
+import SplashScreen from "./src/screens/SplashScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -215,6 +216,12 @@ const App = () => (
           <Stack.Screen
             name="LandingScreen"
             component={LandingScreen}
+            options={{ headerShown: false, statusBarHidden: true }}
+          />
+
+          <Stack.Screen
+            name="SplashScreen"
+            component={SplashScreen}
             options={{ headerShown: false, statusBarHidden: true }}
           />
 

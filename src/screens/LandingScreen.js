@@ -9,9 +9,37 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { CommonActions, useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { auth } from "../../firebaseConfig";
 
-const LandingScreen = ({ navigation }) => {
+const LandingScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
+
+  const navigation = useNavigation();
+
+  const credentialChecker = async () => {
+    try {
+      const savedEmail = await AsyncStorage.getItem("email");
+      const savedPassword = await AsyncStorage.getItem("password");
+      if (savedEmail && savedPassword) {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 1,
+            routes: [
+              {
+                name: "SplashScreen",
+              },
+            ],
+          })
+        );
+      } else {
+        navigation.navigate("LogInScreen");
+      }
+    } catch (error) {
+      Toast.show("Error occured: ", Toast.SHORT);
+    }
+  };
 
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
@@ -27,10 +55,10 @@ const LandingScreen = ({ navigation }) => {
         colors={["#2CC5EF", "#147691", "#061215"]}
         style={styles.container}
       >
-        <Text style={styles.title}>Algorithmia</Text>
+        <Text style={styles.title}>Algorithmia™</Text>
         <SvgXml xml={SVGLogo} style={styles.logo} />
         <Text style={styles.second}>
-          Discover your inner computational knack {"\n"}with Algorithmia
+          Discover your inner computational knack with Algorithmia
         </Text>
         <Text style={styles.third}>
           Knapsack, Selection Sorting, TSP, and String {"\n"} Matching - Your
@@ -40,7 +68,7 @@ const LandingScreen = ({ navigation }) => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            navigation.replace("LogInScreen"); // Reaplace with login screen
+            credentialChecker();
           }}
         >
           <Text style={styles.buttonText}>Get started</Text>
@@ -67,7 +95,7 @@ const styles = StyleSheet.create({
     color: "#EBF7F9",
     fontSize: wp("4.5%"),
     textAlign: "center",
-    marginHorizontal: wp("6%"),
+    marginHorizontal: wp("10%"),
     marginTop: hp("3%"),
     marginBottom: hp("2%"),
   },

@@ -30,28 +30,6 @@ const LogInScreen = () => {
 
   useEffect(() => {
     loadFont().then(() => setFontLoaded(true));
-    const unsubscribe = async () => {
-      try {
-        const savedEmail = await AsyncStorage.getItem("email");
-        const savedPassword = await AsyncStorage.getItem("password");
-        if (savedEmail && savedPassword) {
-          await auth.signInWithEmailAndPassword(savedEmail, savedPassword);
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 1,
-              routes: [
-                {
-                  name: "TabToStack",
-                },
-              ],
-            })
-          );
-        }
-      } catch (error) {
-        Toast.show("Sign in again", Toast.SHORT);
-      }
-    };
-    unsubscribe();
   }, []);
 
   if (!fontLoaded) {
