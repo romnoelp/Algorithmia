@@ -47,11 +47,13 @@ const calculateTotalDistance = async (sourceAddress, destinationAddresses) => {
 
     const distances = [];
     for (let i = 0; i < destinationCoords.length; i++) {
-      const distance = await calculateDistanceFromSource(
+      const distanceInMeters = await calculateDistanceFromSource(
         sourceCoords,
         destinationCoords[i]
       );
-      distances.push(distance);
+
+      const distanceInKm = (distanceInMeters / 1000).toFixed(2);
+      distances.push(distanceInKm);
     }
 
     return distances;
@@ -71,47 +73,6 @@ const calculateDistanceFromSource = async (sourceCoords, destinationCoords) => {
   }
 };
 
-const generatePermutations = (array) => {
-  const result = [];
-
-  const permute = (arr, m = []) => {
-    if (arr.length === 0) {
-      result.push(m);
-    } else {
-      for (let i = 0; i < arr.length; i++) {
-        const curr = arr.slice();
-        const next = curr.splice(i, 1);
-        permute(curr.slice(), m.concat(next));
-      }
-    }
-  };
-
-  permute(array);
-
-  return result;
-};
-
-const sortAddressesExhaustive = async (sourceAddress, destinationAddresses) => {
-  try {
-    const permutations = generatePermutations(destinationAddresses);
-
-    let minDistance = Infinity;
-    let minPermutation = [];
-
-    for (const permutation of permutations) {
-      const distance = await calculateTotalDistance(sourceAddress, permutation);
-      if (distance < minDistance) {
-        minDistance = distance;
-        minPermutation = permutation;
-      }
-    }
-
-    return minPermutation;
-  } catch (error) {
-    console.error("Error sorting addresses:", error);
-    throw error;
-  }
-};
 
 const DeliveryScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -142,9 +103,6 @@ const DeliveryScreen = () => {
     () => {
       if (!fontLoaded) {
         loadFont().then(() => setFontLoaded(true));
-      }
-      if (isCalculateAllAddressModalVisible) {
-        handleSortAddresses();
       }
       setCustomerData(deliveries);
     },
@@ -232,19 +190,27 @@ const DeliveryScreen = () => {
   };
 
   const handleContainerPress = (item) => {
-    setSelectedItem(item); // Store the clicked item
+    setSelectedItem(item); 
     setAddressToDelete(item.key);
     setContainerOptionsVisible(true);
   };
 
-  const handleSourceAddress = () => {
-    if (selectedItem) {
-      const sourceAddress = selectedItem.customerAddress;
-      setSourceAddress(sourceAddress);
-      console.log("Source Address: ", sourceAddress);
-      setContainerOptionsVisible(false);
+  const handleSourceAddress = async () => {
+  if (selectedItem) {
+    const sourceAddress = selectedItem.customerAddress;
+    setSourceAddress(sourceAddress);
+    console.log("Source Address: ", sourceAddress);
+    setContainerOptionsVisible(false);
+
+    try {
+      const destinationAddresses = customerData.map(item => item.customerAddress);
+      const calculatedDistances = await calculateTotalDistance(sourceAddress, destinationAddresses);
+      setDistances(calculatedDistances);
+    } catch (error) {
+      console.error("Error calculating distances:", error);
     }
-  };
+  }
+};
 
   const handleDeleteAddress = async () => {
     try {
@@ -286,56 +252,15 @@ const DeliveryScreen = () => {
   };
 
   const handleCalculateAddressPress = async () => {
-    setIsCalculateAllAddressModalVisible(true);
     try {
-      // Extract addresses from customer data
-      const addresses = customerData.map((item) => item.customerAddress);
-
-      // Ensure there are at least two addresses
-      if (addresses.length < 2) {
-        console.error("At least two addresses are required for calculation.");
-        return;
-      }
-
-      // Set the first and last addresses as source and destination
-      const sourceAddress = addresses[0];
-      const destinationAddresses = [...addresses, sourceAddress];
-
-      // Calculate distances
-      const calculatedDistances = await calculateTotalDistance(
-        sourceAddress,
-        destinationAddresses
-      );
-
-      // Convert distances from meters to kilometers
-      const distancesInKm = calculatedDistances.map((distance) =>
-        (distance / 1000).toFixed(2)
-      );
-
-      // Update distances state with distances in kilometers
-      setDistances(distancesInKm);
-      console.log("Distances:", distancesInKm);
-
-      // Sort addresses based on the new source address
-      await handleSortAddresses();
+      toggleCalculateAddressModal(); 
     } catch (error) {
-      console.error("Error calculating distances:", error);
-      // Handle error
+      console.error("Error occurred while showing the modal:", error);
     }
   };
 
-  const handleSortAddresses = async () => {
-    try {
-      const sorted = await sortAddressesExhaustive(
-        sourceAddress,
-        customerData.map((item) => item.customerAddress)
-      );
-      setSortedAddresses(sorted);
-    } catch (error) {
-      console.error("Error sorting addresses:", error);
-      // Handle error
-    }
-  };
+
+
 
   return (
     <View style={styles.container}>
@@ -464,6 +389,7 @@ const DeliveryScreen = () => {
         transparent={true}
         visible={containerOptionsVisible}
         onRequestClose={handleContainerOptionsClose}
+        onBackdropPress={handleContainerOptionsClose}
       >
         <View style={styles.modalContainer}>
           <View style={[styles.addAddressFrame, { height: hp("30%") }]}>
@@ -508,8 +434,8 @@ const DeliveryScreen = () => {
               </View>
               <FlatList
                 data={customerData}
-                renderItem={({ item }) => (
-                  <View key={item.key} style={styles.customerContainer}>
+                renderItem={({ item, index }) => (
+                  <View key={index} style={styles.customerContainer}>
                     <Text
                       style={[styles.sortedCustomerInfo, { textAlign: "left" }]}
                     >
