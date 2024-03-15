@@ -17,16 +17,16 @@ import {
 import { SVGDelivery, loadFont } from "../../loadFontSVG";
 import FloatingButton from "../components/FloatingButton";
 import axios from "axios";
-import * as geolib from "geolib";
 import { Button } from "@rneui/base";
 import { useDeliveryContext } from "../../context/DeliveryContext";
 import { auth, db } from "../../firebaseConfig";
 import Toast from "react-native-simple-toast";
 
-const memoizedDistances = {};
+const memoizedDistances = {}; // Cache for memoizing distances
 
 const calculateTotalDistance = async (sourceAddress, destinationAddresses) => {
   try {
+    console.log("destinationAddresses:", destinationAddresses);
     const sourceResponse = await axios.get(
       `https://nominatim.openstreetmap.org/search?q=${sourceAddress}&format=json&limit=1`
     );
@@ -34,7 +34,6 @@ const calculateTotalDistance = async (sourceAddress, destinationAddresses) => {
       latitude: parseFloat(sourceResponse.data[0].lat),
       longitude: parseFloat(sourceResponse.data[0].lon),
     };
-
     const distances = [];
     for (const address of destinationAddresses) {
       const cacheKey = `${sourceAddress}-${address}`;
@@ -47,7 +46,7 @@ const calculateTotalDistance = async (sourceAddress, destinationAddresses) => {
           latitude: parseFloat(destinationResponse.data[0].lat),
           longitude: parseFloat(destinationResponse.data[0].lon),
         };
-        const distanceInMeters = await calculateDistanceFromSource(
+        const distanceInMeters = calculateDistanceFromSource(
           sourceCoords,
           destCoord
         );
@@ -56,7 +55,7 @@ const calculateTotalDistance = async (sourceAddress, destinationAddresses) => {
       } else {
         distanceInKm = memoizedDistances[cacheKey];
       }
-      distances.push(distanceInKm);
+      distances.push(parseFloat(distanceInKm));
     }
 
     return distances;
@@ -65,7 +64,25 @@ const calculateTotalDistance = async (sourceAddress, destinationAddresses) => {
     throw error;
   }
 };
+const generatePermutations = (arr) => {
+  const result = [];
 
+  const permute = (array, currentPermutation = []) => {
+    if (array.length === 0) {
+      result.push(currentPermutation);
+    } else {
+      for (let i = 0; i < array.length; i++) {
+        const newArray = array.slice(0, i).concat(array.slice(i + 1));
+        const newPermutation = currentPermutation.concat(array[i]);
+        permute(newArray, newPermutation);
+      }
+    }
+  };
+
+  permute(arr);
+
+  return result;
+};
 const calculateDistanceFromSource = (sourceCoords, destinationCoords) => {
   try {
     const earthRadius = 6371000;
@@ -95,56 +112,68 @@ const calculateDistanceFromSource = (sourceCoords, destinationCoords) => {
   }
 };
 
-function generatePermutations(arr) {
-  const result = [];
-
-  const permute = (array, currentPermutation = []) => {
-    if (array.length === 0) {
-      result.push(currentPermutation);
-    } else {
-      for (let i = 0; i < array.length; i++) {
-        const newArray = array.slice(0, i).concat(array.slice(i + 1));
-        const newPermutation = currentPermutation.concat(array[i]);
-        permute(newArray, newPermutation);
-      }
-    }
-  };
-
-  permute(arr);
-
-  return result;
-}
-
 const findShortestPath = async (sourceAddress, destinationAddresses) => {
   try {
+    console.log("Source Address:", sourceAddress);
+    console.log("Destination Addresses:", destinationAddresses);
+
     const permutations = generatePermutations(destinationAddresses);
+    console.log("Permutations:", permutations);
+
     let shortestPath = [];
     let shortestDistance = Infinity;
+    let shortestDistances = {}; // Object to store distances for each address
 
     for (const permutation of permutations) {
       let totalDistance = 0;
       let currentAddress = sourceAddress;
+      let distances = {}; // Object to store distances for each address in the permutation
+
+      console.log("Current Permutation:", permutation);
 
       for (const address of permutation) {
+        console.log("Calculating distance from", currentAddress, "to", address);
         const distanceInKm = await calculateTotalDistance(currentAddress, [
           address,
         ]);
+        console.log("Distance:", distanceInKm);
+        distances[address] = distanceInKm[0]; // Store distance for this address
         totalDistance += distanceInKm[0];
+        console.log("Total Distance:", totalDistance);
         currentAddress = address;
       }
 
+      console.log(
+        "Calculating distance from",
+        currentAddress,
+        "to",
+        sourceAddress
+      );
       const distanceToSource = await calculateTotalDistance(currentAddress, [
         sourceAddress,
       ]);
+      console.log("Distance to Source:", distanceToSource[0]);
+      distances[sourceAddress] = distanceToSource[0]; // Store distance for source address
       totalDistance += distanceToSource[0];
+
+      console.log("Total Distance after returning to source:", totalDistance);
 
       if (totalDistance < shortestDistance) {
         shortestDistance = totalDistance;
         shortestPath = [sourceAddress, ...permutation, sourceAddress];
+        shortestDistances = distances; // Update shortest distances
+        console.log("Shortest Path updated:", shortestPath);
       }
     }
 
-    return { path: shortestPath, distance: shortestDistance };
+    console.log("Shortest Path:", shortestPath);
+    console.log("Shortest Distance:", shortestDistance);
+
+    return {
+      path: shortestPath,
+      distance: shortestDistance,
+      distances: shortestDistances,
+    };
   } catch (error) {
     console.error("Error finding shortest path:", error);
     throw error;
@@ -167,14 +196,18 @@ const DeliveryScreen = () => {
   const [isScrolling, setIsScrolling] = useState(false);
   const [containerOptionsVisible, setContainerOptionsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [sourceAddress, setSourceAddress] = useState("");
-  const { addDelivery, deliveries } = useDeliveryContext();
-  const [distances, setDistances] = useState([]);
-  const [sortedAddresses, setSortedAddresses] = useState([]);
+  const { addDelivery, deliveries, setDeliveryList } = useDeliveryContext();
+  const [totalDistance, setTotalDistance] = useState(0);
+  const [shortestPath, setShortestPath] = useState([]);
+  const [sourceKey, setSourceKey] = useState();
+
   const user = auth.currentUser;
+
+  console.log("source address:", sourceAddress);
+  console.log("source key:", sourceKey);
 
   useEffect(
     () => {
@@ -246,13 +279,12 @@ const DeliveryScreen = () => {
           .collection("deliveries")
           .get()
           .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              doc.ref.delete();
+            querySnapshot.forEach(async (doc) => {
+              await doc.ref.delete();
             });
           });
-
+        setDeliveryList([]);
         Toast.show("All addresses deleted successfully", Toast.SHORT);
-        setCustomerData([]);
       }
     } catch (error) {
       console.error("Error deleting all addresses:", error);
@@ -268,40 +300,20 @@ const DeliveryScreen = () => {
 
   const handleContainerPress = (item) => {
     setSelectedItem(item);
+
     setAddressToDelete(item.key);
     setContainerOptionsVisible(true);
   };
 
   const handleSourceAddress = async () => {
     if (selectedItem) {
-      const sourceAddress = selectedItem.customerAddress;
-      setSourceAddress(sourceAddress);
-      console.log("Source Address: ", sourceAddress);
+      const originAddress = selectedItem.customerAddress; // Origin address
+      setSourceAddress(originAddress);
+      setSourceKey(selectedItem.key);
+      console.log("Origin Address:", originAddress);
       setContainerOptionsVisible(false);
-
-      try {
-        const destinationAddresses = customerData.map(
-          (item) => item.customerAddress
-        );
-        const calculatedDistances = await calculateTotalDistance(
-          sourceAddress,
-          destinationAddresses
-        );
-
-        setDistances(calculatedDistances);
-
-        const combinedData = customerData.map((item, index) => ({
-          ...item,
-          distance: calculatedDistances[index],
-        }));
-
-        setSortedAddresses(combinedData);
-      } catch (error) {
-        console.error("Error calculating distances:", error);
-      }
     }
   };
-
   const handleDeleteAddress = async () => {
     try {
       if (addressToDelete && user) {
@@ -317,7 +329,7 @@ const DeliveryScreen = () => {
         const updatedCustomerData = customerData.filter(
           (item) => item.key !== addressToDelete
         );
-        setCustomerData(updatedCustomerData);
+        setDeliveryList(updatedCustomerData);
       }
     } catch (error) {
       console.error("Error deleting address:", error);
@@ -339,20 +351,43 @@ const DeliveryScreen = () => {
   const handleContainerOptionsClose = () => {
     setSelectedItem(null);
     setAddressToDelete(null);
+    setContainerOptionsVisible(false);
   };
 
   const handleCalculateAddressPress = async () => {
     try {
-      // const result = await findShortestPath(
-      //   sourceAddress,
-      //   customerData.map((item) => item.customerAddress)
-      // );
+      if (!sourceAddress) {
+        Toast.show("Select a source address");
+      } else {
+        const addreses = deliveries
+          .filter((item) => item.key !== sourceKey)
+          .map((item) => item.customerAddress);
+        console.log(addreses);
+        const result = await findShortestPath(sourceAddress, addreses);
 
-      // // Log the result in console
-      // console.log("Shortest Path:", result.path);
-      // console.log("Shortest Distance:", result.distance);
-      console.log(memoizedDistances)
-      toggleCalculateAddressModal();
+        // Log the result in console
+        console.log("Shortest Path:", result.path);
+        console.log("Shortest Distance:", result.distance);
+
+        setTotalDistance(result.distance);
+
+        const { path, distances } = result;
+
+        // Convert distances object into an array of objects
+        const pathWithDistances = [];
+
+        pathWithDistances.push({ address: path[0], distance: 0 });
+
+        // Iterate over the remaining addresses in the path
+        for (let i = 1; i < path.length; i++) {
+          const address = path[i];
+          const distance = distances[address];
+          pathWithDistances.push({ address, distance });
+        }
+
+        toggleCalculateAddressModal();
+        setShortestPath(pathWithDistances);
+      }
     } catch (error) {
       console.error("Error occurred while showing the modal:", error);
     }
@@ -377,7 +412,6 @@ const DeliveryScreen = () => {
             <TouchableOpacity
               style={styles.customerContainer}
               onPress={() => handleContainerPress(item)}
-              onLongPress={() => handleContainerLongPress(item)}
             >
               <Text style={[styles.customerInfo, { flex: 1 }]}>
                 {item.customerName}
@@ -416,42 +450,27 @@ const DeliveryScreen = () => {
       >
         <View style={styles.sortedAddressContainer}>
           <View style={[styles.sortedAddressFrame, { height: hp("65%") }]}>
-            <Text style={styles.nearestTitle}>Delivery Tracker</Text>
+            <Text style={styles.nearestTitle}>Shortest Route</Text>
             <View style={styles.trackerContainer}>
               <View style={styles.header}>
-                <Text style={styles.columnHeader}>Customer</Text>
-                <Text style={styles.columnHeader}>Address</Text>
-                <Text style={styles.columnHeader}>Distance</Text>
+                <Text style={[styles.columnHeader, { flex: 2 }]}>Address</Text>
+                <Text style={[styles.columnHeader, { flex: 1 }]}>Distance</Text>
               </View>
               <FlatList
-                data={sortedAddresses}
-                renderItem={({ item, index }) => (
-                  <View key={index} style={styles.customerContainer}>
-                    <Text
-                      style={[styles.sortedCustomerInfo, { textAlign: "left" }]}
-                    >
-                      {item.customerName}
+                data={shortestPath}
+                renderItem={({ item }) => (
+                  <View style={styles.customerContainer}>
+                    <Text style={[styles.sortedCustomerInfo, { flex: 2 }]}>
+                      {item.address}
                     </Text>
-                    <Text
-                      style={[
-                        styles.sortedCustomerInfo,
-                        { textAlign: "center" },
-                      ]}
-                    >
-                      {item.customerAddress}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.sortedCustomerInfo,
-                        { textAlign: "right" },
-                      ]}
-                    >
-                      {distances[index]}km
+                    <Text style={[styles.sortedCustomerInfo, { flex: 1 }]}>
+                      {item.distance} km
                     </Text>
                   </View>
                 )}
-                keyExtractor={(item) => item.key.toString()}
+                keyExtractor={shortestPath.distance}
               />
+              <Text>Total Distance:{totalDistance.toFixed(2)} km</Text>
             </View>
           </View>
         </View>
@@ -518,7 +537,7 @@ const DeliveryScreen = () => {
                 title="Cancel"
                 titleStyle={styles.saveButtonText}
                 buttonStyle={[styles.cancelDeleteButton]}
-                onPress={() => setDeleteModalVisible(false)}
+                onPress={() => toggleDeleteAllAddressModal()}
               />
               <Button
                 title="Delete"
@@ -535,8 +554,7 @@ const DeliveryScreen = () => {
         animationType="fade"
         transparent={true}
         visible={containerOptionsVisible}
-        onRequestClose={handleContainerOptionsClose}
-        onBackdropPress={handleContainerOptionsClose}
+        onRequestClose={() => handleContainerOptionsClose()}
       >
         <View style={styles.modalContainer}>
           <View style={[styles.addAddressFrame, { height: hp("30%") }]}>
@@ -568,11 +586,9 @@ const DeliveryScreen = () => {
 const styles = StyleSheet.create({
   sortedCustomerInfo: {
     fontFamily: "karma-regular",
-    fontSize: wp("2.7%"),
+    fontSize: wp("3%"),
     color: "#09171B",
     flexDirection: "row",
-    flex: 1,
-    textAlign: "center",
   },
   columnHeader: {
     fontFamily: "karma-semibold",
@@ -692,7 +708,6 @@ const styles = StyleSheet.create({
     borderRadius: wp("4%"),
     paddingHorizontal: wp("4%"),
     paddingVertical: hp("2%"),
-    minWidth: wp("40%"),
     height: hp("8%"),
     alignItems: "center",
   },
