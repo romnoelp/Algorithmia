@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -23,6 +23,8 @@ import { useDeliveryContext } from "../../context/DeliveryContext";
 import { auth, db } from "../../firebaseConfig";
 import Toast from "react-native-simple-toast";
 
+const memoizedDistances = {};
+
 const calculateTotalDistance = async (sourceAddress, destinationAddresses) => {
   try {
     const sourceResponse = await axios.get(
@@ -33,26 +35,27 @@ const calculateTotalDistance = async (sourceAddress, destinationAddresses) => {
       longitude: parseFloat(sourceResponse.data[0].lon),
     };
 
-    const destinationCoords = [];
-    for (const address of destinationAddresses) {
-      const destinationResponse = await axios.get(
-        `https://nominatim.openstreetmap.org/search?q=${address}&format=json&limit=1`
-      );
-      const destCoord = {
-        latitude: parseFloat(destinationResponse.data[0].lat),
-        longitude: parseFloat(destinationResponse.data[0].lon),
-      };
-      destinationCoords.push(destCoord);
-    }
-
     const distances = [];
-    for (let i = 0; i < destinationCoords.length; i++) {
-      const distanceInMeters = await calculateDistanceFromSource(
-        sourceCoords,
-        destinationCoords[i]
-      );
-
-      const distanceInKm = (distanceInMeters / 1000).toFixed(2);
+    for (const address of destinationAddresses) {
+      const cacheKey = `${sourceAddress}-${address}`;
+      let distanceInKm;
+      if (!memoizedDistances[cacheKey]) {
+        const destinationResponse = await axios.get(
+          `https://nominatim.openstreetmap.org/search?q=${address}&format=json&limit=1`
+        );
+        const destCoord = {
+          latitude: parseFloat(destinationResponse.data[0].lat),
+          longitude: parseFloat(destinationResponse.data[0].lon),
+        };
+        const distanceInMeters = await calculateDistanceFromSource(
+          sourceCoords,
+          destCoord
+        );
+        distanceInKm = (distanceInMeters / 1000).toFixed(2);
+        memoizedDistances[cacheKey] = distanceInKm;
+      } else {
+        distanceInKm = memoizedDistances[cacheKey];
+      }
       distances.push(distanceInKm);
     }
 
@@ -65,7 +68,7 @@ const calculateTotalDistance = async (sourceAddress, destinationAddresses) => {
 
 const calculateDistanceFromSource = (sourceCoords, destinationCoords) => {
   try {
-    const earthRadius = 6371000; 
+    const earthRadius = 6371000;
     const lat1 = sourceCoords.latitude;
     const lon1 = sourceCoords.longitude;
     const lat2 = destinationCoords.latitude;
@@ -97,7 +100,6 @@ function generatePermutations(arr) {
 
   const permute = (array, currentPermutation = []) => {
     if (array.length === 0) {
-
       result.push(currentPermutation);
     } else {
       for (let i = 0; i < array.length; i++) {
@@ -124,12 +126,16 @@ const findShortestPath = async (sourceAddress, destinationAddresses) => {
       let currentAddress = sourceAddress;
 
       for (const address of permutation) {
-        const distanceInKm = await calculateTotalDistance(currentAddress, [address]);
+        const distanceInKm = await calculateTotalDistance(currentAddress, [
+          address,
+        ]);
         totalDistance += distanceInKm[0];
         currentAddress = address;
       }
 
-      const distanceToSource = await calculateTotalDistance(currentAddress, [sourceAddress]);
+      const distanceToSource = await calculateTotalDistance(currentAddress, [
+        sourceAddress,
+      ]);
       totalDistance += distanceToSource[0];
 
       if (totalDistance < shortestDistance) {
@@ -337,6 +343,15 @@ const DeliveryScreen = () => {
 
   const handleCalculateAddressPress = async () => {
     try {
+      // const result = await findShortestPath(
+      //   sourceAddress,
+      //   customerData.map((item) => item.customerAddress)
+      // );
+
+      // // Log the result in console
+      // console.log("Shortest Path:", result.path);
+      // console.log("Shortest Distance:", result.distance);
+      console.log(memoizedDistances)
       toggleCalculateAddressModal();
     } catch (error) {
       console.error("Error occurred while showing the modal:", error);
@@ -390,6 +405,57 @@ const DeliveryScreen = () => {
           </View>
         )}
       </View>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isCalculateAllAddressModalVisible}
+        onRequestClose={toggleCalculateAddressModal}
+        animationInTiming={2000}
+        animationOutTiming={2000}
+      >
+        <View style={styles.sortedAddressContainer}>
+          <View style={[styles.sortedAddressFrame, { height: hp("65%") }]}>
+            <Text style={styles.nearestTitle}>Delivery Tracker</Text>
+            <View style={styles.trackerContainer}>
+              <View style={styles.header}>
+                <Text style={styles.columnHeader}>Customer</Text>
+                <Text style={styles.columnHeader}>Address</Text>
+                <Text style={styles.columnHeader}>Distance</Text>
+              </View>
+              <FlatList
+                data={sortedAddresses}
+                renderItem={({ item, index }) => (
+                  <View key={index} style={styles.customerContainer}>
+                    <Text
+                      style={[styles.sortedCustomerInfo, { textAlign: "left" }]}
+                    >
+                      {item.customerName}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.sortedCustomerInfo,
+                        { textAlign: "center" },
+                      ]}
+                    >
+                      {item.customerAddress}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.sortedCustomerInfo,
+                        { textAlign: "right" },
+                      ]}
+                    >
+                      {distances[index]}km
+                    </Text>
+                  </View>
+                )}
+                keyExtractor={(item) => item.key.toString()}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <Modal
         animationType="fade"
@@ -490,57 +556,6 @@ const DeliveryScreen = () => {
                 titleStyle={styles.saveButtonText}
                 onPress={handleDeleteAddress}
                 buttonStyle={styles.deleteAllButton}
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isCalculateAllAddressModalVisible}
-        onRequestClose={toggleCalculateAddressModal}
-        animationInTiming={2000}
-        animationOutTiming={2000}
-      >
-        <View style={styles.sortedAddressContainer}>
-          <View style={[styles.sortedAddressFrame, { height: hp("65%") }]}>
-            <Text style={styles.nearestTitle}>Delivery Tracker</Text>
-            <View style={styles.trackerContainer}>
-              <View style={styles.header}>
-                <Text style={styles.columnHeader}>Customer</Text>
-                <Text style={styles.columnHeader}>Address</Text>
-                <Text style={styles.columnHeader}>Distance</Text>
-              </View>
-              <FlatList
-                data={sortedAddresses}
-                renderItem={({ item, index }) => (
-                  <View key={index} style={styles.customerContainer}>
-                    <Text
-                      style={[styles.sortedCustomerInfo, { textAlign: "left" }]}
-                    >
-                      {item.customerName}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.sortedCustomerInfo,
-                        { textAlign: "center" },
-                      ]}
-                    >
-                      {item.customerAddress}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.sortedCustomerInfo,
-                        { textAlign: "right" },
-                      ]}
-                    >
-                      {distances[index]}km
-                    </Text>
-                  </View>
-                )}
-                keyExtractor={(item) => item.key.toString()}
               />
             </View>
           </View>
