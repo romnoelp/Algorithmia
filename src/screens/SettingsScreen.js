@@ -21,10 +21,6 @@ const SettingsScreen = ({ navigation }) => {
   }
   const settingChoices = [
     {
-      key: 1,
-      name: "Appearance",
-    },
-    {
       key: 2,
       name: "Developers",
     },
@@ -65,7 +61,7 @@ const SettingsScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={{ fontSize: hp("4%"), fontFamily: "karma-bold" }}>
+      <Text style={{ fontSize: hp("3%"), fontFamily: "karma-bold", marginTop: wp("2%")}}>
         Settings
       </Text>
       <View style={styles.mapContainer}>
@@ -79,7 +75,7 @@ const SettingsScreen = ({ navigation }) => {
                 style={{
                   marginHorizontal: wp("2%"),
                   fontFamily: "karma-semibold",
-                  fontSize: hp("3%"),
+                  fontSize: hp("2.5%"),
                 }}
               >
                 {item.name}
@@ -99,7 +95,7 @@ const styles = StyleSheet.create({
   },
   settingContainer: {
     marginVertical: hp("1%"),
-    borderBottomColor: "#2CC5EF",
+    borderBottomColor: "#10ABD5",
     borderBottomWidth: 2,
   },
   mapContainer: { marginTop: hp("3%") },

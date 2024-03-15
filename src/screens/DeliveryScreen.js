@@ -470,7 +470,9 @@ const DeliveryScreen = () => {
                 )}
                 keyExtractor={shortestPath.distance}
               />
-              <Text style={styles.totalDistance}>Total Distance:{totalDistance.toFixed(2)} km</Text>
+              <Text style={styles.totalDistance}>
+                Total Distance: {totalDistance.toFixed(2)} km
+              </Text>
             </View>
           </View>
         </View>
@@ -584,6 +586,10 @@ const DeliveryScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  totalDistance: {
+    fontFamily: "karma-regular",
+    marginLeft: wp("1.6%"),
+  },
   sortedCustomerInfo: {
     fontFamily: "karma-regular",
     fontSize: wp("3%"),
@@ -615,7 +621,7 @@ const styles = StyleSheet.create({
     fontFamily: "karma-bold",
     fontSize: wp("5%"),
     marginTop: hp("1%"),
-    marginRight: wp("32%"),
+    marginRight: wp("40%"),
   },
   buttonContainer: {
     flexDirection: "row",

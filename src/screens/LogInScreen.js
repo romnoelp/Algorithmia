@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     marginTop: hp("4%"),
     paddingHorizontal: wp("4%"),
     paddingVertical: hp("1%"),
-    backgroundColor: "white",
+    backgroundColor: "#EBF7F9",
     fontSize: wp("4%"),
   },
   inputFieldContainer: {

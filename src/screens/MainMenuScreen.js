@@ -21,6 +21,7 @@ import { auth, db } from "../../firebaseConfig";
 import { useDeliveryContext } from "../../context/DeliveryContext";
 import Toast from "react-native-simple-toast";
 import { useProductContext } from "../../context/ProductContext";
+import { AntDesign, Entypo } from "@expo/vector-icons";
 
 const MainMenuScreen = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -100,14 +101,14 @@ const MainMenuScreen = ({ navigation }) => {
     return null;
   }
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#EBF7F9" }}>
       <TouchableOpacity>
         <View style={styles.logoContainer}>
           <SvgXml xml={SVGLogo} width="43" height="43" />
         </View>
       </TouchableOpacity>
       <View style={styles.settingsContainer}>
-        <SvgXml xml={SVGSettings("white")} width="43" height="43" />
+        <SvgXml xml={SVGSettings("#EBF7F9")} width="43" height="43" />
       </View>
       <View style={styles.container}>
         <View style={styles.headerLine} />
@@ -126,7 +127,7 @@ const MainMenuScreen = ({ navigation }) => {
             activeOpacity={0.7}
           >
             <View style={[styles.squareShapeView, { marginLeft: 25 }]}>
-              <SvgXml xml={SVGOne("white")} width="76" height="76" />
+              <SvgXml xml={SVGOne("#09171B")} width="76" height="76" />
             </View>
             <Text style={[styles.title, { marginLeft: 25 }]}>Wholesale</Text>
           </TouchableOpacity>
@@ -136,7 +137,7 @@ const MainMenuScreen = ({ navigation }) => {
             activeOpacity={0.7}
           >
             <View style={[styles.squareShapeView, { marginRight: 25 }]}>
-              <SvgXml xml={SVGTwo("white")} width="90" height="90" />
+              <SvgXml xml={SVGTwo("#09171B")} width="90" height="90" />
             </View>
             <Text style={[styles.title, { marginRight: 25 }]}>Sort Items</Text>
           </TouchableOpacity>
@@ -150,7 +151,7 @@ const MainMenuScreen = ({ navigation }) => {
             activeOpacity={0.7}
           >
             <View style={[styles.squareShapeView, { marginLeft: 25 }]}>
-              <SvgXml xml={SVGThree("white")} width="76" height="76" />
+              <SvgXml xml={SVGThree("#09171B")} width="76" height="76" />
             </View>
             <Text style={[styles.title, { marginLeft: 25 }]}>Delivery</Text>
           </TouchableOpacity>
@@ -160,7 +161,7 @@ const MainMenuScreen = ({ navigation }) => {
             activeOpacity={0.7}
           >
             <View style={[styles.squareShapeView, { marginRight: 25 }]}>
-              <SvgXml xml={SVGFour("white")} width="90" height="90" />
+              <SvgXml xml={SVGFour("#09171B")} width="90" height="90" />
             </View>
             <Text style={[styles.title, { marginRight: 25 }]}>Word Finder</Text>
           </TouchableOpacity>
@@ -173,7 +174,7 @@ const MainMenuScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#EBF7F9",
     justifyContent: "center",
   },
   logoContainer: {
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
     fontFamily: "karma-semibold",
     color: "black",
     fontSize: 20,
-    textAlign: "left", 
+    textAlign: "left",
   },
   row: {
     flexDirection: "row",
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
     width: 159,
     height: 142,
     borderRadius: 20,
-    backgroundColor: "#147691",
+    backgroundColor: "#10ABD5",
     justifyContent: "center",
     alignItems: "center",
   },

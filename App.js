@@ -11,6 +11,7 @@ import FinderScreen from "./src/screens/FinderScreen";
 import DeliveryScreen from "./src/screens/DeliveryScreen";
 import SortingScreen from "./src/screens/SortingScreen";
 import RegisterScreen from "./src/screens/RegisterScreen";
+import { AntDesign, Entypo } from "@expo/vector-icons";
 import {
   SVGFour,
   SVGLogo,
@@ -32,13 +33,14 @@ import { ProductProvider } from "./context/ProductContext";
 import SplashScreen from "./src/screens/SplashScreen";
 import AboutAppScreen from "./src/screens/AboutAppScreen";
 
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const TabtoSettingsStack = createNativeStackNavigator();
 
 const headerOptionsForBottomTab = (navigation, svgLeft, svgRight, icon) => ({
   headerStyle: {
-    backgroundColor: "#EBF7F9",
+    backgroundColor: "#10ABD5",
     borderBottomColor: "#6FD1EB",
     borderBottomWidth: 5,
   },
@@ -137,7 +139,7 @@ const TabtoSettingsStackNavigator = ({ navigation }) => (
       component={SettingsScreen}
       options={{
         headerStyle: {
-          backgroundColor: "#147691",
+          backgroundColor: "#10ABD5",
         },
         headerTitle: "",
         headerLeft: () => (
@@ -145,7 +147,7 @@ const TabtoSettingsStackNavigator = ({ navigation }) => (
             activeOpacity={0.7}
             onPress={() => navigation.navigate("MainMenuScreen")}
           >
-            <SvgXml xml={SVGHome("white")} width={"25"} height={"25"} />
+            <SvgXml xml={SVGHome("#09171B")} width={"25"} height={"25"} />
           </TouchableOpacity>
         ),
         statusBarHidden: true,
@@ -156,20 +158,16 @@ const TabtoSettingsStackNavigator = ({ navigation }) => (
       component={MainMenuScreen}
       options={{
         headerStyle: {
-          backgroundColor: "#147691",
+          backgroundColor: "#10ABD5",
         },
         headerTitle: "",
         headerRight: () => (
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => navigation.navigate("SettingsScreen")}
+            style={{ marginRight: wp("4.5%") }}
           >
-            <SvgXml
-              xml={SVGSettings("white")}
-              width={"35"}
-              height={"35"}
-              style={{ marginRight: wp("5%") }}
-            />
+            <SvgXml xml={SVGSettings("#09171B")} width={"25"} height={"25"} />
           </TouchableOpacity>
         ),
         headerLeft: () => (
@@ -188,7 +186,7 @@ const TabtoSettingsStackNavigator = ({ navigation }) => (
       component={DevelopersScreen} // Use DevelopersScreen component
       options={{
         headerStyle: {
-          backgroundColor: "#147691",
+          backgroundColor: "#10ABD5",
         },
         headerTitle: "", // Set the header title
         headerLeft: () => (
@@ -197,7 +195,7 @@ const TabtoSettingsStackNavigator = ({ navigation }) => (
             onPress={() => navigation.goBack()} // Go back when left icon is pressed
           >
             <SvgXml
-              xml={SVGHome("white")} // Use appropriate icon
+              xml={SVGHome("#09171B")} // Use appropriate icon
               width={"25"}
               height={"25"}
             />
@@ -211,7 +209,7 @@ const TabtoSettingsStackNavigator = ({ navigation }) => (
       component={AboutAppScreen} // Use DevelopersScreen component
       options={{
         headerStyle: {
-          backgroundColor: "#147691",
+          backgroundColor: "#10ABD5",
         },
         headerTitle: "", // Set the header title
         headerLeft: () => (
@@ -220,7 +218,7 @@ const TabtoSettingsStackNavigator = ({ navigation }) => (
             onPress={() => navigation.goBack()} // Go back when left icon is pressed
           >
             <SvgXml
-              xml={SVGHome("white")} // Use appropriate icon
+              xml={SVGHome("#09171B")} // Use appropriate icon
               width={"25"}
               height={"25"}
             />
