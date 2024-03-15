@@ -56,7 +56,8 @@ const SettingsScreen = ({ navigation }) => {
         navigation.navigate("DevelopersScreen");
         break;
       case 3:
-        return alert("About the app");
+        navigation.navigate("AboutAppScreen");
+        break;
       case 4:
         signOut();
     }

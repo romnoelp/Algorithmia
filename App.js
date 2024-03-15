@@ -30,6 +30,7 @@ import {
 import { DeliveryProvider } from "./context/DeliveryContext";
 import { ProductProvider } from "./context/ProductContext";
 import SplashScreen from "./src/screens/SplashScreen";
+import AboutAppScreen from "./src/screens/AboutAppScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -189,7 +190,30 @@ const TabtoSettingsStackNavigator = ({ navigation }) => (
         headerStyle: {
           backgroundColor: "#147691",
         },
-        headerTitle: "Developers", // Set the header title
+        headerTitle: "", // Set the header title
+        headerLeft: () => (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => navigation.goBack()} // Go back when left icon is pressed
+          >
+            <SvgXml
+              xml={SVGHome("white")} // Use appropriate icon
+              width={"25"}
+              height={"25"}
+            />
+          </TouchableOpacity>
+        ),
+        statusBarHidden: true,
+      }}
+    />
+    <TabtoSettingsStack.Screen
+      name="AboutAppScreen" // Define DevelopersScreen
+      component={AboutAppScreen} // Use DevelopersScreen component
+      options={{
+        headerStyle: {
+          backgroundColor: "#147691",
+        },
+        headerTitle: "", // Set the header title
         headerLeft: () => (
           <TouchableOpacity
             activeOpacity={0.7}
