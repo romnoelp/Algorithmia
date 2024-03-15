@@ -73,6 +73,58 @@ const calculateDistanceFromSource = async (sourceCoords, destinationCoords) => {
   }
 };
 
+function generatePermutations(arr) {
+  const result = [];
+
+  const permute = (array, currentPermutation = []) => {
+    if (array.length === 0) {
+
+      result.push(currentPermutation);
+    } else {
+      for (let i = 0; i < array.length; i++) {
+        const newArray = array.slice(0, i).concat(array.slice(i + 1));
+        const newPermutation = currentPermutation.concat(array[i]);
+        permute(newArray, newPermutation);
+      }
+    }
+  };
+
+  permute(arr);
+
+  return result;
+}
+
+const findShortestPath = async (sourceAddress, destinationAddresses) => {
+  try {
+    const permutations = generatePermutations(destinationAddresses);
+    let shortestPath = [];
+    let shortestDistance = Infinity;
+
+    for (const permutation of permutations) {
+      let totalDistance = 0;
+      let currentAddress = sourceAddress;
+
+      for (const address of permutation) {
+        const distanceInKm = await calculateTotalDistance(currentAddress, [address]);
+        totalDistance += distanceInKm[0];
+        currentAddress = address;
+      }
+
+      const distanceToSource = await calculateTotalDistance(currentAddress, [sourceAddress]);
+      totalDistance += distanceToSource[0];
+
+      if (totalDistance < shortestDistance) {
+        shortestDistance = totalDistance;
+        shortestPath = [sourceAddress, ...permutation, sourceAddress];
+      }
+    }
+
+    return { path: shortestPath, distance: shortestDistance };
+  } catch (error) {
+    console.error("Error finding shortest path:", error);
+    throw error;
+  }
+};
 
 const DeliveryScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -190,27 +242,41 @@ const DeliveryScreen = () => {
   };
 
   const handleContainerPress = (item) => {
-    setSelectedItem(item); 
+    setSelectedItem(item);
     setAddressToDelete(item.key);
     setContainerOptionsVisible(true);
   };
 
   const handleSourceAddress = async () => {
-  if (selectedItem) {
-    const sourceAddress = selectedItem.customerAddress;
-    setSourceAddress(sourceAddress);
-    console.log("Source Address: ", sourceAddress);
-    setContainerOptionsVisible(false);
+    if (selectedItem) {
+      const sourceAddress = selectedItem.customerAddress;
+      setSourceAddress(sourceAddress);
+      console.log("Source Address: ", sourceAddress);
+      setContainerOptionsVisible(false);
 
-    try {
-      const destinationAddresses = customerData.map(item => item.customerAddress);
-      const calculatedDistances = await calculateTotalDistance(sourceAddress, destinationAddresses);
-      setDistances(calculatedDistances);
-    } catch (error) {
-      console.error("Error calculating distances:", error);
+      try {
+        const destinationAddresses = customerData.map(
+          (item) => item.customerAddress
+        );
+        const calculatedDistances = await calculateTotalDistance(
+          sourceAddress,
+          destinationAddresses
+        );
+
+        setDistances(calculatedDistances);
+
+        const combinedData = customerData.map((item, index) => ({
+          ...item,
+          distance: calculatedDistances[index],
+        }));
+
+        setSortedAddresses(combinedData);
+        setIsCalculateAllAddressModalVisible(true);
+      } catch (error) {
+        console.error("Error calculating distances:", error);
+      }
     }
-  }
-};
+  };
 
   const handleDeleteAddress = async () => {
     try {
@@ -253,14 +319,11 @@ const DeliveryScreen = () => {
 
   const handleCalculateAddressPress = async () => {
     try {
-      toggleCalculateAddressModal(); 
+      toggleCalculateAddressModal();
     } catch (error) {
       console.error("Error occurred while showing the modal:", error);
     }
   };
-
-
-
 
   return (
     <View style={styles.container}>
@@ -433,7 +496,7 @@ const DeliveryScreen = () => {
                 <Text style={styles.columnHeader}>Distance</Text>
               </View>
               <FlatList
-                data={customerData}
+                data={sortedAddresses}
                 renderItem={({ item, index }) => (
                   <View key={index} style={styles.customerContainer}>
                     <Text
