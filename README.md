@@ -26,7 +26,6 @@
 
 <div style="display: flex; justify-content: center; flex-wrap: wrap;">
   <img src="./src/screenshots/wholsale.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center; margin: 10px;">
-  <img src="./src/screenshots/wholesale.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center; margin: 10px;">
   <img src="./src/screenshots/add.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center; margin: 10px;">
   <img src="./src/screenshots/limit.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center; margin: 10px;">
 </div>
