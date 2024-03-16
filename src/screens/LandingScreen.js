@@ -55,7 +55,7 @@ const LandingScreen = () => {
         colors={["#2CC5EF", "#147691", "#061215"]}
         style={styles.container}
       >
-        <Text style={styles.title}>Algorithmia™</Text>
+        <Text style={styles.title}>Algorithmia</Text>
         <SvgXml xml={SVGLogo} style={styles.logo} />
         <Text style={styles.second}>
           Discover your inner computational knack with Algorithmia

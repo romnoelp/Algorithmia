@@ -55,7 +55,7 @@ const SplashScreen = () => {
         style={styles.container}
       >
         <SvgXml xml={SVGLogo} style={styles.logo} />
-        <Text style={styles.title}>Algorithmia™</Text>
+        <Text style={styles.title}>Algorithmia</Text>
         <Text style={styles.third}>RP . RB . KL . VS</Text>
       </LinearGradient>
     </SafeAreaView>
