@@ -12,11 +12,36 @@
 
 <p style="text-align: justify;">After that, the user will be prompt sign in or sign up, depending on the availability of the user's account.</p>
 
-
 <div style="display: flex; justify-content: center;">
   <img src="./src/screenshots/sign up.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center;">
 </div>
 
+<p style="text-align: justify;">Thenafter, the main menu screen will show up, giving the user the choice to select an operation.</p>
+
+<div style="display: flex; justify-content: center;">
+  <img src="./src/screenshots/menu.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center;">
+</div>
+
+<p style="text-align: justify;">Upon selecting the Wholesale option, the user will be presented of a screen with a floating button at the bottom right that can be used to add products, delete all products, and calculate the knapsack of the said items.</p>
+
+<div style="display: flex; justify-content: center; flex-wrap: wrap;">
+  <img src="./src/screenshots/wholsale.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center; margin: 10px;">
+  <img src="./src/screenshots/add.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center; margin: 10px;">
+  <img src="./src/screenshots/limit.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center; margin: 10px;">
+  <img src="./src/screenshots/snapsack.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center; margin: 10px;">
+</div>
+
+<p style="text-align: justify;">On the event of the button press Calculate, the user will be showed the knapsack information of the products.</p>
+
+<div style="display: flex; justify-content: center;">
+  <img src="./src/screenshots/snapsack.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center;">
+</div>
+
+<p style="text-align: justify;">Next is the sorting screen, where all the products on the previous screen can now be sorted based on its name, weight, or amount.</p>
+
+<div style="display: flex; justify-content: center;">
+  <img src="./src/screenshots/sort.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center;">
+</div>
 
 ## Project Members
 

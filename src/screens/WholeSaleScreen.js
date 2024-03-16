@@ -284,29 +284,34 @@ const WholeSaleScreen = () => {
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Name</Text>
               <TextInput
-                style={styles.inputField}
+                style={[styles.inputField, { fontFamily: "karma-regular" }]}
                 onChangeText={(text) => setProductName(text)}
+                placeholder="Whey protein"
+                placeholderTextColor="#A9A9A9"
                 value={productName}
               />
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Weight</Text>
               <TextInput
-                style={styles.inputField}
+                style={[styles.inputField, { fontFamily: "karma-regular" }]}
                 onChangeText={(text) => setProductWeight(text)}
                 value={productWeight}
+                placeholder="10"
                 keyboardType="numeric"
+                placeholderTextColor="#A9A9A9"
               />
             </View>
 
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Amount</Text>
               <TextInput
-                style={styles.inputField}
+                style={[styles.inputField, { fontFamily: "karma-regular" }]}
                 onChangeText={(text) => setProductAmount(text)}
                 value={productAmount}
+                placeholder="5"
                 keyboardType="numeric"
+                placeholderTextColor="#A9A9A9"
               />
             </View>
 
@@ -340,11 +345,19 @@ const WholeSaleScreen = () => {
                 title="Cancel"
                 onPress={() => toggleIsDeleteAllModal()}
                 buttonStyle={[styles.deleteButton, styles.cancelButton]}
+                titleStyle={[
+                  styles.buttonTitle,
+                  { fontFamily: "karma-regular" },
+                ]}
               />
               <Button
                 title="Delete"
                 onPress={() => handleDeleteAllProducts()}
                 buttonStyle={styles.deleteButton}
+                titleStyle={[
+                  styles.buttonTitle,
+                  { fontFamily: "karma-regular" },
+                ]}
               />
             </View>
           </View>
@@ -386,6 +399,8 @@ const WholeSaleScreen = () => {
                 style={styles.inputField}
                 onChangeText={(text) => setWeightLimit(text)}
                 value={weightLimit}
+                placeholder="15"
+                placeholderTextColor="#A9A9A9"
                 keyboardType="numeric"
               />
             </View>
@@ -442,7 +457,14 @@ const WholeSaleScreen = () => {
                     </View>
                   )}
                 />
-                <Text>Total Amount: {totalAmount}</Text>
+                <Text
+                  style={[
+                    styles.totalAmountText,
+                    { fontFamily: "karma-regular" },
+                  ]}
+                >
+                  Total Amount: {totalAmount}
+                </Text>
               </View>
             )}
           </View>
@@ -455,8 +477,13 @@ const WholeSaleScreen = () => {
 export default WholeSaleScreen;
 
 const styles = StyleSheet.create({
+  totalAmountText: {
+  fontFamily: "karma-regular",
+  fontSize: wp("4.5%"),
+  color: "#09171B",
+},
   buttonTitle: {
-    fontFamily: "karma-light",
+    fontFamily: "karma-regular",
     fontSize: wp("4%"),
     color: "#EBF7F9",
   },
