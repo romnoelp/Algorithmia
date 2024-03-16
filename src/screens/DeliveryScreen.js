@@ -24,6 +24,8 @@ import Toast from "react-native-simple-toast";
 
 const memoizedDistances = {}; // Cache for memoizing distances
 
+// Distance calculation 
+
 const calculateTotalDistance = async (sourceAddress, destinationAddresses) => {
   try {
     console.log("destinationAddresses:", destinationAddresses);
@@ -642,7 +644,7 @@ const styles = StyleSheet.create({
   },
   cancelDeleteButton: {
     margin: wp("2%"),
-    backgroundColor: "#9FA0A0",
+    backgroundColor: "#175F73",
     paddingVertical: hp("2%"),
     paddingHorizontal: wp("8%"),
     borderRadius: wp("2%"),
@@ -650,7 +652,7 @@ const styles = StyleSheet.create({
   },
   deleteAllButton: {
     margin: wp("2%"),
-    backgroundColor: "#175F73",
+    backgroundColor: "#9FA0A0",
     paddingVertical: hp("2%"),
     paddingHorizontal: wp("8%"),
     borderRadius: wp("2%"),
@@ -846,6 +848,11 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontFamily: "karma-light",
     color: "#EBF7F9",
+    fontSize: wp("4%"),
+  },
+  deleteButtonText: {
+    fontFamily: "karma-light",
+    color: "#9FA0A0",
     fontSize: wp("4%"),
   },
   loadingContainer: {
