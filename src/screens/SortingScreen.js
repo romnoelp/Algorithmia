@@ -36,7 +36,7 @@ const SortingScreen = () => {
     }
 
     handleSort();
-  }, [sortField, sortOrder]);
+  }, [sortField, sortOrder, products]);
 
   console.log(sortOrder);
   console.log("sortfield:", sortField);
