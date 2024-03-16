@@ -53,7 +53,7 @@
 <p style="text-align: justify;">Finally, the <strong>Word Finder</strong>. This section will fetch the addresses inside the delivery screen, and will then perform operations based on the selected address. Upon clicking on the address, it will then show a modal that will prompt the user to find the word that they want, and will then use the <strong>Brute Force Algorithm</strong> to find the word within the string. i.e address.</p>
 
 <div style="display: flex; justify-content: center; flex-wrap: wrap;">
-  <img src="./src/screenshots/word.png.png" width="400" height="800" style="align-self: center; margin: 10px;">
+  <img src="./src/screenshots/word.png" width="400" height="800" style="align-self: center; margin: 10px;">
   <img src="./src/screenshots/find.png" width="400" height="800" style="align-self: center; margin: 10px;">
 </div>
 
