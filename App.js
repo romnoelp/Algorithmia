@@ -250,12 +250,12 @@ const App = () => (
           <Stack.Screen
             name="LogInScreen"
             component={LogInScreen}
-            options={{ headerShown: false }}
+            options={{ headerShown: false, statusBarHidden: true }}
           />
           <Stack.Screen
             name="RegisterScreen"
             component={RegisterScreen}
-            options={{ headerShown: false }}
+            options={{ headerShown: false, statusBarHidden: true }}
           />
           <Stack.Screen
             name="TabToStack"

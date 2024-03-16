@@ -10,9 +10,12 @@
   <img src="./src/screenshots/landing.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center;">
 </div>
 
-<p style="text-align: justify;">Upon launching the application, the user will be greeted with a landing page that shows the title and a brief description of what the application is and its purpose.</p>
+<p style="text-align: justify;">After that, the user will be prompt sign in or sign up, depending on the availability of the user's account.</p>
 
 
+<div style="display: flex; justify-content: center;">
+  <img src="./src/screenshots/sign up.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center;">
+</div>
 
 
 ## Project Members
