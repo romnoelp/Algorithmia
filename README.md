@@ -25,7 +25,7 @@
 <p style="text-align: justify;">Upon selecting the Wholesale option, the user will be presented of a screen with a floating button at the bottom right that can be used to add products, delete all products, and calculate the knapsack of the said items.</p>
 
 <div style="display: flex; justify-content: center; flex-wrap: wrap;">
-  <img src="./src/screenshots/wholsale.png" width="400" height="800" style="align-self: center; margin: 10px;">
+  <img src="./src/screenshots/wholesale.png" width="400" height="800" style="align-self: center; margin: 10px;">
   <img src="./src/screenshots/add.png" width="400" height="800" style="align-self: center; margin: 10px;">
   <img src="./src/screenshots/limit.png" width="400" height="800" style="align-self: center; margin: 10px;">
 </div>
