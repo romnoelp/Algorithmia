@@ -42,6 +42,14 @@
   <img src="./src/screenshots/sort.png" width="400" height="800" style="align-self: center;">
 </div>
 
+<p style="text-align: justify;">After that, we can move on to the delivery screen. where you can add addresses, set it as the source, and calculate the shortest path amongsth the addresses, simulating the Traveling Salesman Problem, and solving it with the <strong>exhaustive search algorithm</strong>.</p>
+
+<div style="display: flex; justify-content: center; flex-wrap: wrap;">
+  <img src="./src/screenshots/delivery.png" width="400" height="800" style="align-self: center; margin: 10px;">
+  <img src="./src/screenshots/addadd.png" width="400" height="800" style="align-self: center; margin: 10px;">
+  <img src="./src/screenshots/calculatedeliver.png" width="400" height="800" style="align-self: center; margin: 10px;">
+</div>
+
 ## Project Members
 
 - **Baltazar, Richmond**
