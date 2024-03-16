@@ -293,6 +293,8 @@ const WholeSaleScreen = () => {
             </View>
 
             <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Weight (kg)</Text>
+
               <TextInput
                 style={[styles.inputField, { fontFamily: "karma-regular" }]}
                 onChangeText={(text) => setProductWeight(text)}
@@ -478,10 +480,10 @@ export default WholeSaleScreen;
 
 const styles = StyleSheet.create({
   totalAmountText: {
-  fontFamily: "karma-regular",
-  fontSize: wp("4.5%"),
-  color: "#09171B",
-},
+    fontFamily: "karma-regular",
+    fontSize: wp("4.5%"),
+    color: "#09171B",
+  },
   buttonTitle: {
     fontFamily: "karma-regular",
     fontSize: wp("4%"),
