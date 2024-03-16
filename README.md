@@ -19,7 +19,7 @@
 <p style="text-align: justify;">Thenafter, the main menu screen will show up, giving the user the choice to select an operation.</p>
 
 <div style="display: flex; justify-content: center;">
-  <img src="./src/screenshots/menu.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center;">
+  <img src="./src/screenshots/main.png" alt="Algorithmia Landing Page" width="400" height="800" style="align-self: center;">
 </div>
 
 <p style="text-align: justify;">Upon selecting the Wholesale option, the user will be presented of a screen with a floating button at the bottom right that can be used to add products, delete all products, and calculate the knapsack of the said items.</p>
