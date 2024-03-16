@@ -21,7 +21,7 @@ const AboutAppScreen = () => {
           Interface and is composed of 4 main concepts namely: Knapsack,
           Selection Sorting, TSP, and String Matching. This is the culmination
           of the lessons that was taught to the students comprising the said
-          group by Professor Lima. The
+          group by Professor Lima.
         </Text>
       </View>
     </View>

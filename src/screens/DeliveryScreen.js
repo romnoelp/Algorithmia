@@ -193,7 +193,6 @@ const DeliveryScreen = () => {
   const [customerData, setCustomerData] = useState([]);
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
-  const [isScrolling, setIsScrolling] = useState(false);
   const [containerOptionsVisible, setContainerOptionsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState(null);
@@ -203,6 +202,7 @@ const DeliveryScreen = () => {
   const [totalDistance, setTotalDistance] = useState(0);
   const [shortestPath, setShortestPath] = useState([]);
   const [sourceKey, setSourceKey] = useState();
+  const [isCalculating, setIsCalculating] = useState(false);
 
   const user = auth.currentUser;
 
@@ -363,8 +363,14 @@ const DeliveryScreen = () => {
           .filter((item) => item.key !== sourceKey)
           .map((item) => item.customerAddress);
         console.log(addreses);
+        setIsCalculating(true);
+        Toast.show("Calculating, this might take a while", Toast.SHORT);
         const result = await findShortestPath(sourceAddress, addreses);
 
+        if (result) {
+          setIsCalculating(false);
+        }
+        Toast.show("Calculation Finished", Toast.SHORT);
         // Log the result in console
         console.log("Shortest Path:", result.path);
         console.log("Shortest Distance:", result.distance);
@@ -386,6 +392,7 @@ const DeliveryScreen = () => {
         }
 
         toggleCalculateAddressModal();
+        Toast.show("Calculation Complete", Toast.SHORT);
         setShortestPath(pathWithDistances);
       }
     } catch (error) {
@@ -424,8 +431,6 @@ const DeliveryScreen = () => {
               </Text>
             </TouchableOpacity>
           )}
-          onScroll={() => setIsScrolling(true)}
-          onScrollEndDrag={() => setIsScrolling(false)}
         />
 
         <FloatingButton
@@ -433,9 +438,15 @@ const DeliveryScreen = () => {
           onAddItemsPress={handleAddAddressPress}
           onCalculateAllItemsPress={handleCalculateAddressPress}
         />
+
         {isLoading && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#10ABD5" />
+          </View>
+        )}
+        {isCalculating && (
+          <View style={{ alignSelf: "center" }}>
+            <ActivityIndicator size="large" color="white" />
           </View>
         )}
       </View>
