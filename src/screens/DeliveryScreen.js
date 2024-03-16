@@ -24,7 +24,7 @@ import Toast from "react-native-simple-toast";
 
 const memoizedDistances = {}; // Cache for memoizing distances
 
-// Distance calculation 
+// Distance calculation
 
 const calculateTotalDistance = async (sourceAddress, destinationAddresses) => {
   try {
@@ -62,7 +62,10 @@ const calculateTotalDistance = async (sourceAddress, destinationAddresses) => {
 
     return distances;
   } catch (error) {
-    console.error("Error calculating total distance:", error);
+    Toast.show(
+      `Error calculating total distance: ${error.message}`,
+      Toast.SHORT
+    );
     throw error;
   }
 };
@@ -109,7 +112,7 @@ const calculateDistanceFromSource = (sourceCoords, destinationCoords) => {
 
     return distance;
   } catch (error) {
-    console.error("Error calculating distance from source:", error);
+    Toast.show(`Error calculating distance from source: ${error}`, Toast.SHORT);
     throw error;
   }
 };
@@ -177,7 +180,7 @@ const findShortestPath = async (sourceAddress, destinationAddresses) => {
       distances: shortestDistances,
     };
   } catch (error) {
-    console.error("Error finding shortest path:", error);
+    Toast.show(`Error finding shortest path: ${error.message}`, Toast.SHORT);
     throw error;
   }
 };
@@ -398,7 +401,7 @@ const DeliveryScreen = () => {
         setShortestPath(pathWithDistances);
       }
     } catch (error) {
-      console.error("Error occurred while showing the modal:", error);
+      Toast.show(error.message, Toast.SHORT);
     }
   };
 
