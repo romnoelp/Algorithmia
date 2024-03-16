@@ -107,9 +107,7 @@ const MainMenuScreen = ({ navigation }) => {
           <SvgXml xml={SVGLogo} width="43" height="43" />
         </View>
       </TouchableOpacity>
-      <View style={styles.settingsContainer}>
-        <SvgXml xml={SVGSettings("#EBF7F9")} width="43" height="43" />
-      </View>
+
       <View style={styles.container}>
         <View style={styles.headerLine} />
         <StatusBar hidden />
