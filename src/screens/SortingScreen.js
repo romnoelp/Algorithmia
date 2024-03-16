@@ -28,14 +28,20 @@ const SortingScreen = () => {
   const [sortField, setSortField] = useState("productName");
   const [sortOrder, setSortOrder] = useState("asc");
   const { products } = useProductContext();
+  const [sortedData, setSortedData] = useState();
 
   useEffect(() => {
-    loadFont().then(() => setFontLoaded(true));
-  }, []);
+    if (!fontLoaded) {
+      loadFont().then(() => setFontLoaded(true));
+    }
 
-  console.log(products);
+    handleSort();
+  }, [sortField, sortOrder]);
 
-  const handleSort = (field) => {
+  console.log(sortOrder);
+  console.log("sortfield:", sortField);
+
+  const handleSortOrder = (field) => {
     if (field === sortField) {
       setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
     } else {
@@ -45,33 +51,48 @@ const SortingScreen = () => {
   };
 
   const selectionSort = (array) => {
+    const n = array.length;
     const sortedArray = [...array];
-    sortedArray.sort((a, b) => {
-      const valA = a[sortField];
-      const valB = b[sortField];
-
-      if (valA === undefined || valB === undefined) {
-        return 0;
-      }
-
-      if (sortOrder === "asc") {
-        if (!isNaN(valA) && !isNaN(valB)) {
-          return valA - valB;
-        } else {
-          return valA.localeCompare(valB);
+    if (sortOrder === "asc") {
+      for (let i = 0; i < n - 1; i++) {
+        let minIndex = i;
+        for (let j = i + 1; j < n; j++) {
+          if (sortedArray[j][sortField] < sortedArray[minIndex][sortField]) {
+            minIndex = j;
+          }
+          console.log(sortedArray[j][sortField]);
         }
-      } else {
-        if (!isNaN(valA) && !isNaN(valB)) {
-          return valB - valA;
-        } else {
-          return valB.localeCompare(valA);
+        if (minIndex !== i) {
+          [sortedArray[i], sortedArray[minIndex]] = [
+            sortedArray[minIndex],
+            sortedArray[i],
+          ];
         }
       }
-    });
+    } else {
+      for (let i = 0; i < n - 1; i++) {
+        let maxIndex = i;
+        for (let j = i + 1; j < n; j++) {
+          if (sortedArray[j][sortField] > sortedArray[maxIndex][sortField]) {
+            maxIndex = j;
+          }
+        }
+        if (maxIndex !== i) {
+          [sortedArray[i], sortedArray[maxIndex]] = [
+            sortedArray[maxIndex],
+            sortedArray[i],
+          ];
+        }
+      }
+    }
     return sortedArray;
   };
 
-  const sortedData = selectionSort(products);
+  const handleSort = () => {
+    if (products && products.length > 0) {
+      setSortedData(selectionSort(products));
+    }
+  };
 
   if (!fontLoaded) {
     return null;
@@ -94,7 +115,9 @@ const SortingScreen = () => {
       <View style={styles.mainContainer}>
         <View style={styles.labelRow}>
           <TouchableOpacity
-            onPress={() => handleSort("productName")}
+            onPress={() => {
+              handleSortOrder("productName");
+            }}
             style={{ flex: 2, flexDirection: "row" }}
           >
             <Text style={styles.label}>Name</Text>
@@ -107,7 +130,9 @@ const SortingScreen = () => {
             ) : null}
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => handleSort("productWeight")}
+            onPress={() => {
+              handleSortOrder("productWeight");
+            }}
             style={{ flex: 1, flexDirection: "row" }}
           >
             <Text style={styles.label}>Weight</Text>
@@ -120,7 +145,9 @@ const SortingScreen = () => {
             ) : null}
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => handleSort("productAmount")}
+            onPress={() => {
+              handleSortOrder("productAmount");
+            }}
             style={{ flex: 1, flexDirection: "row" }}
           >
             <Text style={styles.label}>Amount</Text>
