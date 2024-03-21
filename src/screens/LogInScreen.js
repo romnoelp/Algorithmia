@@ -15,7 +15,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { auth, db } from "../../firebaseConfig";
+import { auth, db } from "../../src/dbConfig/firebaseConfig.js";
 import { Button } from "@rneui/base";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-simple-toast";

@@ -17,7 +17,7 @@ import {
 } from "react-native-responsive-screen";
 import { SVGOne, loadFont } from "../../loadFontSVG";
 import { Button } from "@rneui/base";
-import { auth, db } from "../../firebaseConfig";
+import { auth, db } from "../../src/dbConfig/firebaseConfig.js";
 import { useProductContext } from "../../context/ProductContext";
 import Toast from "react-native-simple-toast";
 import FloatingButton from "../components/FloatingButton";

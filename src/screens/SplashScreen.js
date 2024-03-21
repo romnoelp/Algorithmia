@@ -8,7 +8,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { auth } from "../../firebaseConfig";
+import { auth, db } from "../../src/dbConfig/firebaseConfig.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-simple-toast";
 import { CommonActions, useNavigation } from "@react-navigation/native";

@@ -11,7 +11,7 @@ import {
 } from "react-native-responsive-screen";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { auth } from "../../firebaseConfig";
+import { auth, db } from "../../src/dbConfig/firebaseConfig.js";
 
 const LandingScreen = () => {
   const [fontLoaded, setFontLoaded] = useState(false);

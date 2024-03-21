@@ -17,7 +17,7 @@ import {
   SVGFour,
   loadFont,
 } from "../../loadFontSVG";
-import { auth, db } from "../../firebaseConfig";
+import { auth, db } from "../../src/dbConfig/firebaseConfig.js";
 import { useDeliveryContext } from "../../context/DeliveryContext";
 import Toast from "react-native-simple-toast";
 import { useProductContext } from "../../context/ProductContext";

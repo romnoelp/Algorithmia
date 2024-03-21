@@ -19,7 +19,7 @@ import FloatingButton from "../components/FloatingButton";
 import axios from "axios";
 import { Button } from "@rneui/base";
 import { useDeliveryContext } from "../../context/DeliveryContext";
-import { auth, db } from "../../firebaseConfig";
+import { auth, db } from "../../src/dbConfig/firebaseConfig.js";
 import Toast from "react-native-simple-toast";
 
 const memoizedDistances = {}; // Cache for memoizing distances
